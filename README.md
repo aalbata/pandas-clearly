@@ -23,7 +23,7 @@ The course contains **30 modules and 120 guided lessons**, with a student notebo
 | Find a familiar operation quickly | [Reference guide](docs/reference-guide.md) |
 | Put this repository on GitHub | [Push and publishing instructions](PUSH_TO_GITHUB.md) |
 
-The intended repository is [aalbatai/pandas-clearly](https://github.com/aalbatai/pandas-clearly). After GitHub Pages is enabled, its course address will be [aalbatai.github.io/pandas-clearly](https://aalbatai.github.io/pandas-clearly/). A downloaded copy can be previewed locally using the instructions below.
+The intended repository is [aalbata/pandas-clearly](https://github.com/aalbata/pandas-clearly). After GitHub Pages is enabled, its course address will be [aalbata.github.io/pandas-clearly](https://aalbata.github.io/pandas-clearly/). A downloaded copy can be previewed locally using the instructions below.
 
 ## How a lesson works
 
@@ -96,7 +96,7 @@ Corrections, clearer explanations, and reproducible bug reports are welcome. Ple
 
 If you use or adapt this course in teaching, research, or training, please cite it as follows:
 
-> Al Bataineh, A. (2026). *Pandas, Clearly: Pandas for Data Science* (Version 1.0.0). https://github.com/aalbatai/pandas-clearly
+> Al Bataineh, A. (2026). *Pandas, Clearly: Pandas for Data Science* (Version 1.0.0). https://github.com/aalbata/pandas-clearly
 
 ```bibtex
 @misc{albataineh2026pandasclearly,
@@ -105,7 +105,7 @@ If you use or adapt this course in teaching, research, or training, please cite 
   year = {2026},
   version = {1.0.0},
   howpublished = {GitHub repository},
-  url = {https://github.com/aalbatai/pandas-clearly}
+  url = {https://github.com/aalbata/pandas-clearly}
 }
 ```
 
@@ -116,4 +116,4 @@ If you use or adapt this course in teaching, research, or training, please cite 
 Dr. Ali Al Bataineh  
 Computer Information Science  
 Higher Colleges of Technology, Ras Al Khaimah, United Arab Emirates  
-[GitHub: aalbatai](https://github.com/aalbatai) · [pandas-clearly](https://github.com/aalbatai/pandas-clearly)
+[GitHub: aalbata](https://github.com/aalbata) · [pandas-clearly](https://github.com/aalbata/pandas-clearly)

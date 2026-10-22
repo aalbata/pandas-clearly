@@ -13,20 +13,12 @@
       "url": "departments.csv"
     },
     {
-      "path": "public/LICENSE_DATA.txt",
-      "url": "public/LICENSE_DATA.txt"
-    },
-    {
-      "path": "public/UPSTREAM_CITATION.txt",
-      "url": "public/UPSTREAM_CITATION.txt"
-    },
-    {
-      "path": "public/UPSTREAM_DESCRIPTION.txt",
-      "url": "public/UPSTREAM_DESCRIPTION.txt"
-    },
-    {
       "path": "public/import_practice_semicolon.csv",
       "url": "public/import_practice_semicolon.csv"
+    },
+    {
+      "path": "public/LICENSE_DATA.txt",
+      "url": "public/LICENSE_DATA.txt"
     },
     {
       "path": "public/penguins.csv",
@@ -67,6 +59,14 @@
     {
       "path": "public/source_retrieval.json",
       "url": "public/source_retrieval.json"
+    },
+    {
+      "path": "public/UPSTREAM_CITATION.txt",
+      "url": "public/UPSTREAM_CITATION.txt"
+    },
+    {
+      "path": "public/UPSTREAM_DESCRIPTION.txt",
+      "url": "public/UPSTREAM_DESCRIPTION.txt"
     },
     {
       "path": "raw_students.csv",

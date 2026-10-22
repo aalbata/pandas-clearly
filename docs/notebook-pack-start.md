@@ -64,11 +64,11 @@ Read the final error type and message and find the indicated line. When requesti
 
 Early classroom records are fictional. Later modules use Palmer Penguins public data; source details, transformations, and dataset license terms are in [data/public/README.md](data/public/README.md). The original course material uses the [MIT license](LICENSE). Citation metadata is in [CITATION.cff](CITATION.cff).
 
-If you use or adapt the course in teaching, research, or training, please cite: Al Bataineh, A. (2026). *Pandas, Clearly: Pandas for Data Science* (Version 1.0.0). https://github.com/aalbatai/pandas-clearly
+If you use or adapt the course in teaching, research, or training, please cite: Al Bataineh, A. (2026). *Pandas, Clearly: Pandas for Data Science* (Version 1.0.0). https://github.com/aalbata/pandas-clearly
 
 ---
 
 Dr. Ali Al Bataineh  
 Computer Information Science  
 Higher Colleges of Technology, Ras Al Khaimah, United Arab Emirates  
-[GitHub: aalbatai](https://github.com/aalbatai) · [pandas-clearly](https://github.com/aalbatai/pandas-clearly)
+[GitHub: aalbata](https://github.com/aalbata) · [pandas-clearly](https://github.com/aalbata/pandas-clearly)

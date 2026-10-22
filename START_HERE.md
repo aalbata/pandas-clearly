@@ -15,7 +15,7 @@ You can move between routes. A route is a starting suggestion, not a test of you
 
 ## Option 1: learn in the browser
 
-When the course has been published, open [Pandas, Clearly](https://aalbatai.github.io/pandas-clearly/). Choose a module, read the first example, and write a prediction before selecting Run. The first run loads the bundled Python runtime and packages from the course site. A loading message is different from a code error; you can read a lesson before starting the runtime.
+When the course has been published, open [Pandas, Clearly](https://aalbata.github.io/pandas-clearly/). Choose a module, read the first example, and write a prediction before selecting Run. The first run loads the bundled Python runtime and packages from the course site. A loading message is different from a code error; you can read a lesson before starting the runtime.
 
 If you received a downloaded repository folder, preview the included website from that folder:
 
@@ -95,4 +95,4 @@ Use the [reference guide](docs/reference-guide.md) for common operations and the
 Dr. Ali Al Bataineh  
 Computer Information Science  
 Higher Colleges of Technology, Ras Al Khaimah, United Arab Emirates  
-[GitHub: aalbatai](https://github.com/aalbatai) · [pandas-clearly](https://github.com/aalbatai/pandas-clearly)
+[GitHub: aalbata](https://github.com/aalbata) · [pandas-clearly](https://github.com/aalbata/pandas-clearly)

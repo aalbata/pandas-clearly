@@ -91,4 +91,4 @@ This course gives a broad practical foundation in pandas. Specialist areas such 
 Dr. Ali Al Bataineh  
 Computer Information Science  
 Higher Colleges of Technology, Ras Al Khaimah, United Arab Emirates  
-[GitHub: aalbatai](https://github.com/aalbatai) · [pandas-clearly](https://github.com/aalbatai/pandas-clearly)
+[GitHub: aalbata](https://github.com/aalbata) · [pandas-clearly](https://github.com/aalbata/pandas-clearly)

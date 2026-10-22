@@ -68,7 +68,7 @@ def main():
     assert citation["cff-version"] == "1.2.0"
     assert citation["authors"][0]["family-names"] == "Al Bataineh"
     assert "Ras Al Khaimah" in citation["authors"][0]["affiliation"]
-    assert "https://github.com/aalbatai/pandas-clearly" in json.dumps(citation,default=str)
+    assert "https://github.com/aalbata/pandas-clearly" in json.dumps(citation,default=str)
     report = {"html_pages":len(parsers),"local_links_checked":links_checked,"notebooks_checked":len(notebooks),"citation_metadata":True,"author_affiliation_on_every_html_page":not any("affiliation" in f for f in failures),"failures":failures}
     (ROOT/"validation").mkdir(exist_ok=True)
     (ROOT/"validation/site-structure.json").write_text(json.dumps(report,indent=2)+"\n",encoding="utf-8")

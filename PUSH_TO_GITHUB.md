@@ -1,15 +1,15 @@
 # Push the course to GitHub
 
-These steps publish the supplied repository as **aalbatai/pandas-clearly** and serve the generated website from the `main` branch's `docs/` folder. Run them when you are ready to publish your copy.
+These steps publish the supplied repository as **aalbata/pandas-clearly** and serve the generated website from the `main` branch's `docs/` folder. Run them when you are ready to publish your copy.
 
 ## 1. Create an empty repository
 
-Sign in to GitHub as **aalbatai** and create a repository named **pandas-clearly**. Choose **Public** for the public course. Leave the initial README, `.gitignore`, and license options unselected because these files are already included in the local folder.
+Sign in to GitHub as **aalbata** and create a repository named **pandas-clearly**. Choose **Public** for the public course. Leave the initial README, `.gitignore`, and license options unselected because these files are already included in the local folder.
 
 Keep the repository URL from GitHub's setup page. For this account and name, the HTTPS remote is:
 
 ```text
-https://github.com/aalbatai/pandas-clearly.git
+https://github.com/aalbata/pandas-clearly.git
 ```
 
 ## 2. Open the extracted folder
@@ -57,7 +57,7 @@ If your folder is already a Git repository, inspect `git status` and `git branch
 For a fresh repository with no `origin` remote:
 
 ```powershell
-git remote add origin https://github.com/aalbatai/pandas-clearly.git
+git remote add origin https://github.com/aalbata/pandas-clearly.git
 git remote -v
 git push -u origin main
 ```
@@ -77,7 +77,7 @@ In the GitHub repository:
 
 Once GitHub reports a successful publication, the expected address is:
 
-[https://aalbatai.github.io/pandas-clearly/](https://aalbatai.github.io/pandas-clearly/)
+[https://aalbata.github.io/pandas-clearly/](https://aalbata.github.io/pandas-clearly/)
 
 The website uses the static files already generated in `docs/`. Keep `docs/.nojekyll` in the committed output so those files are served as prepared. A validation workflow is separate from the Pages publishing-source setting.
 
@@ -115,4 +115,4 @@ The Git initialization and push sequence follows GitHub's [adding locally hosted
 Dr. Ali Al Bataineh  
 Computer Information Science  
 Higher Colleges of Technology, Ras Al Khaimah, United Arab Emirates  
-[GitHub: aalbatai](https://github.com/aalbatai) · [pandas-clearly](https://github.com/aalbatai/pandas-clearly)
+[GitHub: aalbata](https://github.com/aalbata) · [pandas-clearly](https://github.com/aalbata/pandas-clearly)

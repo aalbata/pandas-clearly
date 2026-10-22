@@ -14,8 +14,8 @@ authors:
     orcid: "https://orcid.org/0000-0001-9530-7950"
 version: 1.0.0
 date-released: 2026-10-22
-repository-code: "https://github.com/aalbatai/pandas-clearly"
-url: "https://github.com/aalbatai/pandas-clearly"
+repository-code: "https://github.com/aalbata/pandas-clearly"
+url: "https://github.com/aalbata/pandas-clearly"
 license: MIT
 keywords:
   - pandas

@@ -2,7 +2,7 @@
 
 ## 1.0.0 — 2026-10-22
 
-Initial course distribution for publication as `aalbatai/pandas-clearly`.
+Initial course distribution for publication as `aalbata/pandas-clearly`.
 
 - Added 30 modules containing 120 guided lessons, beginning with a Python bridge and dictionaries.
 - Included a question, prediction, explanation, change task, hint, worked solution, and quick check with each lesson.
@@ -19,4 +19,4 @@ The release date identifies this distribution. Publication of a repository or Pa
 Dr. Ali Al Bataineh  
 Computer Information Science  
 Higher Colleges of Technology, Ras Al Khaimah, United Arab Emirates  
-[GitHub: aalbatai](https://github.com/aalbatai) · [pandas-clearly](https://github.com/aalbatai/pandas-clearly)
+[GitHub: aalbata](https://github.com/aalbata) · [pandas-clearly](https://github.com/aalbata/pandas-clearly)

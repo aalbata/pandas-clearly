@@ -93,4 +93,4 @@ SHA-256 hashes below identify the supplied bytes. Per-file transformations and h
 Dr. Ali Al Bataineh  
 Computer Information Science  
 Higher Colleges of Technology, Ras Al Khaimah, United Arab Emirates  
-GitHub: [aalbatai](https://github.com/aalbatai)
+GitHub: [aalbata](https://github.com/aalbata)
