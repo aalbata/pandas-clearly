@@ -1,0 +1,174 @@
+{
+  "id": 9,
+  "title": "Data types and safe conversion",
+  "level": "Core",
+  "goal": "Choose a useful data type and identify values that cannot be converted.",
+  "prerequisites": "You can select a column and create a new column.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/basics.html#dtypes",
+  "cells": [
+    {
+      "id": "M09C01",
+      "title": "A number and its text are different",
+      "explanation": "A data type tells pandas what a column contains and which operations make sense. Quotation marks make \"20\" text. `astype()` converts values when the requested conversion is possible.",
+      "code": "ages = pd.Series([\"20\", \"21\", \"19\"], dtype=\"string\")\nresult = ages.astype(\"int64\")\nprint(\"Before:\", ages.dtype)\nprint(\"After:\", result.dtype)\nprint(\"Next year:\", (result + 1).tolist())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What do the quotation marks around the ages tell Python?",
+          "answer": "These values are strings, even though they contain digits."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What will the next-year ages be?",
+          "answer": "21, 22, and 20."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why convert before adding 1?",
+          "answer": "We want numeric addition; text values are not numeric ages yet."
+        }
+      ],
+      "task": "Start again with the same text ages. Convert them to numbers and calculate their mean in `result`.",
+      "hint": "Convert the Series first; then call `.mean()`.",
+      "solution": "ages = pd.Series([\"20\", \"21\", \"19\"], dtype=\"string\")\nresult = ages.astype(\"int64\").mean()\nprint(result)",
+      "solution_note": "The mean is 20.0. The conversion makes arithmetic meaningful.",
+      "check": {
+        "prompt": "Which expression requests a numeric type?",
+        "options": [
+          "ages.astype(\"int64\")",
+          "ages.astype(\"string\")",
+          "str(ages)"
+        ],
+        "correct": 0,
+        "feedback": "int64 is an integer data type; string is text."
+      },
+      "verify": "assert result.tolist() == [20, 21, 19]\nassert str(result.dtype) == \"int64\"",
+      "solution_verify": "assert result == 20.0",
+      "watch": "Do not assume a column is numeric just because its displayed values look like numbers.",
+      "takeaway": "Check types before doing arithmetic."
+    },
+    {
+      "id": "M09C02",
+      "title": "Convert messy numbers and keep the reason",
+      "explanation": "`pd.to_numeric()` parses values as numbers. With `errors=\"coerce\"`, values it cannot parse become missing. Preserve the source so you can distinguish an invalid label from a value that was already missing.",
+      "code": "source = pd.Series([\"88\", \"absent\", None, \"72\"], dtype=\"string\")\nnumbers = pd.to_numeric(source, errors=\"coerce\")\ninvalid = source.notna() & numbers.isna()\nresult = pd.DataFrame({\"Original\": source, \"Number\": numbers, \"Invalid_text\": invalid})\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does `errors=\"coerce\"` ask pandas to do?",
+          "answer": "Replace a value that cannot be parsed as a number with a missing value."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which row is marked as invalid text?",
+          "answer": "Only row 1, containing \"absent\". Row 2 was already missing."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why should we keep the original values?",
+          "answer": "Conversion alone loses the distinction between invalid text and an originally missing value; \"absent\" may also have a special policy meaning."
+        }
+      ],
+      "task": "Change \"absent\" to \"90\" in the source. Rebuild the table and count the missing numbers.",
+      "hint": "Use `.isna().sum()` after the conversion.",
+      "solution": "source = pd.Series([\"88\", \"90\", None, \"72\"], dtype=\"string\")\nnumbers = pd.to_numeric(source, errors=\"coerce\")\ninvalid = source.notna() & numbers.isna()\nresult = pd.DataFrame({\"Original\": source, \"Number\": numbers, \"Invalid_text\": invalid})\nprint(result)\nprint(\"Missing numbers:\", numbers.isna().sum())",
+      "solution_note": "Only the original None remains missing; there are no invalid text values.",
+      "check": {
+        "prompt": "Does converting \"absent\" to a missing value mean the score was zero?",
+        "options": [
+          "Yes, missing and zero are identical",
+          "No; a grading rule must determine what absent means",
+          "Yes, pandas automatically applies grading rules"
+        ],
+        "correct": 1,
+        "feedback": "Parsing is a technical operation. It does not decide the meaning or grading treatment of absence."
+      },
+      "verify": "assert result[\"Number\"].isna().sum() == 2\nassert result[\"Invalid_text\"].tolist() == [False, True, False, False]",
+      "solution_verify": "assert result[\"Number\"].isna().sum() == 1\nassert not result[\"Invalid_text\"].any()",
+      "watch": "Do not silently turn every conversion failure into zero.",
+      "takeaway": "Audit conversion failures before deciding how to handle them."
+    },
+    {
+      "id": "M09C03",
+      "title": "Integers that can be missing",
+      "explanation": "Pandas nullable integer type `Int64` can store whole numbers and `pd.NA`. Its capital I matters. Comparisons can also be missing, so decide how missing comparisons should behave in a filter.",
+      "code": "ages = pd.Series([20, None, 22], dtype=\"Int64\")\nresult = ages + 1\nprint(result)\nprint(\"Known ages:\", ages.notna().sum())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does the capital I in `Int64` select?",
+          "answer": "Pandas nullable integer type, which supports a missing-value marker."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What happens to the missing age when 1 is added?",
+          "answer": "It remains missing; pandas does not invent an age."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is None not an age of zero?",
+          "answer": "It means the age was not recorded, while zero would be an actual number."
+        }
+      ],
+      "task": "Start with the same ages and keep only known ages of at least 21. Store the filtered Series in `result`.",
+      "hint": "Build `ages >= 21`; use `.fillna(False)` on that mask.",
+      "solution": "ages = pd.Series([20, None, 22], dtype=\"Int64\")\nmask = (ages >= 21).fillna(False)\nresult = ages[mask]\nprint(result)",
+      "solution_note": "Only 22 remains. The explicit False says an unknown age does not satisfy this selection rule.",
+      "check": {
+        "prompt": "Which value remains missing after adding 1?",
+        "options": [
+          "20",
+          "None / pd.NA",
+          "22"
+        ],
+        "correct": 1,
+        "feedback": "Arithmetic preserves the unknown value."
+      },
+      "verify": "assert result.iloc[0] == 21\nassert pd.isna(result.iloc[1])\nassert result.iloc[2] == 23",
+      "solution_verify": "assert result.tolist() == [22]\nassert result.index.tolist() == [2]",
+      "watch": "Do not write `if pd.NA:`; its truth value is ambiguous. Use `.isna()` or `.notna()`.",
+      "takeaway": "Use nullable types when missing values are legitimate."
+    },
+    {
+      "id": "M09C04",
+      "title": "Categories and an explicit order",
+      "explanation": "A category stores values drawn from a defined set, such as programs or rating bands. An ordered category has a meaningful sequence that you choose. Sorting follows that sequence instead of alphabetical order.",
+      "code": "ratings = pd.Series([\"High\", \"Low\", \"Medium\", \"Low\"], dtype=\"string\")\nrating_type = pd.CategoricalDtype([\"Low\", \"Medium\", \"High\"], ordered=True)\nresult = ratings.astype(rating_type).sort_values()\nprint(result)\nprint(\"Order:\", result.cat.categories.tolist())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Where is the rating order defined?",
+          "answer": "In the category list [\"Low\", \"Medium\", \"High\"]."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which value appears first after sorting?",
+          "answer": "Low, followed by the other Low, then Medium and High."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why might alphabetical sorting be wrong here?",
+          "answer": "Alphabetical sorting puts High first, which does not represent the intended rating order."
+        }
+      ],
+      "task": "Use students(). Make Program an ordered category with IT before AI, then sort by Program and Student_ID. Store the sorted Student_ID and Program columns in the DataFrame result.",
+      "hint": "Create a `pd.CategoricalDtype([\"IT\", \"AI\"], ordered=True)`.",
+      "solution": "df = students()\nprogram_type = pd.CategoricalDtype([\"IT\", \"AI\"], ordered=True)\ndf[\"Program\"] = df[\"Program\"].astype(program_type)\nresult = df.sort_values([\"Program\", \"Student_ID\"])[[\"Student_ID\", \"Program\"]]\nprint(result)",
+      "solution_note": "All six IT students appear before the six AI students; each program is ordered by ID.",
+      "check": {
+        "prompt": "What does ordered=True add?",
+        "options": [
+          "An explicit meaningful order",
+          "Automatic numeric grades",
+          "A rule that removes duplicates"
+        ],
+        "correct": 0,
+        "feedback": "The category sequence becomes the ordering used by sorting and comparisons."
+      },
+      "verify": "assert result.tolist() == [\"Low\", \"Low\", \"Medium\", \"High\"]",
+      "solution_verify": "assert result[\"Program\"].iloc[:6].tolist() == [\"IT\"] * 6\nassert result.iloc[0][\"Student_ID\"] == \"S002\"",
+      "watch": "A value outside a declared category list becomes missing when converted; check the result.",
+      "takeaway": "Define category meaning and order deliberately."
+    }
+  ]
+}

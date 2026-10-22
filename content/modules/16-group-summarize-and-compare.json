@@ -1,0 +1,174 @@
+{
+  "id": 16,
+  "title": "Group, summarize, and compare",
+  "level": "Core",
+  "goal": "Distinguish group summaries, row-aligned transformations, and group filters.",
+  "prerequisites": "You can select columns, use summary methods, and create new columns.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/groupby.html",
+  "cells": [
+    {
+      "id": "M16C01",
+      "title": "One question for each group",
+      "explanation": "`groupby()` splits rows according to a label, then a summary method calculates one result per group. Named aggregation lets you choose readable output names. Here each campus receives its own row count and mean score.",
+      "code": "df = students()\nresult = df.groupby(\"Campus\", as_index=False).agg(Students=(\"Student_ID\", \"size\"), Mean_score=(\"Score\", \"mean\"))\nprint(result.round(2))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does each row of the result represent?",
+          "answer": "One campus, with its number of student records and average score."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many rows should result contain?",
+          "answer": "Two, one for Dubai and one for RAK."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why use as_index=False?",
+          "answer": "It keeps Campus as an ordinary column rather than placing it in the result index."
+        }
+      ],
+      "task": "Group by Program instead. Store a DataFrame named result with Program as a normal column and named summary columns Students, Median_score, and Highest_score.",
+      "hint": "Use named aggregations with size, median, and max.",
+      "solution": "df = students()\nresult = df.groupby(\"Program\", as_index=False).agg(Students=(\"Student_ID\", \"size\"), Median_score=(\"Score\", \"median\"), Highest_score=(\"Score\", \"max\"))\nprint(result)",
+      "solution_note": "Both programs have six students. AI has median 88.5 and maximum 95; IT has median 74.0 and maximum 82.",
+      "check": {
+        "prompt": "How many values does an ordinary mean aggregation return for one group?",
+        "options": [
+          "One summary value",
+          "One value for every original row",
+          "One value for every cell"
+        ],
+        "correct": 0,
+        "feedback": "An aggregation reduces the group to a summary."
+      },
+      "verify": "assert len(result) == 2\nassert result[\"Students\"].sum() == 12\nassert result.set_index(\"Campus\").loc[\"RAK\", \"Students\"] == 6",
+      "solution_verify": "assert result.set_index(\"Program\").loc[\"AI\", \"Median_score\"] == 88.5\nassert result.set_index(\"Program\").loc[\"IT\", \"Highest_score\"] == 82\nassert result[\"Students\"].sum() == 12",
+      "watch": "A mean without its supporting count can hide a very small group.",
+      "takeaway": "Summarize each group with readable labels and counts."
+    },
+    {
+      "id": "M16C02",
+      "title": "Multiple keys and missing group labels",
+      "explanation": "Grouping by a list of columns forms one group for each observed combination. By default, rows with a missing group key are excluded. `dropna=False` keeps those rows in a separate missing-label group so the totals can be audited.",
+      "code": "df = students()\ndf.loc[0, \"Campus\"] = None\nresult = df.groupby([\"Campus\", \"Program\"], dropna=False, as_index=False).agg(Students=(\"Student_ID\", \"size\"), Mean_score=(\"Score\", \"mean\"))\nprint(result.round(2))\nprint(\"Total represented:\", result[\"Students\"].sum())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does one result row represent now?",
+          "answer": "One Campus-Program combination, including a combination whose Campus is missing."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many student records are represented in total?",
+          "answer": "All 12, because dropna=False retains the missing-campus record."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "What would the default dropna=True do to S001?",
+          "answer": "It would exclude S001 from this grouped result because Campus is missing."
+        }
+      ],
+      "task": "Run the same grouping with dropna=True. Compare its represented row total with len(df), and store the grouped table in result.",
+      "hint": "Keep the original table; add the group sizes and compare the sum.",
+      "solution": "df = students()\ndf.loc[0, \"Campus\"] = None\nresult = df.groupby([\"Campus\", \"Program\"], dropna=True, as_index=False).agg(Students=(\"Student_ID\", \"size\"))\nprint(result)\nprint(\"Represented:\", result[\"Students\"].sum(), \"Original:\", len(df))",
+      "solution_note": "The grouped counts sum to 11, while the original table still has 12 rows. S001 is excluded only from the grouping output.",
+      "check": {
+        "prompt": "Which option retains rows whose grouping key is missing?",
+        "options": [
+          "dropna=False",
+          "dropna=True",
+          "ascending=False"
+        ],
+        "correct": 0,
+        "feedback": "dropna=False creates a missing-key group."
+      },
+      "verify": "assert result[\"Students\"].sum() == 12\nassert result[\"Campus\"].isna().sum() == 1",
+      "solution_verify": "assert result[\"Students\"].sum() == 11\nassert len(df) == 12",
+      "watch": "When group keys are categorical, set observed explicitly if you need predictable inclusion of unused categories.",
+      "takeaway": "Reconcile grouped totals with the original table."
+    },
+    {
+      "id": "M16C03",
+      "title": "A summary for every original row",
+      "explanation": "`transform()` returns values aligned with the original rows. A group mean can therefore be attached to every student in that group. This makes comparisons with a group benchmark possible without reducing the table to one row per group.",
+      "code": "df = students()\ndf[\"Program_mean\"] = df.groupby(\"Program\")[\"Score\"].transform(\"mean\")\ndf[\"Difference\"] = df[\"Score\"] - df[\"Program_mean\"]\nresult = df[[\"Student_ID\", \"Program\", \"Score\", \"Program_mean\", \"Difference\"]]\nprint(result.round(2))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "How many rows does result keep?",
+          "answer": "All 12 original student rows."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will all AI students have the same Program_mean?",
+          "answer": "Yes. The same AI group mean is aligned with each AI student."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why would assigning a two-row group mean Series directly be risky?",
+          "answer": "Pandas aligns by index labels, which may not match the original row index. transform is designed to return a row-aligned result."
+        }
+      ],
+      "task": "Calculate the median score within each campus in a column named Campus_median. Keep only students scoring strictly above that median. Store Student_ID, Campus, Score, and Campus_median in result.",
+      "hint": "Use groupby(\"Campus\")[\"Score\"].transform(\"median\") to build the benchmark.",
+      "solution": "df = students()\ndf[\"Campus_median\"] = df.groupby(\"Campus\")[\"Score\"].transform(\"median\")\nresult = df.loc[df[\"Score\"] > df[\"Campus_median\"], [\"Student_ID\", \"Campus\", \"Score\", \"Campus_median\"]]\nprint(result)",
+      "solution_note": "Six students are above their campus median: S001, S003, S006, S007, S010, and S012.",
+      "check": {
+        "prompt": "Which operation returns a group statistic aligned to every original row?",
+        "options": [
+          "agg",
+          "transform",
+          "drop_duplicates"
+        ],
+        "correct": 1,
+        "feedback": "transform preserves the original row alignment while applying group-specific calculations."
+      },
+      "verify": "assert len(result) == 12\nassert result.groupby(\"Program\")[\"Program_mean\"].nunique().eq(1).all()\nassert np.isclose(result[\"Difference\"].sum(), 0)",
+      "solution_verify": "assert result[\"Student_ID\"].tolist() == [\"S001\", \"S003\", \"S006\", \"S007\", \"S010\", \"S012\"]\nassert (result[\"Score\"] > result[\"Campus_median\"]).all()",
+      "watch": "A group-relative label and a fixed-threshold label answer different questions.",
+      "takeaway": "Use transform when the result belongs beside the original records."
+    },
+    {
+      "id": "M16C04",
+      "title": "Keep whole groups and control unused categories",
+      "explanation": "A group filter keeps or removes whole groups based on a group-level rule. Categorical columns can also contain labels with no rows. `observed=True` limits a group result to categories actually present in the data.",
+      "code": "df = students()\ndf[\"Program\"] = pd.Categorical(df[\"Program\"], categories=[\"AI\", \"IT\", \"CS\"])\nresult = df.groupby(\"Program\", observed=True)[\"Score\"].agg([\"size\", \"mean\"])\nprint(result.round(2))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Does declaring CS as a category create CS student records?",
+          "answer": "No. It declares a possible label without adding rows."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will CS appear in this grouped result?",
+          "answer": "No, because observed=True reports only categories that occur in the data."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "How is filtering whole groups different from filtering scores >= 80?",
+          "answer": "A group filter keeps all rows in an accepted group, including individual scores below 80."
+        }
+      ],
+      "task": "Start from students(). Keep all students in programs whose mean Score is at least 80 using groupby().filter().",
+      "hint": "The filter function receives each group DataFrame; compare its Score mean with 80.",
+      "solution": "df = students()\nresult = df.groupby(\"Program\").filter(lambda group: group[\"Score\"].mean() >= 80)\nprint(result[[\"Student_ID\", \"Program\", \"Score\"]])",
+      "solution_note": "All six AI students remain, including S011 with score 68. The rule concerns the program mean, not each individual score.",
+      "check": {
+        "prompt": "A program passes the group-mean rule. Which records are kept by groupby().filter()?",
+        "options": [
+          "Only records above the threshold",
+          "All records in that program",
+          "Only the highest-scoring record"
+        ],
+        "correct": 1,
+        "feedback": "A group filter accepts or rejects the group as a whole."
+      },
+      "verify": "assert result.index.tolist() == [\"AI\", \"IT\"]\nassert result[\"size\"].tolist() == [6, 6]",
+      "solution_verify": "assert len(result) == 6\nassert set(result[\"Program\"]) == {\"AI\"}\nassert \"S011\" in result[\"Student_ID\"].tolist()",
+      "watch": "Unused categories and missing labels are different: observed controls unused categories; dropna controls missing keys.",
+      "takeaway": "Separate group inclusion rules from row inclusion rules."
+    }
+  ]
+}

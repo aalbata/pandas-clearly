@@ -1,0 +1,174 @@
+{
+  "id": 3,
+  "title": "Meet the pandas Series",
+  "level": "Foundation",
+  "goal": "Create a labeled column and explain positions, labels, and arithmetic.",
+  "prerequisites": "Know dictionary keys, list positions, and the difference between = and ==.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/dsintro.html#series",
+  "cells": [
+    {
+      "id": "M03C01",
+      "title": "One column, with labels",
+      "explanation": "The setup imports pandas using the short name pd. A Series is a one-dimensional collection of values with an index: labels attached to those values. Without an explicit index, pandas supplies labels starting at 0. A Series also has a dtype describing how its values are stored.",
+      "code": "scores = pd.Series([88, 72, 91], name=\"Score\")\nprint(scores)\nprint(\"Number of values:\", len(scores))\nprint(\"Index:\", scores.index.tolist())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does pd refer to in pd.Series(...) ?",
+          "answer": "pd is the alias for the pandas package created by import pandas as pd in the setup."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which index labels will this Series have?",
+          "answer": "0, 1, and 2."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Is the index printed on the left an extra score?",
+          "answer": "No. It labels each score; it is not an additional measurement in the Series."
+        }
+      ],
+      "task": "Create a Series called hours containing 8, 5, and 9. Give it the name Study_Hours and print its length.",
+      "hint": "Change both the list values and the name= argument.",
+      "solution": "hours = pd.Series([8, 5, 9], name=\"Study_Hours\")\nprint(hours)\nprint(\"Number of values:\", len(hours))",
+      "solution_note": "The Series contains three study-hour values and is named Study_Hours. Its default index is still 0, 1, 2.",
+      "check": {
+        "prompt": "A Series is best described as:",
+        "options": [
+          "A complete folder.",
+          "A Python keyword.",
+          "One labeled sequence of values."
+        ],
+        "correct": 2,
+        "feedback": "A Series is a one-dimensional labeled pandas data structure."
+      },
+      "verify": "assert scores.tolist() == [88, 72, 91] and scores.name == 'Score'\nassert scores.index.tolist() == [0, 1, 2]",
+      "solution_verify": "assert hours.tolist() == [8, 5, 9] and hours.name == 'Study_Hours'",
+      "watch": "Do not call the dtype text a data row; it describes the Series.",
+      "takeaway": "I can distinguish Series values, index labels, and the Series name."
+    },
+    {
+      "id": "M03C02",
+      "title": "Choose labels or positions explicitly",
+      "explanation": "You can supply meaningful labels, such as student IDs, as the Series index. loc selects an index label; iloc selects an integer position. These can identify the same value, but they ask different questions. Using them explicitly avoids confusing a number used as a label with a position.",
+      "code": "scores = pd.Series([88, 72, 91], index=[\"S001\", \"S002\", \"S003\"], name=\"Score\")\nby_label = scores.loc[\"S002\"]\nby_position = scores.iloc[1]\nprint(scores)\nprint(by_label, by_position)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which expression asks for student S002, and which asks for the second value?",
+          "answer": "scores.loc[\"S002\"] asks for the label S002. scores.iloc[1] asks for position 1, the second value."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What two values are printed on the last line?",
+          "answer": "72 and 72."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "After sorting scores, will position 1 always belong to S002?",
+          "answer": "No. Sorting can change positions. The S002 label still identifies that student's score."
+        }
+      ],
+      "task": "Select S003 by label and the first score by position. Store them as by_label and by_position, then print both.",
+      "hint": "Use loc with the ID text, and iloc with 0 for the first position.",
+      "solution": "scores = pd.Series([88, 72, 91], index=[\"S001\", \"S002\", \"S003\"], name=\"Score\")\nby_label = scores.loc[\"S003\"]\nby_position = scores.iloc[0]\nprint(by_label, by_position)",
+      "solution_note": "S003 has score 91. Position 0 contains S001's score, 88.",
+      "check": {
+        "prompt": "Which selector is explicitly positional?",
+        "options": [
+          "iloc",
+          "loc",
+          "name"
+        ],
+        "correct": 0,
+        "feedback": "iloc always selects by integer position rather than index label."
+      },
+      "verify": "assert by_label == 72 and by_position == 72",
+      "solution_verify": "assert by_label == 91 and by_position == 88",
+      "watch": "Prefer .iloc[0] when you mean first position; do not rely on scores[0] with a text index.",
+      "takeaway": "I can select a Series value by label or by position."
+    },
+    {
+      "id": "M03C03",
+      "title": "Do arithmetic on a whole Series",
+      "explanation": "Pandas can apply an arithmetic operation to all values at once. This is called a vectorized operation. scores + 2 creates a new result; it does not replace scores unless you assign the result back. clip() can enforce an upper or lower boundary when that is the stated rule.",
+      "code": "scores = pd.Series([88, 72, 99], index=[\"S001\", \"S002\", \"S003\"], name=\"Score\")\nresult = scores + 2\nprint(\"Original:\")\nprint(scores)\nprint(\"After adding two:\")\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Does scores + 2 work on one value or every value?",
+          "answer": "It adds 2 to every value in the Series, keeping the index labels."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What is the new result for S003, and what remains in scores for S003?",
+          "answer": "The new result is 101. The original scores value remains 99."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why might 101 be unacceptable for a score measured out of 100?",
+          "answer": "It exceeds the permitted range. If the rule allows bonus marks but caps scores at 100, clipping can apply that explicit rule."
+        }
+      ],
+      "task": "Add 5 to each score, then cap the result at 100. Keep the original scores unchanged.",
+      "hint": "Apply .clip(upper=100) to the calculated Series.",
+      "solution": "scores = pd.Series([88, 72, 99], index=[\"S001\", \"S002\", \"S003\"], name=\"Score\")\nresult = (scores + 5).clip(upper=100)\nprint(result)",
+      "solution_note": "The new scores are 93, 77, and 100. Clipping applies the stated maximum; it should not be used to hide unexplained invalid source data.",
+      "check": {
+        "prompt": "What does result = scores + 2 normally do?",
+        "options": [
+          "Changes the original scores in place.",
+          "Creates a new Series assigned to result.",
+          "Adds a new dictionary key."
+        ],
+        "correct": 1,
+        "feedback": "The arithmetic expression produces a new Series; scores stays unchanged."
+      },
+      "verify": "assert result.tolist() == [90, 74, 101]\nassert scores.tolist() == [88, 72, 99]",
+      "solution_verify": "assert result.tolist() == [93, 77, 100]\nassert scores.tolist() == [88, 72, 99]",
+      "watch": "Use clipping only when a justified business or teaching rule calls for it.",
+      "takeaway": "I can calculate a new labeled column without writing a loop."
+    },
+    {
+      "id": "M03C04",
+      "title": "Labels control Series alignment",
+      "explanation": "When combining two Series, pandas matches index labels, even when their order differs. It does not simply pair the first value in one Series with the first value in the other. A label missing from one side normally produces a missing result for arithmetic.",
+      "code": "quiz = pd.Series({\"S001\": 17, \"S002\": 14, \"S003\": 19})\nproject = pd.Series({\"S003\": 46, \"S001\": 44, \"S002\": 36})\nresult = quiz + project\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which project value is added to the quiz score for S001?",
+          "answer": "44, because its label is S001, even though it is the second value in project."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What total will S003 have?",
+          "answer": "65, from 19 + 46."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is label alignment useful for student records?",
+          "answer": "It keeps values matched to the same student when the two inputs have different row orders, provided their labels identify students correctly."
+        }
+      ],
+      "task": "Remove S002 from project, add the two Series again, and print which result is missing. Do not replace the missing project with zero.",
+      "hint": "Build project with only S003 and S001; use result.isna() to inspect missing results.",
+      "solution": "quiz = pd.Series({\"S001\": 17, \"S002\": 14, \"S003\": 19})\nproject = pd.Series({\"S003\": 46, \"S001\": 44})\nresult = quiz + project\nprint(result)\nprint(\"Missing total:\")\nprint(result.isna())",
+      "solution_note": "S001 totals 61 and S003 totals 65. S002 has a missing total because its project value is absent. A missing project is not automatically a zero score.",
+      "check": {
+        "prompt": "How does pandas add two Series with index labels?",
+        "options": [
+          "By matching the labels.",
+          "Only by their printed order.",
+          "By sorting their numerical values first."
+        ],
+        "correct": 0,
+        "feedback": "Series arithmetic aligns matching index labels before combining values."
+      },
+      "verify": "assert result.to_dict() == {'S001': 61, 'S002': 50, 'S003': 65}",
+      "solution_verify": "assert result.loc['S001'] == 61 and result.loc['S003'] == 65\nassert pd.isna(result.loc['S002']) and result.isna().sum() == 1",
+      "watch": "Equal lengths do not guarantee correct alignment; inspect the actual index labels.",
+      "takeaway": "I can explain why label alignment can create missing values."
+    }
+  ]
+}

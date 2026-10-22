@@ -1,0 +1,50 @@
+[
+  {
+    "column": "species",
+    "description": "Observed penguin species: Adelie, Chinstrap, or Gentoo.",
+    "unit": "category",
+    "missing_count": 0
+  },
+  {
+    "column": "island",
+    "description": "Sampling island: Biscoe, Dream, or Torgersen.",
+    "unit": "category",
+    "missing_count": 0
+  },
+  {
+    "column": "bill_length_mm",
+    "description": "Bill length.",
+    "unit": "mm",
+    "missing_count": 2
+  },
+  {
+    "column": "bill_depth_mm",
+    "description": "Bill depth.",
+    "unit": "mm",
+    "missing_count": 2
+  },
+  {
+    "column": "flipper_length_mm",
+    "description": "Flipper length.",
+    "unit": "mm",
+    "missing_count": 2
+  },
+  {
+    "column": "body_mass_g",
+    "description": "Body mass.",
+    "unit": "g",
+    "missing_count": 2
+  },
+  {
+    "column": "sex",
+    "description": "Recorded sex: female or male; unavailable entries remain missing.",
+    "unit": "category",
+    "missing_count": 11
+  },
+  {
+    "column": "year",
+    "description": "Study year: 2007, 2008, or 2009.",
+    "unit": "year",
+    "missing_count": 0
+  }
+]

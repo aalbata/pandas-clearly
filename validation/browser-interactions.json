@@ -1,0 +1,94 @@
+{
+  "checked_at_utc": "2026-10-22T14:14:38.578Z",
+  "mode": "ui-interactions",
+  "project_subpath": "/pandas-clearly/",
+  "checks": [
+    {
+      "name": "export_import_work_roundtrip",
+      "passed": true,
+      "duration_ms": 3232,
+      "filename": "Pandas_Clearly_My_Work.json",
+      "bytes": 695,
+      "answers": 3,
+      "code_confidence_and_choice_restored": true,
+      "state_preserved_after_reload": true
+    },
+    {
+      "name": "reset_practice_draft",
+      "passed": true,
+      "duration_ms": 1562,
+      "cell": "M01C01",
+      "starting_code_restored": true,
+      "written_answer_retained": true,
+      "confidence_retained": true,
+      "reset_persisted_after_reload": true
+    },
+    {
+      "name": "excel_export_download",
+      "passed": true,
+      "duration_ms": 8879,
+      "filename": "campus_report.xlsx",
+      "bytes": 4976,
+      "sha256": "0c600c7284a0d4f2ed5d5134cbd7a323ccf5554a227c96cfcc451abed434c63c",
+      "workbook": {
+        "sheet": "Summary",
+        "headers": [
+          "Campus",
+          "Score"
+        ],
+        "data_rows": [
+          [
+            "Dubai",
+            76.83333333333333
+          ],
+          [
+            "RAK",
+            81
+          ]
+        ]
+      }
+    },
+    {
+      "name": "plot_image_and_download",
+      "passed": true,
+      "duration_ms": 9964,
+      "filename": "M24C01_plot_1.png",
+      "bytes": 19568,
+      "sha256": "18fe61effec1e0ddea2de2a8036beceb1d38fd725b00ec113d924f7522dda4ef",
+      "width": 648,
+      "height": 385,
+      "displayed_and_downloaded_bytes_match": true
+    },
+    {
+      "name": "stop_infinite_loop_and_recover",
+      "passed": true,
+      "duration_ms": 18081,
+      "stop_completed_in_ms": 35,
+      "interrupted_draft_retained": true,
+      "written_answer_retained": true,
+      "new_worker_started": true,
+      "recovery_output": "Recovered: 10"
+    }
+  ],
+  "external_requests": [],
+  "javascript_errors": [],
+  "confirmation_dialogs": [
+    {
+      "type": "confirm",
+      "message": "Replace this browser's saved answers and drafts with the imported work? Export your current work first if you need both copies."
+    },
+    {
+      "type": "confirm",
+      "message": "Restore this activity's starting code? Your written answers will stay."
+    }
+  ],
+  "browser": "133.0.6943.0",
+  "versions": {
+    "python": "3.12.7",
+    "pandas": "2.2.3",
+    "numpy": "2.0.2"
+  },
+  "interactions": 5,
+  "passed": 5,
+  "failed": 0
+}

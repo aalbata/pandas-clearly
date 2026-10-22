@@ -1,0 +1,6 @@
+﻿# Original fictional import exercise, not Palmer Penguins observations.
+# NA is the literal North Area code; MISSING marks an unavailable amount.
+record_id;site_code;amount_eur;note
+001;NA;12,50;"café, east desk"
+010;EU;MISSING;"quoted; semicolon"
+100;NA;0,00;"recorded zero"

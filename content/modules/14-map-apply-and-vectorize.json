@@ -1,0 +1,174 @@
+{
+  "id": 14,
+  "title": "Map, apply, and vectorize",
+  "level": "Core",
+  "goal": "Choose an appropriate way to transform values and create categories.",
+  "prerequisites": "You can create columns, filter values, and define a short Python function.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/basics.html#function-application",
+  "cells": [
+    {
+      "id": "M14C01",
+      "title": "Map codes to meaningful labels",
+      "explanation": "`Series.map()` can look up each value in a dictionary. A code missing from the dictionary produces a missing result. Keep the source codes so you can investigate labels that were not mapped.",
+      "code": "codes = pd.Series([\"AI\", \"IT\", \"CS\", None], dtype=\"string\")\nlabels = {\"AI\": \"Artificial Intelligence\", \"IT\": \"Information Technology\"}\nresult = pd.DataFrame({\"Code\": codes, \"Label\": codes.map(labels)})\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What do the keys of labels represent?",
+          "answer": "The codes we want to look up."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which Label entries will be missing?",
+          "answer": "The entry for CS, which is not mapped, and the entry whose source code is missing."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why should the unmapped CS and missing source code be investigated separately?",
+          "answer": "One is an observed but unrecognized code; the other was never recorded."
+        }
+      ],
+      "task": "For this exercise, define CS as Cybersecurity. Add it to the mapping and rebuild the result while leaving the original missing code missing.",
+      "hint": "Add one dictionary key-value pair; do not fill every missing label.",
+      "solution": "codes = pd.Series([\"AI\", \"IT\", \"CS\", None], dtype=\"string\")\nlabels = {\"AI\": \"Artificial Intelligence\", \"IT\": \"Information Technology\", \"CS\": \"Cybersecurity\"}\nresult = pd.DataFrame({\"Code\": codes, \"Label\": codes.map(labels)})\nprint(result)",
+      "solution_note": "The CS row now has its specified label; the row without a source code remains missing.",
+      "check": {
+        "prompt": "What happens to an unmapped key in Series.map with a plain dictionary?",
+        "options": [
+          "It is always copied unchanged",
+          "It produces a missing result",
+          "It becomes zero"
+        ],
+        "correct": 1,
+        "feedback": "Unlike a general text replacement, a dictionary map returns missing for keys it does not contain."
+      },
+      "verify": "assert result[\"Label\"].isna().sum() == 2\nassert result.loc[0, \"Label\"] == \"Artificial Intelligence\"",
+      "solution_verify": "assert result[\"Label\"].isna().sum() == 1\nassert result.loc[2, \"Label\"] == \"Cybersecurity\"",
+      "watch": "The meaning of a code must come from a stated codebook, not a guess.",
+      "takeaway": "Check what a lookup leaves unmatched."
+    },
+    {
+      "id": "M14C02",
+      "title": "Apply a function to each value",
+      "explanation": "A Python function can express a custom rule for one value. `Series.apply()` calls that function for each entry. When the same rule can be written with built-in column operations, those operations are often simpler and more efficient.",
+      "code": "scores = pd.Series([58, 79, 80, 95])\ndef status(score):\n    return \"Secure\" if score >= 80 else \"Review\"\nresult = scores.apply(status)\nprint(result.tolist())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does the function receive each time it is called?",
+          "answer": "One score value, not the whole Series."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which label does a score of exactly 80 receive?",
+          "answer": "Secure, because the condition uses >=."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Is apply required for every calculation on a column?",
+          "answer": "No. Built-in arithmetic, comparisons, string methods, and aggregations often do the job directly."
+        }
+      ],
+      "task": "Create the same labels without a custom function. Use a Boolean comparison and a mapping from True/False to labels.",
+      "hint": "Start with `scores.ge(80)`.",
+      "solution": "scores = pd.Series([58, 79, 80, 95])\nresult = scores.ge(80).map({True: \"Secure\", False: \"Review\"})\nprint(result.tolist())",
+      "solution_note": "The labels are unchanged. The column comparison makes the threshold visible without a separate function.",
+      "check": {
+        "prompt": "What does ge(80) mean?",
+        "options": [
+          "Greater than or equal to 80",
+          "Exactly 80",
+          "Less than 80"
+        ],
+        "correct": 0,
+        "feedback": "ge is the named form of the >= comparison."
+      },
+      "verify": "assert result.tolist() == [\"Review\", \"Review\", \"Secure\", \"Secure\"]",
+      "solution_verify": "assert result.tolist() == [\"Review\", \"Review\", \"Secure\", \"Secure\"]",
+      "watch": "These labels use an exercise rule, not an official grading policy.",
+      "takeaway": "Use a custom function when it adds clarity, not by default."
+    },
+    {
+      "id": "M14C03",
+      "title": "A row function versus column arithmetic",
+      "explanation": "`DataFrame.apply(..., axis=1)` passes one row at a time to a function. Here Quiz is out of 20 and Project is out of 50, so both must be scaled before weighting them. A direct column formula can express the same calculation.",
+      "code": "df = pd.DataFrame({\"Quiz\": [16, 12, 18], \"Project\": [40, 35, 45]})\nresult = df.apply(lambda row: (row[\"Quiz\"] / 20) * 40 + (row[\"Project\"] / 50) * 60, axis=1)\nprint(result.round(2).tolist())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why is axis=1 used here?",
+          "answer": "The function needs Quiz and Project from the same row."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What is the first weighted percentage?",
+          "answer": "80.0: 16/20 contributes 32 and 40/50 contributes 48."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why would Quiz + Project be a different measure?",
+          "answer": "It would sum raw points without the stated 40% and 60% weights."
+        }
+      ],
+      "task": "Compute the same weighted percentage with direct column arithmetic, without apply or lambda.",
+      "hint": "Perform each calculation on the entire df[\"Quiz\"] or df[\"Project\"] Series.",
+      "solution": "df = pd.DataFrame({\"Quiz\": [16, 12, 18], \"Project\": [40, 35, 45]})\nresult = (df[\"Quiz\"] / 20) * 40 + (df[\"Project\"] / 50) * 60\nprint(result.round(2).tolist())",
+      "solution_note": "The percentages remain 80.0, 66.0, and 90.0. Direct arithmetic also preserves the row index.",
+      "check": {
+        "prompt": "With DataFrame.apply, axis=1 passes which object to the function?",
+        "options": [
+          "A row",
+          "A file",
+          "The column names only"
+        ],
+        "correct": 0,
+        "feedback": "axis=1 applies the function across the columns of each row."
+      },
+      "verify": "assert np.allclose(result.to_numpy(), [80.0, 66.0, 90.0])",
+      "solution_verify": "assert np.allclose(result.to_numpy(), [80.0, 66.0, 90.0])\nassert result.index.equals(df.index)",
+      "watch": "Check the maximum points and weights before calculating a percentage.",
+      "takeaway": "Prefer direct column formulas for ordinary arithmetic."
+    },
+    {
+      "id": "M14C04",
+      "title": "Fixed intervals versus quantile groups",
+      "explanation": "`cut()` groups numbers using value boundaries that you choose. `qcut()` uses sample quantiles to form groups with roughly similar counts. They answer different questions, and equal-count groups need not have equal numeric widths.",
+      "code": "values = pd.Series([10, 20, 30, 100])\nfixed = pd.cut(values, bins=[0, 50, 100], labels=[\"Lower\", \"Upper\"], include_lowest=True)\nquantile = pd.qcut(values, q=2, labels=[\"Lower_half\", \"Upper_half\"])\nresult = pd.DataFrame({\"Value\": values, \"Fixed_band\": fixed, \"Quantile_band\": quantile})\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which method uses the explicit boundary of 50?",
+          "answer": "cut()."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many values are in the lower fixed band and lower quantile group?",
+          "answer": "Three values are in Lower; two are in Lower_half."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why would quantile bands be unsuitable for an official fixed pass threshold?",
+          "answer": "Their boundaries depend on the current sample rather than a fixed scoring rule."
+        }
+      ],
+      "task": "Use students(). Create Score_band using boundaries 0, 60, 80, 100 with labels Developing, Progressing, Secure. Include both 0 and 100, with 60 in Developing and 80 in Progressing. Store the count of each band in a Series named result.",
+      "hint": "Use cut with right=True and include_lowest=True, then value_counts(sort=False).",
+      "solution": "df = students()\ndf[\"Score_band\"] = pd.cut(df[\"Score\"], bins=[0, 60, 80, 100], labels=[\"Developing\", \"Progressing\", \"Secure\"], right=True, include_lowest=True)\nresult = df[\"Score_band\"].value_counts(sort=False)\nprint(result)",
+      "solution_note": "The counts are 1 Developing, 5 Progressing, and 6 Secure. These are practice labels with explicit boundary rules.",
+      "check": {
+        "prompt": "Which method is appropriate for fixed score boundaries?",
+        "options": [
+          "qcut",
+          "cut",
+          "sort_index"
+        ],
+        "correct": 1,
+        "feedback": "cut accepts the exact value boundaries you need."
+      },
+      "verify": "assert (result[\"Fixed_band\"] == \"Lower\").sum() == 3\nassert (result[\"Quantile_band\"] == \"Lower_half\").sum() == 2",
+      "solution_verify": "assert result.to_dict() == {\"Developing\": 1, \"Progressing\": 5, \"Secure\": 6}",
+      "watch": "Tied values can prevent qcut from making the requested number of distinct bins; inspect boundaries and group counts.",
+      "takeaway": "Choose bands by meaning or by sample distribution, as required."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+*.egg-info/
+
+# Local generated analysis and validation scratch space
+outputs/
+notebooks/**/outputs/
+.validation/
+.cache/
+tmp/
+temp/
+*.log
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local credentials and environment configuration
+.env
+.env.*
+!.env.example
+
+# Frontend tooling, if used locally
+node_modules/
+
+# Keep generated docs/ and notebooks/ tracked for distribution and GitHub Pages.

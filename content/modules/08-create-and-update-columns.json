@@ -1,0 +1,174 @@
+{
+  "id": 8,
+  "title": "Create and update columns",
+  "level": "Core",
+  "goal": "Calculate new fields, tidy column names, and change selected values safely.",
+  "prerequisites": "Know arithmetic, column selection, Boolean masks, and assignment.",
+  "reference": "https://pandas.pydata.org/docs/getting_started/intro_tutorials/05_add_columns.html",
+  "cells": [
+    {
+      "id": "M08C01",
+      "title": "Calculate a new column",
+      "explanation": "Assign a Series to a new column name to add a field. Arithmetic across columns works row by row after index alignment. Here the artificial Score_Per_Hour ratio demonstrates division; it is not a validated measure of student ability. Always consider units and the meaning of a calculation.",
+      "code": "df = students()\ndf[\"Score_Per_Hour\"] = df[\"Score\"] / df[\"Study_Hours\"]\nresult = df[[\"Name\", \"Score\", \"Study_Hours\", \"Score_Per_Hour\"]]\nprint(result.head(3).round(2))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which part of the assignment names the new column?",
+          "answer": "df[\"Score_Per_Hour\"] on the left side."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What is Amira's Score_Per_Hour before rounding?",
+          "answer": "11.0, from 88 divided by 8."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why should a high ratio not be treated as proof of better learning?",
+          "answer": "The ratio alone does not measure learning quality or account for other factors. It is only an arithmetic example with fictional data."
+        }
+      ],
+      "task": "Start with a fresh df = students(). Create Score_Fraction by dividing Score by 100. Store Name, Score, and Score_Fraction for all students in result, then print its first three rows.",
+      "hint": "Assign the division result to df[\"Score_Fraction\"].",
+      "solution": "df = students()\ndf[\"Score_Fraction\"] = df[\"Score\"] / 100\nresult = df[[\"Name\", \"Score\", \"Score_Fraction\"]]\nprint(result.head(3))",
+      "solution_note": "The first fractions are 0.88, 0.72, and 0.91. The original Score remains measured out of 100.",
+      "check": {
+        "prompt": "What happens when you assign to a column name that does not yet exist?",
+        "options": [
+          "Pandas adds the column.",
+          "Pandas always deletes a row.",
+          "Pandas sorts the index."
+        ],
+        "correct": 0,
+        "feedback": "Assigning a value or aligned Series to a new name creates a column."
+      },
+      "verify": "assert df.shape == (12, 10) and result.loc[0, 'Score_Per_Hour'] == 11\nassert round(result.loc[1, 'Score_Per_Hour'], 1) == 14.4",
+      "solution_verify": "assert df.shape == (12, 10) and result['Score_Fraction'].head(3).tolist() == [0.88, 0.72, 0.91]",
+      "watch": "Before dividing by a column, check for zero and missing denominators; they can create undefined results.",
+      "takeaway": "I can create a calculated column and state its units and limits."
+    },
+    {
+      "id": "M08C02",
+      "title": "Use assign, rename, and drop",
+      "explanation": "assign() returns a DataFrame with new or replaced columns. rename(columns=...) changes column labels, while drop(columns=...) removes named columns. These methods return new objects by default. Assign the returned result so your intended changes are kept.",
+      "code": "df = students()\nresult = (df.assign(Passed=df[\"Score\"] >= 60)\n            .rename(columns={\"Name\": \"Student_Name\"})\n            .drop(columns=[\"Join_Date\"]))\nprint(result[[\"Student_Name\", \"Score\", \"Passed\"]].head(4))\nprint(\"Result shape:\", result.shape)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What is stored in the new Passed column?",
+          "answer": "True for scores at least 60 and False otherwise, using the rule stated in this example."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Does result still have a column named Name?",
+          "answer": "No. In result it has been renamed Student_Name. The original df still has Name."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why does the final table still have nine columns?",
+          "answer": "It starts with nine, adds Passed, then drops Join_Date: 9 + 1 - 1 = 9."
+        }
+      ],
+      "task": "Use assign to create Needs_Support for scores below 70. Rename Attendance to Attendance_Percent and drop Join_Date. Keep the result in result.",
+      "hint": "Provide a Boolean Series to assign, a mapping to rename, and a list of names to drop.",
+      "solution": "df = students()\nresult = (df.assign(Needs_Support=df[\"Score\"] < 70)\n            .rename(columns={\"Attendance\": \"Attendance_Percent\"})\n            .drop(columns=[\"Join_Date\"]))\nprint(result[[\"Name\", \"Score\", \"Needs_Support\", \"Attendance_Percent\"]])",
+      "solution_note": "Needs_Support is True for Dana, Hassan, and Khalid. The longer attendance name makes the unit explicit. df remains available in its original form.",
+      "check": {
+        "prompt": "Which removes a named column from the returned table?",
+        "options": [
+          "df.rename(columns={\"Score\": \"Mark\"})",
+          "df.drop(columns=[\"Score\"])",
+          "df.assign(Score=0)"
+        ],
+        "correct": 1,
+        "feedback": "drop(columns=[...]) removes the specified columns; rename changes a label and assign creates or replaces values."
+      },
+      "verify": "assert result.shape == (12, 9) and 'Name' not in result and 'Student_Name' in result\nassert 'Join_Date' not in result and result['Passed'].sum() == 11\nassert 'Name' in df and 'Passed' not in df",
+      "solution_verify": "assert result['Needs_Support'].sum() == 3 and 'Attendance_Percent' in result\nassert 'Attendance' not in result and 'Join_Date' not in result\nassert 'Attendance' in df and 'Needs_Support' not in df",
+      "watch": "Calling df.drop(...) without assigning its returned result does not change df by default.",
+      "takeaway": "I can add fields and tidy column structure while keeping the original available."
+    },
+    {
+      "id": "M08C03",
+      "title": "Update the original with one loc assignment",
+      "explanation": "Use one .loc[row_condition, column_name] assignment to change selected values in a DataFrame. This explicitly identifies both the rows and the field being changed. Avoid chained assignment such as df[mask][\"Score\"] = value; it does not reliably update the intended original object and does not do so under pandas 3 Copy-on-Write.",
+      "code": "df = students()\nmask = df[\"Student_ID\"] == \"S004\"\ndf.loc[mask, \"Score\"] = 67\nresult = df.loc[mask, [\"Student_ID\", \"Name\", \"Score\"]]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which row and column are changed?",
+          "answer": "The Score column for the row whose Student_ID is S004, Dana."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What is Dana's score after the assignment?",
+          "answer": "67."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why does a single loc assignment state your intention more clearly than two chained brackets?",
+          "answer": "It tells pandas to change the named column in selected rows of df itself, instead of writing into an intermediate selection."
+        }
+      ],
+      "task": "Apply a practice bonus of 3 points to students with Attendance at least 95. Cap scores at 100 and show only the updated students.",
+      "hint": "Use one .loc[mask, \"Score\"] assignment; calculate from the same selected Score values and clip at 100.",
+      "solution": "df = students()\nmask = df[\"Attendance\"] >= 95\ndf.loc[mask, \"Score\"] = (df.loc[mask, \"Score\"] + 3).clip(upper=100)\nresult = df.loc[mask, [\"Student_ID\", \"Name\", \"Score\", \"Attendance\"]]\nprint(result)",
+      "solution_note": "Amira, Chloe, Fatima, and Jamal receive the practice bonus. Their scores become 91, 94, 98, and 92. Students outside the mask keep their scores.",
+      "check": {
+        "prompt": "Which is the clear way to update selected scores in df?",
+        "options": [
+          "df[mask][\"Score\"] = 67",
+          "df[\"Score\"][mask] = 67",
+          "df.loc[mask, \"Score\"] = 67"
+        ],
+        "correct": 2,
+        "feedback": "One loc assignment directly targets the selected rows and column in df."
+      },
+      "verify": "assert result['Score'].tolist() == [67]\nassert df.loc[df['Student_ID'] == 'S003', 'Score'].iloc[0] == 91",
+      "solution_verify": "assert result['Student_ID'].tolist() == ['S001', 'S003', 'S006', 'S010']\nassert result['Score'].tolist() == [91, 94, 98, 92]\nassert df.loc[df['Student_ID'] == 'S004', 'Score'].iloc[0] == 65",
+      "watch": "Repeatedly running an incremental update on the same table would repeat the bonus; this cell starts with a fresh table each time.",
+      "takeaway": "I can modify selected values using one explicit loc assignment."
+    },
+    {
+      "id": "M08C04",
+      "title": "Keep an independent working copy",
+      "explanation": "Assigning original to another name creates an alias: both names refer to the same Python object. copy() creates a separate DataFrame for this ordinary scalar-valued teaching table. Use a fresh copy when you want to experiment without changing the original. Pandas copy rules do not replace the need to understand which object you are editing.",
+      "code": "original = students()\nworking = original.copy()\nworking.loc[0, \"Score\"] = 0\nprint(\"Original first score:\", original.loc[0, \"Score\"])\nprint(\"Working first score:\", working.loc[0, \"Score\"])\nprint(\"Same object:\", working is original)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does .copy() let us do in this example?",
+          "answer": "Change values in working while keeping original unchanged."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What two first-score values are printed?",
+          "answer": "88 for original and 0 for working."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "What would change if the code used working = original instead?",
+          "answer": "Both names would refer to the same object; changing working would also be visible through original."
+        }
+      ],
+      "task": "Copy only the RAK rows into working. Add 1 to their scores in the copy and verify Amira's original score is still 88.",
+      "hint": "Filter with loc, call .copy(), and update the selected table rather than original.",
+      "solution": "original = students()\nworking = original.loc[original[\"Campus\"] == \"RAK\"].copy()\nworking[\"Score\"] = working[\"Score\"] + 1\nprint(working[[\"Name\", \"Score\"]])\nprint(\"Amira in original:\", original.loc[0, \"Score\"])",
+      "solution_note": "working contains six RAK students with scores increased by 1. Amira has 89 in working and 88 in original.",
+      "check": {
+        "prompt": "What does working = original do?",
+        "options": [
+          "Makes two names refer to the same object.",
+          "Always creates a separate deep copy.",
+          "Exports the data to a file."
+        ],
+        "correct": 0,
+        "feedback": "Simple assignment binds another name to the existing object; copy() is a separate operation."
+      },
+      "verify": "assert original.loc[0, 'Score'] == 88 and working.loc[0, 'Score'] == 0\nassert working is not original",
+      "solution_verify": "assert len(working) == 6 and working.loc[0, 'Score'] == 89\nassert original.loc[0, 'Score'] == 88 and original.shape == (12, 9)",
+      "watch": "For columns containing nested mutable Python objects, even a deep DataFrame copy does not recursively copy those inner objects; this table uses ordinary scalar values.",
+      "takeaway": "I can protect source values while testing changes on a separate table."
+    }
+  ]
+}

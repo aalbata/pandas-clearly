@@ -1,0 +1,88 @@
+{
+  "files": [
+    {
+      "path": "assessment.csv",
+      "url": "assessment.csv"
+    },
+    {
+      "path": "attendance.csv",
+      "url": "attendance.csv"
+    },
+    {
+      "path": "departments.csv",
+      "url": "departments.csv"
+    },
+    {
+      "path": "public/LICENSE_DATA.txt",
+      "url": "public/LICENSE_DATA.txt"
+    },
+    {
+      "path": "public/UPSTREAM_CITATION.txt",
+      "url": "public/UPSTREAM_CITATION.txt"
+    },
+    {
+      "path": "public/UPSTREAM_DESCRIPTION.txt",
+      "url": "public/UPSTREAM_DESCRIPTION.txt"
+    },
+    {
+      "path": "public/import_practice_semicolon.csv",
+      "url": "public/import_practice_semicolon.csv"
+    },
+    {
+      "path": "public/penguins.csv",
+      "url": "public/penguins.csv"
+    },
+    {
+      "path": "public/penguins.data_dictionary.json",
+      "url": "public/penguins.data_dictionary.json"
+    },
+    {
+      "path": "public/penguins.jsonl",
+      "url": "public/penguins.jsonl"
+    },
+    {
+      "path": "public/penguins.nested.json",
+      "url": "public/penguins.nested.json"
+    },
+    {
+      "path": "public/penguins.records.json",
+      "url": "public/penguins.records.json"
+    },
+    {
+      "path": "public/penguins.tsv",
+      "url": "public/penguins.tsv"
+    },
+    {
+      "path": "public/penguins.txt",
+      "url": "public/penguins.txt"
+    },
+    {
+      "path": "public/penguins.xlsx",
+      "url": "public/penguins.xlsx"
+    },
+    {
+      "path": "public/provenance.json",
+      "url": "public/provenance.json"
+    },
+    {
+      "path": "public/source_retrieval.json",
+      "url": "public/source_retrieval.json"
+    },
+    {
+      "path": "raw_students.csv",
+      "url": "raw_students.csv"
+    },
+    {
+      "path": "students.csv",
+      "url": "students.csv"
+    },
+    {
+      "path": "students.json",
+      "url": "students.json"
+    },
+    {
+      "path": "students.xlsx",
+      "url": "students.xlsx"
+    }
+  ]
+}

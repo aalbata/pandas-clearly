@@ -1,0 +1,174 @@
+{
+  "id": 19,
+  "title": "Reshape tables",
+  "level": "Core",
+  "goal": "Move between long and wide layouts and choose when to aggregate.",
+  "prerequisites": "Understand keys, groups, and summary functions.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/reshaping.html",
+  "cells": [
+    {
+      "id": "M19C01",
+      "title": "Melt wide columns into rows",
+      "explanation": "A wide table stores different measures in different columns. melt turns selected measure columns into a label column and a value column. The ID is repeated so every new row still belongs to a student.",
+      "code": "wide = students().head(3)[[\"Student_ID\", \"Score\", \"Attendance\"]]\nresult = wide.melt(id_vars=\"Student_ID\", value_vars=[\"Score\", \"Attendance\"], var_name=\"Measure\", value_name=\"Value\")\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which column stays as an identifier?",
+          "answer": "Student_ID."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many long rows will 3 students and 2 measures produce?",
+          "answer": "6 rows."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Are Score and Attendance being added together?",
+          "answer": "No. melt changes the layout; the values remain separate and their measure labels are retained."
+        }
+      ],
+      "task": "Use the first four students and melt Score and Study_Hours instead.",
+      "hint": "Change head(3) to head(4) and the two measure names.",
+      "solution": "wide = students().head(4)[[\"Student_ID\", \"Score\", \"Study_Hours\"]]\nresult = wide.melt(id_vars=\"Student_ID\", var_name=\"Measure\", value_name=\"Value\")\nprint(result)",
+      "solution_note": "Four students with two measures produce eight rows.",
+      "check": {
+        "prompt": "What does melt mainly change?",
+        "options": [
+          "The values by averaging them",
+          "The table layout",
+          "The student IDs"
+        ],
+        "correct": 1,
+        "feedback": "melt reorganizes values into a long layout without aggregating them."
+      },
+      "verify": "assert len(result) == 6\nassert result[\"Value\"].sum() == 529",
+      "solution_verify": "assert len(result) == 8\nassert set(result[\"Measure\"]) == {\"Score\", \"Study_Hours\"}",
+      "watch": "A shared Value column may contain measures with different units; keep and use Measure.",
+      "takeaway": "Long form keeps one measured value per row."
+    },
+    {
+      "id": "M19C02",
+      "title": "Pivot a unique pair",
+      "explanation": "pivot moves distinct category labels into columns. Every index-and-column pair must identify at most one value. Here each student has one Score and one Attendance value.",
+      "code": "long = students().head(3).melt(id_vars=\"Student_ID\", value_vars=[\"Score\", \"Attendance\"], var_name=\"Measure\", value_name=\"Value\")\nresult = long.pivot(index=\"Student_ID\", columns=\"Measure\", values=\"Value\")\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which labels become the output columns?",
+          "answer": "The distinct Measure values: Attendance and Score."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What is the Score for S002 after pivoting?",
+          "answer": "72, unchanged."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why can repeated Student_ID and Measure pairs cause an error?",
+          "answer": "pivot cannot choose which of several values belongs in the same output cell."
+        }
+      ],
+      "task": "Pivot the same long table so Measure labels form the rows and Student_ID labels form the columns.",
+      "hint": "Exchange the arguments assigned to index and columns.",
+      "solution": "long = students().head(3).melt(id_vars=\"Student_ID\", value_vars=[\"Score\", \"Attendance\"], var_name=\"Measure\", value_name=\"Value\")\nresult = long.pivot(index=\"Measure\", columns=\"Student_ID\", values=\"Value\")\nprint(result)",
+      "solution_note": "The values stay the same, but the two table axes exchange roles.",
+      "check": {
+        "prompt": "What must be unique for pivot?",
+        "options": [
+          "Each row label alone",
+          "Each column label alone",
+          "Each index-and-column pair"
+        ],
+        "correct": 2,
+        "feedback": "The pair identifies one output cell and must have a single value."
+      },
+      "verify": "assert result.shape == (3, 2)\nassert result.loc[\"S002\", \"Score\"] == 72",
+      "solution_verify": "assert result.shape == (2, 3)\nassert result.loc[\"Score\", \"S002\"] == 72",
+      "watch": "Use pivot_table only when you actually intend to aggregate repeated pairs.",
+      "takeaway": "pivot rearranges uniquely identified values."
+    },
+    {
+      "id": "M19C03",
+      "title": "Aggregate with pivot_table",
+      "explanation": "Several students share the same Campus and Program. pivot_table can reduce those repeated combinations using an explicit aggregation function. Naming aggfunc makes the summary rule clear.",
+      "code": "df = students()\nresult = df.pivot_table(index=\"Campus\", columns=\"Program\", values=\"Score\", aggfunc=\"mean\", observed=True)\nprint(result.round(2))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does one cell summarize?",
+          "answer": "The mean Score of students with that Campus and Program."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many campus-by-program cells are there?",
+          "answer": "Four: two campuses times two programs."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why specify aggfunc?",
+          "answer": "It documents the statistic; mean, sum, and count answer different questions."
+        }
+      ],
+      "task": "Change the table to count Student_ID records for each campus and program.",
+      "hint": "Use values=\"Student_ID\" and aggfunc=\"count\".",
+      "solution": "df = students()\nresult = df.pivot_table(index=\"Campus\", columns=\"Program\", values=\"Student_ID\", aggfunc=\"count\", observed=True)\nprint(result)",
+      "solution_note": "The counts are Dubai AI 2, Dubai IT 4, RAK AI 4, and RAK IT 2.",
+      "check": {
+        "prompt": "Which method handles repeated pairs by summarizing them?",
+        "options": [
+          "pivot_table",
+          "pivot without any changes",
+          "set_index alone"
+        ],
+        "correct": 0,
+        "feedback": "pivot_table applies an aggregation to values sharing the same output cell."
+      },
+      "verify": "assert result.shape == (2, 2)\nassert result.loc[\"Dubai\", \"AI\"] == 92\nassert result.loc[\"RAK\", \"IT\"] == 77.5",
+      "solution_verify": "assert result.to_numpy().sum() == 12\nassert result.loc[\"RAK\", \"AI\"] == 4",
+      "watch": "Filling an absent combination with zero implies a meaning; it is not automatically appropriate for a mean.",
+      "takeaway": "Choose an aggregation that matches the question."
+    },
+    {
+      "id": "M19C04",
+      "title": "Count combinations with crosstab",
+      "explanation": "crosstab counts how often two categories occur together. normalize=\"index\" instead reports proportions within each row. The denominator changes, so always label the result.",
+      "code": "df = students()\nresult = pd.crosstab(df[\"Campus\"], df[\"Program\"])\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What is counted in each cell?",
+          "answer": "Students in that Campus and Program combination."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many RAK students are in AI?",
+          "answer": "4."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Would a larger count alone prove a stronger preference?",
+          "answer": "No. Group sizes matter; proportions may be more suitable for that question."
+        }
+      ],
+      "task": "Calculate program percentages within each campus and keep the unrounded percentages in result. Print a version rounded to one decimal place.",
+      "hint": "Use normalize=\"index\" and multiply by 100.",
+      "solution": "df = students()\nresult = pd.crosstab(df[\"Campus\"], df[\"Program\"], normalize=\"index\") * 100\nprint(result.round(1))",
+      "solution_note": "Each campus row sums to 100%. AI accounts for about 66.7% in RAK and 33.3% in Dubai in this fictional table.",
+      "check": {
+        "prompt": "normalize=\"index\" uses which denominator?",
+        "options": [
+          "Each row total",
+          "The entire table total",
+          "Each column total"
+        ],
+        "correct": 0,
+        "feedback": "Each cell is divided by its own row total."
+      },
+      "verify": "assert result.loc[\"RAK\", \"AI\"] == 4\nassert result.to_numpy().sum() == 12",
+      "solution_verify": "assert np.allclose(result.sum(axis=1), 100)\nassert np.isclose(result.loc[\"Dubai\", \"AI\"], 100 / 3)",
+      "watch": "Say whether percentages are by row, by column, or of the whole table.",
+      "takeaway": "Counts and proportions answer different questions."
+    }
+  ]
+}

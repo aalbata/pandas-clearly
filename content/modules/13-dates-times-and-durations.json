@@ -1,0 +1,174 @@
+{
+  "id": 13,
+  "title": "Dates, times, and durations",
+  "level": "Core",
+  "goal": "Parse dates explicitly and use calendar-aware operations.",
+  "prerequisites": "You can convert types and select rows by conditions.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/timeseries.html",
+  "cells": [
+    {
+      "id": "M13C01",
+      "title": "Turn date text into dates",
+      "explanation": "A date-looking string is still text until it is parsed. `to_datetime()` converts it to a date/time type. An explicit format removes ambiguity; impossible dates can be marked as NaT, pandas missing date value.",
+      "code": "source = pd.Series([\"2026-09-01\", \"2026-09-03\", \"2026-02-30\"], dtype=\"string\")\nresult = pd.to_datetime(source, format=\"%Y-%m-%d\", errors=\"coerce\")\nprint(result)\nprint(\"Unparsed dates:\", result.isna().sum())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What do %Y, %m, and %d represent?",
+          "answer": "Four-digit year, numeric month, and day of month."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What happens to February 30?",
+          "answer": "It becomes NaT because it is not a valid calendar date."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why might 01/02/2026 be ambiguous without a format?",
+          "answer": "It could mean January 2 or February 1, depending on the intended date convention."
+        }
+      ],
+      "task": "Parse [\"01/09/2026\", \"03/09/2026\", \"30/02/2026\"] as day/month/year. Count invalid dates.",
+      "hint": "Use the explicit format \"%d/%m/%Y\".",
+      "solution": "source = pd.Series([\"01/09/2026\", \"03/09/2026\", \"30/02/2026\"], dtype=\"string\")\nresult = pd.to_datetime(source, format=\"%d/%m/%Y\", errors=\"coerce\")\nprint(result)\nprint(\"Unparsed dates:\", result.isna().sum())",
+      "solution_note": "The first two dates are September 1 and September 3. February 30 remains invalid.",
+      "check": {
+        "prompt": "What is NaT?",
+        "options": [
+          "A missing datetime value",
+          "A date-format instruction",
+          "The current time"
+        ],
+        "correct": 0,
+        "feedback": "NaT marks a missing or unparseable date/time value."
+      },
+      "verify": "assert result.iloc[0] == pd.Timestamp(\"2026-09-01\")\nassert result.isna().sum() == 1",
+      "solution_verify": "assert result.iloc[0] == pd.Timestamp(\"2026-09-01\")\nassert result.iloc[1].day == 3\nassert result.isna().sum() == 1",
+      "watch": "Inspect parsing failures; errors=\"coerce\" does not repair the source date.",
+      "takeaway": "Parse known date formats explicitly."
+    },
+    {
+      "id": "M13C02",
+      "title": "Extract useful calendar parts",
+      "explanation": "After parsing dates, the `.dt` accessor exposes calendar parts such as year, month, and weekday. These features are useful for grouping and checking patterns. Do not try to use `.dt` on unparsed strings.",
+      "code": "df = students()\ndf[\"Join_Date\"] = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\nresult = df[[\"Student_ID\", \"Join_Date\"]].copy()\nresult[\"Month\"] = result[\"Join_Date\"].dt.month\nresult[\"Weekday\"] = result[\"Join_Date\"].dt.day_name()\nprint(result.head(4))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why can .dt be used on Join_Date here?",
+          "answer": "The column has been converted from text into a datetime type."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will all Month values be the same in this dataset?",
+          "answer": "Yes, all join dates are in September, so every Month is 9."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why might a month number need a year too in a larger dataset?",
+          "answer": "September from different years would otherwise be grouped together."
+        }
+      ],
+      "task": "Add Year and Day columns for the same join dates. Store only the first three rows in result, with columns Student_ID, Year, Month, and Day, then print result.",
+      "hint": "Use `.dt.year`, `.dt.month`, and `.dt.day`.",
+      "solution": "df = students()\ndates = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\nresult = pd.DataFrame({\"Student_ID\": df[\"Student_ID\"], \"Year\": dates.dt.year, \"Month\": dates.dt.month, \"Day\": dates.dt.day}).head(3)\nprint(result)",
+      "solution_note": "The years are 2026, the months are 9, and the day values are 1, 2, and 3.",
+      "check": {
+        "prompt": "Which accessor provides calendar components?",
+        "options": [
+          ".str",
+          ".dt",
+          ".iloc"
+        ],
+        "correct": 1,
+        "feedback": ".dt exposes datetime properties and methods."
+      },
+      "verify": "assert result[\"Month\"].eq(9).all()\nassert result.iloc[0][\"Weekday\"] == \"Tuesday\"",
+      "solution_verify": "assert result[\"Day\"].tolist() == [1, 2, 3]\nassert result[\"Year\"].eq(2026).all()",
+      "watch": "A weekday pattern in twelve fictional records is a practice result, not evidence about real student behavior.",
+      "takeaway": "Create date features after parsing the date type."
+    },
+    {
+      "id": "M13C03",
+      "title": "Filter an explicit date interval",
+      "explanation": "Date comparisons let you select a time interval. `between()` includes both boundaries by default; naming the inclusive rule makes your intent clearer. Here every date is a midnight date with no separate time-of-day information.",
+      "code": "df = students()\ndf[\"Join_Date\"] = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\nmask = df[\"Join_Date\"].between(\"2026-09-03\", \"2026-09-06\", inclusive=\"both\")\nresult = df.loc[mask, [\"Student_ID\", \"Join_Date\"]]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Are September 3 and September 6 included?",
+          "answer": "Yes; inclusive=\"both\" includes both endpoints."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which IDs appear?",
+          "answer": "S003, S004, S005, and S006."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why do interval boundary rules matter?",
+          "answer": "An included or excluded endpoint changes which records contribute to the analysis."
+        }
+      ],
+      "task": "Select dates on or after September 3 and strictly before September 6 using two comparisons.",
+      "hint": "Combine >= and < with & and parentheses.",
+      "solution": "df = students()\ndf[\"Join_Date\"] = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\nmask = (df[\"Join_Date\"] >= \"2026-09-03\") & (df[\"Join_Date\"] < \"2026-09-06\")\nresult = df.loc[mask, [\"Student_ID\", \"Join_Date\"]]\nprint(result)",
+      "solution_note": "S003, S004, and S005 remain. The exclusive upper boundary removes S006.",
+      "check": {
+        "prompt": "Which operator excludes the upper boundary?",
+        "options": [
+          "<=",
+          "<",
+          ">="
+        ],
+        "correct": 1,
+        "feedback": "A strict less-than comparison excludes an equal endpoint."
+      },
+      "verify": "assert result[\"Student_ID\"].tolist() == [\"S003\", \"S004\", \"S005\", \"S006\"]",
+      "solution_verify": "assert result[\"Student_ID\"].tolist() == [\"S003\", \"S004\", \"S005\"]",
+      "watch": "With timestamps containing hours, an end date at midnight is not the whole final day; a next-day exclusive bound is often clearer.",
+      "takeaway": "State the start and end rules of every date filter."
+    },
+    {
+      "id": "M13C04",
+      "title": "Calculate elapsed time with a fixed reference",
+      "explanation": "Subtracting dates produces timedeltas, which represent durations. `.dt.days` extracts whole days from those durations. A fixed reference date makes a classroom result reproducible when the file is opened later.",
+      "code": "df = students()\njoined = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\nreference = pd.Timestamp(\"2026-10-01\")\nresult = pd.DataFrame({\"Student_ID\": df[\"Student_ID\"], \"Days_enrolled\": (reference - joined).dt.days})\nprint(result.head(4))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What object is produced by reference - joined?",
+          "answer": "A Series of time durations, called timedeltas."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many elapsed days does S001 have on October 1?",
+          "answer": "30 days from September 1 to October 1."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why use a fixed reference instead of today()?",
+          "answer": "Everyone can reproduce the same answer, regardless of when they run the lesson."
+        }
+      ],
+      "task": "Change the reference to October 8 and select students with at least 30 elapsed days enrolled.",
+      "hint": "Recalculate the duration, then filter Days_enrolled >= 30.",
+      "solution": "df = students()\njoined = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\nreference = pd.Timestamp(\"2026-10-08\")\ndf[\"Days_enrolled\"] = (reference - joined).dt.days\nresult = df.loc[df[\"Days_enrolled\"] >= 30, [\"Student_ID\", \"Days_enrolled\"]]\nprint(result)",
+      "solution_note": "S001 through S008 meet the rule. S008 has exactly 30 elapsed days.",
+      "check": {
+        "prompt": "Does elapsed time count both the start and end date as full extra days?",
+        "options": [
+          "Yes",
+          "No; it is the duration between the two dates",
+          "Only during September"
+        ],
+        "correct": 1,
+        "feedback": "Date subtraction measures elapsed time. Inclusive calendar-day counts are a separate reporting rule."
+      },
+      "verify": "assert result.loc[0, \"Days_enrolled\"] == 30\nassert result.loc[11, \"Days_enrolled\"] == 19",
+      "solution_verify": "assert len(result) == 8\nassert result.iloc[-1][\"Student_ID\"] == \"S008\"\nassert result.iloc[-1][\"Days_enrolled\"] == 30",
+      "watch": "For real timestamps, keep time zones consistent before subtracting them.",
+      "takeaway": "Use timedelta arithmetic instead of subtracting date strings."
+    }
+  ]
+}

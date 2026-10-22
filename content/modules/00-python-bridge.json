@@ -1,0 +1,174 @@
+{
+  "id": 0,
+  "title": "A short Python bridge",
+  "level": "Foundation",
+  "goal": "Read the small amount of Python needed to begin the pandas lessons.",
+  "prerequisites": "No programming experience is required; work through one line at a time.",
+  "reference": "https://docs.python.org/3/tutorial/introduction.html",
+  "cells": [
+    {
+      "id": "M00C01",
+      "title": "Names hold values",
+      "explanation": "A variable is a name associated with a value. The equals sign assigns a value; two equals signs compare values. Quotation marks make text, while an unquoted number can take part in arithmetic. print() displays a value so you can inspect it.",
+      "code": "name = \"Amira\"\nage = 20\nnext_age = age + 1\nis_twenty = age == 20\nprint(name)\nprint(next_age)\nprint(is_twenty)\nprint(type(age).__name__)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which line assigns a value, and which line compares two values?",
+          "answer": "age = 20 assigns 20 to age. The expression age == 20 compares age with 20 and produces True."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What will next_age print? Will age itself become 21?",
+          "answer": "next_age prints 21. age stays 20 because the calculated value was assigned to a different name."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why are \"20\" and 20 different?",
+          "answer": "\"20\" is text; 20 is a whole number. Their types determine which operations make sense."
+        }
+      ],
+      "task": "Describe Bilal, age 21, using name and age. Calculate his age in three years in next_age. Store the comparison of his current age with 21 in is_twenty_one, then print the results.",
+      "hint": "Change the name and starting age, then use age + 3. Keep = for assignment and == for comparison.",
+      "solution": "name = \"Bilal\"\nage = 21\nnext_age = age + 3\nis_twenty_one = age == 21\nprint(name)\nprint(next_age)\nprint(is_twenty_one)",
+      "solution_note": "The results are Bilal, 24, and True. The original age remains 21.",
+      "check": {
+        "prompt": "What does age == 20 do?",
+        "options": [
+          "Assigns 20 to age",
+          "Compares age with 20",
+          "Converts age to text"
+        ],
+        "correct": 1,
+        "feedback": "The double equals sign compares two values. A single equals sign assigns a value."
+      },
+      "verify": "assert name == 'Amira' and age == 20\nassert next_age == 21 and is_twenty is True",
+      "solution_verify": "assert name == 'Bilal' and age == 21\nassert next_age == 24 and is_twenty_one is True",
+      "watch": "Python names are case-sensitive: age and Age are different names.",
+      "takeaway": "I can distinguish a value, a variable, an assignment, and a comparison."
+    },
+    {
+      "id": "M00C02",
+      "title": "A list keeps values in order",
+      "explanation": "Square brackets create a list. Each value has a position, beginning at 0. len() counts the values, and a slice selects a range of positions. A slice includes its start position and excludes its stop position.",
+      "code": "scores = [88, 72, 91]\nfirst_score = scores[0]\nfirst_two = scores[0:2]\nprint(first_score)\nprint(first_two)\nprint(len(scores))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What is the difference between scores and scores[0]?",
+          "answer": "scores is the whole list. scores[0] retrieves the first value, 88."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Does scores[0:2] contain two values or three?",
+          "answer": "Two values: 88 and 72. Position 2 is excluded from the slice."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why would scores[3] fail for this list?",
+          "answer": "The list has three values at positions 0, 1, and 2. Position 3 does not exist, so Python raises IndexError."
+        }
+      ],
+      "task": "Select the second and third scores into result. Then add 65 to the end of scores using append(), and print the new list length.",
+      "hint": "Use the slice [1:3], then scores.append(65).",
+      "solution": "scores = [88, 72, 91]\nresult = scores[1:3]\nscores.append(65)\nprint(result)\nprint(scores)\nprint(len(scores))",
+      "solution_note": "result contains 72 and 91. The original list now has four values, ending in 65.",
+      "check": {
+        "prompt": "Which position refers to the first list value?",
+        "options": [
+          "0",
+          "1",
+          "The list length"
+        ],
+        "correct": 0,
+        "feedback": "Python list positions begin at zero."
+      },
+      "verify": "assert scores == [88, 72, 91]\nassert first_score == 88 and first_two == [88, 72]",
+      "solution_verify": "assert result == [72, 91]\nassert scores == [88, 72, 91, 65]",
+      "watch": "A list position is an integer. The text \"0\" is not the same as position 0.",
+      "takeaway": "I can count, select, and append list values."
+    },
+    {
+      "id": "M00C03",
+      "title": "Give a calculation a name",
+      "explanation": "A function is a named set of instructions you can reuse. def starts a function definition, and the indented body states what it does. A parameter receives an input value when the function is called. return sends the result back so it can be saved or used in another calculation.",
+      "code": "def add_bonus(score, bonus):\n    return score + bonus\n\nfirst = add_bonus(72, 3)\nsecond = add_bonus(88, 2)\nprint(first)\nprint(second)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "In add_bonus(72, 3), what values do score and bonus receive?",
+          "answer": "score receives 72 and bonus receives 3 for that call."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What do first and second contain?",
+          "answer": "first contains 75; second contains 90."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why return the answer instead of only printing it inside the function?",
+          "answer": "A returned answer can be saved in a variable and used later. Printing alone displays it but does not return that answer to the caller."
+        }
+      ],
+      "task": "Create a function called to_percentage(points, maximum) that returns points divided by maximum, multiplied by 100. Calculate 16 out of 20 into result and print it.",
+      "hint": "Keep the return line indented. For this exercise, maximum is positive.",
+      "solution": "def to_percentage(points, maximum):\n    return (points / maximum) * 100\n\nresult = to_percentage(16, 20)\nprint(result)",
+      "solution_note": "The returned percentage is 80.0. The same function can be called with a different number of points and a different positive maximum.",
+      "check": {
+        "prompt": "Which keyword sends the calculated answer back to the caller?",
+        "options": [
+          "def",
+          "print",
+          "return"
+        ],
+        "correct": 2,
+        "feedback": "return supplies the function's result. def defines a function; print displays information."
+      },
+      "verify": "assert first == 75 and second == 90\nassert add_bonus(10, 0) == 10",
+      "solution_verify": "assert result == 80.0\nassert to_percentage(35, 50) == 70.0",
+      "watch": "Indentation is part of Python syntax. Division also requires a nonzero denominator.",
+      "takeaway": "I can read a small function, call it, and use its returned value."
+    },
+    {
+      "id": "M00C04",
+      "title": "Import a tool and read an error",
+      "explanation": "import makes a module's tools available; as gives the module a shorter name. This example uses Python's built-in math module. The try/except block catches an expected conversion error so we can read its type and message, then continue. Read the error name and the failing value before changing code.",
+      "code": "import math as m\n\ntry:\n    number = float(\"nine\")\nexcept ValueError as error:\n    print(type(error).__name__ + \": \" + str(error))\n\nnumber = float(\"9\")\nresult = m.sqrt(number)\nprint(\"Corrected result:\", result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does m refer to after import math as m?",
+          "answer": "m is a short name for the math module. m.sqrt accesses its square-root function."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Why does float(\"nine\") raise ValueError, but float(\"9\") works?",
+          "answer": "The word nine cannot be parsed as a numeric value by float. The digit string 9 can, producing 9.0."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "What should you inspect first when a cell reports an error?",
+          "answer": "Read the error type, its message, and the line that failed. Check the actual input and variable names rather than changing unrelated lines."
+        }
+      ],
+      "task": "Import math as m, set text to \"25\", convert text to a number, and calculate its square root in result. Print the result.",
+      "hint": "Use float(text) for conversion and m.sqrt(number) for the calculation.",
+      "solution": "import math as m\n\ntext = \"25\"\nnumber = float(text)\nresult = m.sqrt(number)\nprint(result)",
+      "solution_note": "The result is 5.0. Later, import pandas as pd follows the same alias pattern; pandas supplies the data tools used in the course.",
+      "check": {
+        "prompt": "What does as pd mean in import pandas as pd?",
+        "options": [
+          "Create a DataFrame called pd",
+          "Use pd as a short name for the pandas module",
+          "Convert every value to a number"
+        ],
+        "correct": 1,
+        "feedback": "The alias pd refers to the imported pandas module, which is why pd.Series and pd.DataFrame work."
+      },
+      "verify": "assert number == 9.0 and result == 3.0\nassert m.sqrt(16) == 4.0",
+      "solution_verify": "assert text == '25' and number == 25.0 and result == 5.0",
+      "watch": "Catching an error does not repair its cause. This example prints the expected error and then supplies a valid value explicitly.",
+      "takeaway": "I can recognize an import alias and use an error message to guide a correction."
+    }
+  ]
+}

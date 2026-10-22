@@ -1,0 +1,174 @@
+{
+  "id": 11,
+  "title": "Duplicates and data quality",
+  "level": "Core",
+  "goal": "Find repeated records and validate IDs, ranges, and allowed labels.",
+  "prerequisites": "You can filter rows, convert values, and count missing entries.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/indexing.html#duplicate-data",
+  "cells": [
+    {
+      "id": "M11C01",
+      "title": "Find an exact repeated record",
+      "explanation": "`duplicated()` marks repeated rows. By default, the first occurrence is kept unmarked and later copies are marked True. With `keep=False`, every member of a repeated set is marked.",
+      "code": "df = raw_students()\nresult = df.loc[df.duplicated(keep=False), [\"Student_ID\", \"Name\", \"Score\"]]\nprint(result)\nprint(\"Extra copies:\", df.duplicated().sum())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why use keep=False when investigating duplicates?",
+          "answer": "It shows both the original row and its duplicate so we can compare them."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many displayed rows and how many extra copies will we see?",
+          "answer": "Two displayed rows for S003, but only one extra copy."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Is a repeated name enough to identify a duplicate person?",
+          "answer": "No. Different people can share a name; use the intended record key and relevant fields."
+        }
+      ],
+      "task": "Remove exact duplicate rows and reset the index. Store the result in `result`.",
+      "hint": "Use `.drop_duplicates().reset_index(drop=True)`.",
+      "solution": "df = raw_students()\nresult = df.drop_duplicates().reset_index(drop=True)\nprint(result[[\"Student_ID\", \"Name\", \"Score\"]])\nprint(\"Rows:\", len(result))",
+      "solution_note": "Twelve rows remain. Other data-quality problems are still present and need separate treatment.",
+      "check": {
+        "prompt": "What does duplicated() count by default here?",
+        "options": [
+          "Every occurrence of a repeated row",
+          "Only repeated copies after the first",
+          "Rows with missing values"
+        ],
+        "correct": 1,
+        "feedback": "The default keep=\"first\" leaves the first copy unmarked."
+      },
+      "verify": "assert len(result) == 2\nassert set(result[\"Student_ID\"]) == {\"S003\"}",
+      "solution_verify": "assert len(result) == 12\nassert not result.duplicated().any()\nassert result.index.tolist() == list(range(12))",
+      "watch": "A duplicate record and a missing value are different problems.",
+      "takeaway": "Inspect repeated records before removing them."
+    },
+    {
+      "id": "M11C02",
+      "title": "A repeated ID is not always an exact duplicate",
+      "explanation": "`subset` lets you check only the columns that define a record key. Two rows can share an ID but disagree on a score. Keeping the last one is defensible only when a documented order says it is the latest record.",
+      "code": "df = pd.DataFrame({\"Student_ID\": [\"S001\", \"S001\", \"S002\"], \"Updated\": [\"2026-10-01\", \"2026-10-03\", \"2026-10-02\"], \"Score\": [80, 88, 72]})\nresult = df.loc[df.duplicated(subset=[\"Student_ID\"], keep=False)]\nprint(result)\nprint(\"Exact duplicates:\", df.duplicated().sum())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which field is being treated as the record key?",
+          "answer": "Student_ID."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Are the two S001 rows exact duplicates?",
+          "answer": "No. Their dates and scores differ."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why would dropping one row without a rule be risky?",
+          "answer": "We could discard the correct observation; the meaning of the records and update order matters."
+        }
+      ],
+      "task": "Assume the later Updated date is the authoritative revision. Parse Updated, sort chronologically, and keep the latest row per Student_ID. Store the retained rows in result, sorted by Student_ID in ascending order.",
+      "hint": "Date parsing is introduced in Module 13: use pd.to_datetime with format=\"%Y-%m-%d\". Sort by Updated before drop_duplicates(subset=\"Student_ID\", keep=\"last\"), then sort the retained rows by Student_ID.",
+      "solution": "df = pd.DataFrame({\"Student_ID\": [\"S001\", \"S001\", \"S002\"], \"Updated\": [\"2026-10-01\", \"2026-10-03\", \"2026-10-02\"], \"Score\": [80, 88, 72]})\ndf[\"Updated\"] = pd.to_datetime(df[\"Updated\"], format=\"%Y-%m-%d\")\nresult = df.sort_values(\"Updated\").drop_duplicates(subset=\"Student_ID\", keep=\"last\").sort_values(\"Student_ID\")\nprint(result)",
+      "solution_note": "S001 keeps score 88 from October 3; S002 keeps 72. The decision follows the stated update policy.",
+      "check": {
+        "prompt": "Does keep=\"last\" automatically know the newest date?",
+        "options": [
+          "Yes",
+          "No; the row order must first match the date rule",
+          "Only when the ID is numeric"
+        ],
+        "correct": 1,
+        "feedback": "Last means last in the current row order."
+      },
+      "verify": "assert len(result) == 2\nassert result[\"Score\"].tolist() == [80, 88]",
+      "solution_verify": "assert result[\"Score\"].tolist() == [88, 72]\nassert result[\"Student_ID\"].is_unique",
+      "watch": "In a transaction table, repeated student IDs may be expected; define what one row represents.",
+      "takeaway": "Choose a key and a documented conflict rule."
+    },
+    {
+      "id": "M11C03",
+      "title": "Flag impossible values instead of hiding them",
+      "explanation": "Data can have the right type and still be invalid. If Attendance is a percentage, its allowed range is 0 through 100. A Boolean mask can create a review table before you decide how to repair the source.",
+      "code": "df = raw_students()\ninvalid = ~df[\"Attendance\"].between(0, 100)\nresult = df.loc[invalid, [\"Student_ID\", \"Attendance\"]]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does the ~ symbol do to the range check?",
+          "answer": "It reverses True and False, so rows outside the range are selected."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which record will be flagged?",
+          "answer": "S011, whose Attendance value is 105."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why should we not automatically change 105 to 100?",
+          "answer": "We do not know the correct value. Clipping can hide a recording error and overstate attendance."
+        }
+      ],
+      "task": "Preserve the source Attendance values in Attendance_raw. Convert Attendance to a nullable numeric column and set its out-of-range values to missing. Store the affected rows in result with columns Student_ID, Attendance_raw, and Attendance.",
+      "hint": "Use a copy, `astype(\"Float64\")`, and one `.loc[mask, column]` assignment.",
+      "solution": "df = raw_students()\ndf[\"Attendance_raw\"] = df[\"Attendance\"]\ndf[\"Attendance\"] = df[\"Attendance\"].astype(\"Float64\")\ninvalid = ~df[\"Attendance\"].between(0, 100)\ndf.loc[invalid, \"Attendance\"] = pd.NA\nresult = df.loc[invalid, [\"Student_ID\", \"Attendance_raw\", \"Attendance\"]]\nprint(result)",
+      "solution_note": "The original 105 is retained for follow-up. The cleaned measurement is marked unknown, not changed to a guessed value.",
+      "check": {
+        "prompt": "Is a numeric value always a valid measurement?",
+        "options": [
+          "Yes",
+          "No, it must also satisfy the measurement rules",
+          "Only when it has a decimal point"
+        ],
+        "correct": 1,
+        "feedback": "Type validation and range validation check different things."
+      },
+      "verify": "assert result[\"Student_ID\"].tolist() == [\"S011\"]\nassert result[\"Attendance\"].tolist() == [105]",
+      "solution_verify": "assert result[\"Attendance_raw\"].iloc[0] == 105\nassert pd.isna(result[\"Attendance\"].iloc[0])",
+      "watch": "The allowed range comes from the meaning of the variable, not from pandas.",
+      "takeaway": "Validate values against explicit domain rules."
+    },
+    {
+      "id": "M11C04",
+      "title": "Turn expectations into assertions",
+      "explanation": "An assertion stops execution if an expectation is false. It is useful for classroom checks and analysis pipelines. Validate identity, required values, and ranges separately so a failure has a clear meaning.",
+      "code": "df = students()\nassert df[\"Student_ID\"].notna().all(), \"A student ID is missing\"\nassert df[\"Student_ID\"].is_unique, \"Student IDs must be unique here\"\nassert df[\"Score\"].between(0, 100).all(), \"Score outside 0-100\"\nresult = {\"rows\": len(df), \"valid_ids\": True, \"valid_scores\": True}\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What happens if an assertion condition is False?",
+          "answer": "Python raises an AssertionError and stops the normal execution of the cell."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will these checks pass for students()?",
+          "answer": "Yes. The clean teaching table has 12 unique nonmissing IDs and scores within the allowed range."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why test missing IDs separately from uniqueness?",
+          "answer": "A column with one missing ID can still be unique; uniqueness alone does not require every ID to be present."
+        }
+      ],
+      "task": "Add checks requiring Campus to be RAK or Dubai and Attendance to be 0-100. Store the two Boolean results in a dictionary named result with keys campus_ok and attendance_ok.",
+      "hint": "Use `.isin([...]).all()` for an allowed-label check.",
+      "solution": "df = students()\ncampus_ok = df[\"Campus\"].isin([\"RAK\", \"Dubai\"]).all()\nattendance_ok = df[\"Attendance\"].between(0, 100).all()\nassert campus_ok, \"Unexpected campus label\"\nassert attendance_ok, \"Attendance outside 0-100\"\nresult = {\"campus_ok\": bool(campus_ok), \"attendance_ok\": bool(attendance_ok)}\nprint(result)",
+      "solution_note": "Both checks are True for the clean table. Applying equivalent checks to raw data would expose problems that need review.",
+      "check": {
+        "prompt": "For a Boolean Series with no missing values, what does .all() require?",
+        "options": [
+          "At least one True",
+          "Every value to be True",
+          "Exactly twelve rows"
+        ],
+        "correct": 1,
+        "feedback": "With no missing values, every tested value must be True. By default, .all() skips missing values. Validate required non-missing values separately, or explicitly treat missing checks as False."
+      },
+      "verify": "assert result[\"rows\"] == 12\nassert result[\"valid_ids\"] is True",
+      "solution_verify": "assert result == {\"campus_ok\": True, \"attendance_ok\": True}",
+      "watch": "Python can disable assert statements in optimized runs; formal applications may need explicit validation errors.",
+      "takeaway": "Write data expectations as checks you can repeat."
+    }
+  ]
+}

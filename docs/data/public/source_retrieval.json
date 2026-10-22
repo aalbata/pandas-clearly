@@ -1,0 +1,33 @@
+{
+  "repository": "https://github.com/allisonhorst/palmerpenguins",
+  "commit": "8957207b78d6ccd1b4654a9dd9c9041b657478ab",
+  "commit_url": "https://github.com/allisonhorst/palmerpenguins/commit/8957207b78d6ccd1b4654a9dd9c9041b657478ab",
+  "commit_timestamp": "2024-09-19T22:17:00Z",
+  "retrieved_at_utc": "2026-10-22T13:57:31.974410+00:00",
+  "files": [
+    {
+      "path": "penguins.csv",
+      "upstream_path": "inst/extdata/penguins.csv",
+      "url": "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/8957207b78d6ccd1b4654a9dd9c9041b657478ab/inst/extdata/penguins.csv",
+      "bytes": 15241
+    },
+    {
+      "path": "LICENSE_DATA.txt",
+      "upstream_path": "LICENSE.md",
+      "url": "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/8957207b78d6ccd1b4654a9dd9c9041b657478ab/LICENSE.md",
+      "bytes": 6966
+    },
+    {
+      "path": "UPSTREAM_CITATION.txt",
+      "upstream_path": "inst/CITATION",
+      "url": "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/8957207b78d6ccd1b4654a9dd9c9041b657478ab/inst/CITATION",
+      "bytes": 638
+    },
+    {
+      "path": "UPSTREAM_DESCRIPTION.txt",
+      "upstream_path": "DESCRIPTION",
+      "url": "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/8957207b78d6ccd1b4654a9dd9c9041b657478ab/DESCRIPTION",
+      "bytes": 1454
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+{
+  "id": 22,
+  "title": "Explore richer structures",
+  "level": "Extension",
+  "goal": "Use multiple index levels, list-valued columns, and categorical encodings.",
+  "prerequisites": "Understand indexes, reshaping, and basic data types.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/advanced.html",
+  "cells": [
+    {
+      "id": "M22C01",
+      "title": "Create a MultiIndex",
+      "explanation": "A MultiIndex stores more than one label per row. Here Campus and Student_ID jointly locate a student. sort_index arranges the levels for predictable selection.",
+      "code": "df = students().set_index([\"Campus\", \"Student_ID\"]).sort_index()\nresult = df.loc[(\"RAK\", \"S003\"), [\"Name\", \"Score\"]]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does the tuple (\"RAK\", \"S003\") identify?",
+          "answer": "A row with Campus RAK and Student_ID S003."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What Name and Score will appear?",
+          "answer": "Chloe and 91."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why keep Student_ID as an additional level?",
+          "answer": "Campus alone is shared by several students; the second level identifies the individual record."
+        }
+      ],
+      "task": "Use xs to select all Dubai students at the Campus level and print Name and Score.",
+      "hint": "Call xs(\"Dubai\", level=\"Campus\") on the indexed table.",
+      "solution": "df = students().set_index([\"Campus\", \"Student_ID\"]).sort_index()\nresult = df.xs(\"Dubai\", level=\"Campus\")[[\"Name\", \"Score\"]]\nprint(result)",
+      "solution_note": "The selection contains six Dubai students; xs drops the selected level by default.",
+      "check": {
+        "prompt": "What is a MultiIndex?",
+        "options": [
+          "Several labels per row or column axis entry",
+          "Several unrelated DataFrames",
+          "A duplicate-free column"
+        ],
+        "correct": 0,
+        "feedback": "It represents an axis with multiple levels of labels."
+      },
+      "verify": "assert result[\"Name\"] == \"Chloe\"\nassert result[\"Score\"] == 91",
+      "solution_verify": "assert len(result) == 6\nassert result.index.name == \"Student_ID\"\nassert \"S002\" in result.index",
+      "watch": "A tuple used as a MultiIndex key is different from a list of separate row keys.",
+      "takeaway": "Name index levels so selections are understandable."
+    },
+    {
+      "id": "M22C02",
+      "title": "Stack and unstack",
+      "explanation": "stack moves column labels into an additional row-index level. unstack moves an index level back into columns. The explicit future_stack=True selects the modern stack implementation on pandas 2.2 and 3.x.",
+      "code": "wide = students().head(2).set_index(\"Student_ID\")[[\"Score\", \"Attendance\"]]\nresult = wide.stack(future_stack=True)\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "How many index levels does the stacked result have?",
+          "answer": "Two: Student_ID and the original measure column label."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many values are in the stacked result?",
+          "answer": "4, from two students and two measures."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Were the measurements averaged during stacking?",
+          "answer": "No. Their labels moved; the original values remain."
+        }
+      ],
+      "task": "Stack the first three students and unstack the last level back into a DataFrame. Check that it equals the original wide table.",
+      "hint": "Use .unstack() on the stacked Series, then .equals(wide).",
+      "solution": "wide = students().head(3).set_index(\"Student_ID\")[[\"Score\", \"Attendance\"]]\nstacked = wide.stack(future_stack=True)\nresult = stacked.unstack().reindex(columns=wide.columns)\nprint(result)\nprint(\"Values restored:\", result.equals(wide))",
+      "solution_note": "The explicit column reindex restores the original column order for the equality check.",
+      "check": {
+        "prompt": "Which operation returns the last index level to columns?",
+        "options": [
+          "unstack",
+          "drop_duplicates",
+          "head"
+        ],
+        "correct": 0,
+        "feedback": "unstack reshapes one index level into column labels."
+      },
+      "verify": "assert len(result) == 4\nassert result.loc[(\"S001\", \"Score\")] == 88",
+      "solution_verify": "assert result.equals(wide)\nassert result.shape == (3, 2)",
+      "watch": "Missing combinations can appear when reshaping sparse data; inspect the resulting shape.",
+      "takeaway": "Stack and unstack move labels between axes."
+    },
+    {
+      "id": "M22C03",
+      "title": "Expand lists with explode",
+      "explanation": "Sometimes one cell contains several items, such as a list of skills. explode creates a separate row for each item and repeats the other columns. This changes the unit of analysis from one row per student to one row per student-skill.",
+      "code": "df = pd.DataFrame({\"Student_ID\": [\"S001\", \"S002\"], \"Skills\": [[\"Python\", \"SQL\"], [\"Excel\"]]})\nresult = df.explode(\"Skills\", ignore_index=True)\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What kind of value is stored in each Skills cell before explode?",
+          "answer": "A Python list."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many rows result?",
+          "answer": "3: two skills for S001 and one skill for S002."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why would counting rows after explode overcount students?",
+          "answer": "A student with multiple skills appears in multiple rows."
+        }
+      ],
+      "task": "Give S002 a second skill, SQL. Explode the table, then store the count of student-skill rows for each skill in result as a value_counts() Series.",
+      "hint": "After explode, use the Skills column value_counts().",
+      "solution": "df = pd.DataFrame({\"Student_ID\": [\"S001\", \"S002\"], \"Skills\": [[\"Python\", \"SQL\"], [\"Excel\", \"SQL\"]]})\nlong = df.explode(\"Skills\", ignore_index=True)\nresult = long[\"Skills\"].value_counts()\nprint(result)",
+      "solution_note": "SQL appears twice; Python and Excel appear once each.",
+      "check": {
+        "prompt": "After explode, one row represents what?",
+        "options": [
+          "Always one unique student",
+          "One listed item belonging to a student",
+          "One average skill score"
+        ],
+        "correct": 1,
+        "feedback": "Each item becomes a row; the student identifier can repeat."
+      },
+      "verify": "assert len(result) == 3\nassert result[\"Student_ID\"].nunique() == 2",
+      "solution_verify": "assert result[\"SQL\"] == 2\nassert result.sum() == 4",
+      "watch": "An empty list becomes a row with a missing item; a string that looks like a list is still a string.",
+      "takeaway": "Check what a row represents after changing the layout."
+    },
+    {
+      "id": "M22C04",
+      "title": "Order and encode categories",
+      "explanation": "Categorical values can follow a chosen order instead of alphabetical order. get_dummies makes one indicator column per category. These indicator values describe membership, not a numerical ranking.",
+      "code": "df = students().head(4).copy()\ndf[\"Program\"] = pd.Categorical(df[\"Program\"], categories=[\"IT\", \"AI\"], ordered=True)\nordered = df.sort_values(\"Program\", kind=\"stable\")\nresult = pd.get_dummies(ordered[\"Program\"], prefix=\"Program\", dtype=int)\nprint(ordered[[\"Student_ID\", \"Program\"]])\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which Program sorts first?",
+          "answer": "IT, because it is listed first in the ordered categories."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What are Program_IT and Program_AI for S001?",
+          "answer": "0 and 1 respectively."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Does a dummy value of 1 mean AI is better than IT?",
+          "answer": "No. It only marks whether that row belongs to the AI category."
+        }
+      ],
+      "task": "Change the category order to AI then IT and print the sorted student IDs and dummy columns.",
+      "hint": "Reverse the categories list before sorting.",
+      "solution": "df = students().head(4).copy()\ndf[\"Program\"] = pd.Categorical(df[\"Program\"], categories=[\"AI\", \"IT\"], ordered=True)\nordered = df.sort_values(\"Program\", kind=\"stable\")\nresult = pd.get_dummies(ordered[\"Program\"], prefix=\"Program\", dtype=int)\nprint(ordered[[\"Student_ID\", \"Program\"]])\nprint(result)",
+      "solution_note": "AI students now appear first; each row still has one indicator value equal to 1.",
+      "check": {
+        "prompt": "What does get_dummies encode?",
+        "options": [
+          "Category membership",
+          "Student achievement",
+          "A guaranteed useful order"
+        ],
+        "correct": 0,
+        "feedback": "Each column indicates membership in one category."
+      },
+      "verify": "assert ordered.iloc[0][\"Student_ID\"] == \"S002\"\nassert (result.sum(axis=1) == 1).all()",
+      "solution_verify": "assert ordered[\"Student_ID\"].tolist() == [\"S001\", \"S003\", \"S002\", \"S004\"]\nassert result.loc[0, \"Program_AI\"] == 1",
+      "watch": "Values outside a specified category list become missing; validate allowed categories first.",
+      "takeaway": "Category order and indicator encoding are separate choices."
+    }
+  ]
+}

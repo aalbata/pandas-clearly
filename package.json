@@ -1,0 +1,13 @@
+{
+  "name": "pandas-clearly-course",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser verification for Pandas, Clearly by Dr. Ali Al Bataineh",
+  "scripts": {
+    "test:browser": "node tests/browser_verify.cjs",
+    "test:browser:full": "node tests/browser_verify.cjs --full",
+    "test:interactions": "node tests/browser_interactions.cjs",
+    "test:visuals": "node tests/browser_visuals.cjs"
+  },
+  "devDependencies": {"playwright": "1.51.1"}
+}

@@ -1,0 +1,174 @@
+{
+  "id": 17,
+  "title": "Merge related tables",
+  "level": "Core",
+  "goal": "Connect tables by a key and audit which records matched.",
+  "prerequisites": "Use column selection and understand unique Student_ID values.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/merging.html",
+  "cells": [
+    {
+      "id": "M17C01",
+      "title": "Attach the department",
+      "explanation": "The Program column is a key shared by two tables. A many-to-one merge lets several students match one department row. The validation checks that the lookup table has only one row per program.",
+      "code": "df = students()\nresult = df.merge(departments(), on=\"Program\", how=\"left\", validate=\"many_to_one\")\nprint(result[[\"Student_ID\", \"Program\", \"Department\"]])",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does on=\"Program\" tell pandas?",
+          "answer": "Match the two tables using Program values."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will the result contain 2 rows or 12 rows?",
+          "answer": "12 rows, one for each student, because each Program matches exactly one lookup row."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why validate=\"many_to_one\"?",
+          "answer": "Students may repeat a Program, but each Program must appear at most once in the lookup table."
+        }
+      ],
+      "task": "Use DataFrame.join to attach the same lookup fields. Set Program as the lookup index and keep the student index.",
+      "hint": "Use departments().set_index(\"Program\"), then join(..., on=\"Program\").",
+      "solution": "df = students()\nlookup = departments().set_index(\"Program\")\nresult = df.join(lookup, on=\"Program\", how=\"left\", validate=\"many_to_one\")\nprint(result[[\"Student_ID\", \"Program\", \"Department\"]])",
+      "solution_note": "join can use the right table index as the key. Both forms preserve all 12 students here.",
+      "check": {
+        "prompt": "Which side must have unique Program values?",
+        "options": [
+          "The student table",
+          "The department lookup",
+          "Both tables"
+        ],
+        "correct": 1,
+        "feedback": "The lookup side must be unique for many-to-one matching."
+      },
+      "verify": "assert len(result) == 12\nassert result.loc[result[\"Student_ID\"].eq(\"S001\"), \"Department\"].item() == \"Computing\"",
+      "solution_verify": "assert len(result) == 12\nassert result[\"Advisor\"].notna().all()",
+      "watch": "Do not join tables by row position when they describe entities identified by keys.",
+      "takeaway": "Choose and validate the matching key."
+    },
+    {
+      "id": "M17C02",
+      "title": "Keep matches or keep every student",
+      "explanation": "An inner merge keeps only keys found in both tables. A left merge keeps every key from the left table. In this complete assessment lookup, a missing Quiz comes from an unmatched student. With other data, a matched assessment could itself have a missing Quiz; use the merge indicator to test for unmatched records.",
+      "code": "result = students().merge(assessment(), on=\"Student_ID\", how=\"inner\", validate=\"one_to_one\")\nprint(result[[\"Student_ID\", \"Name\", \"Quiz\"]])\nprint(\"Rows:\", len(result))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which table supplies Quiz?",
+          "answer": "The assessment table."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which registered student disappears from the inner merge?",
+          "answer": "S012, Lina, because the assessment table has no S012 row."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Does an unmatched quiz mean the student earned zero?",
+          "answer": "No. A missing match is unknown and needs investigation."
+        }
+      ],
+      "task": "Change the merge to left and store the full merged table in merged. Select only students whose Quiz is missing into result, keeping Student_ID, Name, and Quiz, then print result.",
+      "hint": "Use how=\"left\" and then Quiz.isna().",
+      "solution": "merged = students().merge(assessment(), on=\"Student_ID\", how=\"left\", validate=\"one_to_one\")\nresult = merged.loc[merged[\"Quiz\"].isna(), [\"Student_ID\", \"Name\", \"Quiz\"]]\nprint(result)",
+      "solution_note": "The left merge retains 12 students; the missing-match report contains only S012.",
+      "check": {
+        "prompt": "Which merge preserves every registered student?",
+        "options": [
+          "inner",
+          "left, with students on the left",
+          "right, with assessments on the right"
+        ],
+        "correct": 1,
+        "feedback": "A left merge preserves the left table keys even when there is no right-side match."
+      },
+      "verify": "assert len(result) == 11\nassert \"S012\" not in result[\"Student_ID\"].tolist()",
+      "solution_verify": "assert len(merged) == 12\nassert result[\"Student_ID\"].tolist() == [\"S012\"]",
+      "watch": "Filling an unmatched assessment with zero changes its meaning; agree on a policy first.",
+      "takeaway": "Merge type determines which records remain."
+    },
+    {
+      "id": "M17C03",
+      "title": "Audit both unmatched sides",
+      "explanation": "An outer merge keeps keys from either table. indicator=True adds a _merge column showing left_only, right_only, or both. This is a simple way to find records that need review.",
+      "code": "audit = students().merge(assessment(), on=\"Student_ID\", how=\"outer\", indicator=True, validate=\"one_to_one\")\nresult = audit.loc[audit[\"_merge\"].ne(\"both\"), [\"Student_ID\", \"_merge\"]]\nprint(result)\nprint(\"All merged rows:\", len(audit))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does right_only mean here?",
+          "answer": "The key exists in assessments but not in the student table."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which IDs will the audit show?",
+          "answer": "S012 is left_only; S013 is right_only."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why inspect both unmatched sides?",
+          "answer": "One side can reveal missing assessments; the other can reveal assessments for an unregistered or mistyped ID."
+        }
+      ],
+      "task": "Use a right merge instead. Keep indicator=True and report the row that has no registered student name.",
+      "hint": "A right merge preserves the assessment keys; inspect Name.isna().",
+      "solution": "audit = students().merge(assessment(), on=\"Student_ID\", how=\"right\", indicator=True, validate=\"one_to_one\")\nresult = audit.loc[audit[\"Name\"].isna(), [\"Student_ID\", \"_merge\"]]\nprint(result)\nprint(\"All merged rows:\", len(audit))",
+      "solution_note": "The right merge keeps 12 assessment records. S013 remains even though no student profile matches.",
+      "check": {
+        "prompt": "How many distinct keys does the outer merge contain?",
+        "options": [
+          "11",
+          "12",
+          "13"
+        ],
+        "correct": 2,
+        "feedback": "The union contains S001 through S013: 11 shared keys plus 2 unmatched keys."
+      },
+      "verify": "assert len(audit) == 13\nassert set(result[\"Student_ID\"]) == {\"S012\", \"S013\"}",
+      "solution_verify": "assert len(audit) == 12\nassert result[\"Student_ID\"].tolist() == [\"S013\"]",
+      "watch": "Pandas may match missing keys to other missing keys; audit or reject null keys before important merges.",
+      "takeaway": "Use indicator to make unmatched records visible."
+    },
+    {
+      "id": "M17C04",
+      "title": "Stop duplicate-key expansion",
+      "explanation": "If a lookup repeats a key, one input row can produce several output rows. The code deliberately adds a duplicate AI lookup. Catching MergeError lets us demonstrate the problem without stopping the lesson.",
+      "code": "bad_lookup = pd.concat([departments(), departments().iloc[[0]]], ignore_index=True)\nblocked = False\ntry:\n    students().merge(bad_lookup, on=\"Program\", validate=\"many_to_one\")\nexcept pd.errors.MergeError:\n    blocked = True\n    print(\"Blocked: Program is not unique in the lookup.\")\nresult = students().merge(bad_lookup, on=\"Program\")\nprint(\"Rows without validation:\", len(result))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why is try/except used?",
+          "answer": "To catch the expected validation error and continue the lesson."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many rows appear without validation?",
+          "answer": "18: each of the 6 AI students matches twice, and the 6 IT students match once."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Should every duplicate key be dropped automatically?",
+          "answer": "No. Repeated keys may describe different facts. This example repeats an identical lookup row, so removing that exact duplicate is justified."
+        }
+      ],
+      "task": "Remove only exact duplicate lookup rows, confirm Program is unique, and perform the validated merge.",
+      "hint": "drop_duplicates() removes exact repeats; is_unique checks the key.",
+      "solution": "bad_lookup = pd.concat([departments(), departments().iloc[[0]]], ignore_index=True)\nlookup = bad_lookup.drop_duplicates()\nassert lookup[\"Program\"].is_unique\nresult = students().merge(lookup, on=\"Program\", validate=\"many_to_one\")\nprint(\"Validated rows:\", len(result))",
+      "solution_note": "The duplicated lookup was identical, so removing the exact repeat restores 12 rows.",
+      "check": {
+        "prompt": "What can repeated keys on both sides cause?",
+        "options": [
+          "A multiplication of matching rows",
+          "Automatic averaging",
+          "Automatic removal of duplicates"
+        ],
+        "correct": 0,
+        "feedback": "Each matching pair produces a row, so duplicate keys can expand the result."
+      },
+      "verify": "assert blocked\nassert len(result) == 18",
+      "solution_verify": "assert len(result) == 12\nassert result[\"Student_ID\"].is_unique",
+      "watch": "validate checks the relationship; it does not decide how to repair conflicting records.",
+      "takeaway": "Check key uniqueness before trusting merged row counts."
+    }
+  ]
+}

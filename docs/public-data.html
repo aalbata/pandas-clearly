@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><meta name="author" content="Ali Al Bataineh"><meta name="description" content="Pandas, Clearly: a free practical pandas course and reference by Dr. Ali Al Bataineh. Learn through prediction, code, questions, and independent practice."><title>Public data provenance | Pandas, Clearly</title><link rel="stylesheet" href="assets/course.css"><script src="assets/course.js" defer></script></head>
+<body data-view="learn"><a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="site-header"><a class="brand" href="index.html"><span class="brand-title">Pandas, Clearly</span><span class="brand-subtitle">Pandas for Data Science</span></a><nav class="header-nav" aria-label="Main navigation"><a href="index.html#paths">Learn</a><a href="reference.html">Reference</a><a href="datasets.html">Datasets</a><a href="downloads.html">Downloads</a></nav><div class="header-actions"><button type="button" class="button small" data-action="toggle-menu" aria-controls="course-sidebar" aria-expanded="false">Modules &amp; search</button></div></header>
+<div class="course-shell"><aside class="course-sidebar" id="course-sidebar"><div class="sidebar-search"><label for="course-search">Find a task or pandas method</label><input id="course-search" type="search" placeholder="Try: missing, merge, Excel" autocomplete="off"><p id="search-status" class="sr-only" aria-live="polite"></p><div id="search-results" hidden></div></div><nav aria-label="Course modules"><div class="sidebar-group"><h2>Start here</h2><a class="module-link" href="lessons/00-a-short-python-bridge.html"><span class="module-number">00</span><span>A short Python bridge</span></a><a class="module-link" href="lessons/01-start-with-a-dictionary.html"><span class="module-number">01</span><span>Start with a dictionary</span></a><a class="module-link" href="lessons/02-from-one-student-to-many.html"><span class="module-number">02</span><span>From one student to many</span></a></div><div class="sidebar-group"><h2>Tables and selection</h2><a class="module-link" href="lessons/03-meet-the-pandas-series.html"><span class="module-number">03</span><span>Meet the pandas Series</span></a><a class="module-link" href="lessons/04-build-and-inspect-a-dataframe.html"><span class="module-number">04</span><span>Build and inspect a DataFrame</span></a><a class="module-link" href="lessons/05-select-exactly-what-you-need.html"><span class="module-number">05</span><span>Select exactly what you need</span></a><a class="module-link" href="lessons/06-filter-with-conditions.html"><span class="module-number">06</span><span>Filter with conditions</span></a><a class="module-link" href="lessons/07-sorting-and-index-decisions.html"><span class="module-number">07</span><span>Sorting and index decisions</span></a><a class="module-link" href="lessons/08-create-and-update-columns.html"><span class="module-number">08</span><span>Create and update columns</span></a></div><div class="sidebar-group"><h2>Clean and understand</h2><a class="module-link" href="lessons/09-data-types-and-safe-conversion.html"><span class="module-number">09</span><span>Data types and safe conversion</span></a><a class="module-link" href="lessons/10-missing-values-and-honest-cleaning.html"><span class="module-number">10</span><span>Missing values and honest cleaning</span></a><a class="module-link" href="lessons/11-duplicates-and-data-quality.html"><span class="module-number">11</span><span>Duplicates and data quality</span></a><a class="module-link" href="lessons/12-clean-and-search-text.html"><span class="module-number">12</span><span>Clean and search text</span></a><a class="module-link" href="lessons/13-dates-times-and-durations.html"><span class="module-number">13</span><span>Dates, times, and durations</span></a><a class="module-link" href="lessons/14-map-apply-and-vectorize.html"><span class="module-number">14</span><span>Map, apply, and vectorize</span></a><a class="module-link" href="lessons/15-statistics-you-can-explain.html"><span class="module-number">15</span><span>Statistics you can explain</span></a></div><div class="sidebar-group"><h2>Combine and analyze</h2><a class="module-link" href="lessons/16-group-summarize-and-compare.html"><span class="module-number">16</span><span>Group, summarize, and compare</span></a><a class="module-link" href="lessons/17-merge-related-tables.html"><span class="module-number">17</span><span>Merge related tables</span></a><a class="module-link" href="lessons/18-concatenate-and-align.html"><span class="module-number">18</span><span>Concatenate and align</span></a><a class="module-link" href="lessons/19-reshape-tables.html"><span class="module-number">19</span><span>Reshape tables</span></a></div><div class="sidebar-group"><h2>Files and practical work</h2><a class="module-link" href="lessons/20-read-and-write-files.html"><span class="module-number">20</span><span>Read and write files</span></a><a class="module-link" href="lessons/21-work-with-time-series.html"><span class="module-number">21</span><span>Work with time series</span></a><a class="module-link" href="lessons/22-explore-richer-structures.html"><span class="module-number">22</span><span>Explore richer structures</span></a><a class="module-link" href="lessons/23-work-efficiently-and-reproducibly.html"><span class="module-number">23</span><span>Work efficiently and reproducibly</span></a><a class="module-link" href="lessons/24-plot-and-interpret.html"><span class="module-number">24</span><span>Plot and interpret</span></a><a class="module-link" href="lessons/25-debugging-clinic.html"><span class="module-number">25</span><span>Debugging clinic</span></a><a class="module-link" href="lessons/26-end-to-end-classroom-project.html"><span class="module-number">26</span><span>End-to-end classroom project</span></a></div><div class="sidebar-group"><h2>Public data workshops</h2><a class="module-link" href="lessons/27-import-csv-and-text-with-confidence.html"><span class="module-number">27</span><span>Import CSV and text with confidence</span></a><a class="module-link" href="lessons/28-work-across-excel-and-json-formats.html"><span class="module-number">28</span><span>Work across Excel and JSON formats</span></a><a class="module-link" href="lessons/29-analyze-a-real-public-dataset.html"><span class="module-number">29</span><span>Analyze a real public dataset</span></a></div></nav><div class="sidebar-tools"><p data-progress aria-live="polite">Your practice progress is saved on this device.</p><div class="button-row"><button type="button" class="button small" data-action="export-work">Export my work</button><button type="button" class="button small" data-action="import-work">Import work</button></div><p class="small-print" data-save-status>Save an export to keep a backup.</p></div></aside><main id="main-content" class="course-main"><noscript><p class="notice">All explanations, questions, and verified outputs can be read here. Enable JavaScript for search, saved answers, and browser Python, or use the downloadable notebooks.</p></noscript><h1 id="public-data-for-pandas-clearly">Public data for Pandas, Clearly</h1>
+<h2 id="what-this-dataset-contains">What this dataset contains</h2>
+<p>These files contain the real, publicly available <strong>Palmer Penguins</strong> dataset distributed by the <code>palmerpenguins</code> project. The upstream simplified <code>penguins.csv</code> contains <strong>344 observations and 8 variables</strong> from study years <strong>2007–2009</strong>. One row describes an observed penguin. It is not a current census of all penguins and is not a causal experiment.</p>
+<p>The data were collected and made available by <strong>Dr. Kristen Gorman and the Palmer Station Antarctica Long Term Ecological Research program</strong>. The teaching conversions preserve the observations. No penguin records have been generated, sampled, imputed, rounded, removed, reordered, or duplicated.</p>
+<p>The unmodified source is the package's simplified eight-column <code>penguins</code> table. It is different from the package's seventeen-column dataset named <code>penguins_raw</code>, which is not included here.</p>
+<h2 id="provenance-and-citation">Provenance and citation</h2>
+<ul>
+<li><a href="https://allisonhorst.github.io/palmerpenguins/">Official project</a></li>
+<li><a href="https://allisonhorst.github.io/palmerpenguins/reference/penguins.html">Official field definitions and underlying data citations</a></li>
+<li><a href="https://allisonhorst.github.io/palmerpenguins/authors.html">Official authors and citation</a></li>
+<li><a href="https://github.com/allisonhorst/palmerpenguins/commit/8957207b78d6ccd1b4654a9dd9c9041b657478ab">Pinned upstream revision</a></li>
+<li><a href="https://raw.githubusercontent.com/allisonhorst/palmerpenguins/8957207b78d6ccd1b4654a9dd9c9041b657478ab/inst/extdata/penguins.csv">Exact downloaded CSV</a></li>
+<li>Retrieved <strong>2026-10-22 UTC</strong>. The precise timestamp, upstream paths, transformations, and checksums are recorded in <a href="data/public/provenance.json">provenance.json</a>.</li>
+</ul>
+<p><strong>Dataset/package citation:</strong> Horst AM, Hill AP, Gorman KB (2020). <em>palmerpenguins: Palmer Archipelago (Antarctica) penguin data</em>. <a href="https://doi.org/10.5281/zenodo.3960218">doi:10.5281/zenodo.3960218</a>. The official citation names package version 0.1.0; the pinned repository's DESCRIPTION identifies version 0.1.1. Both upstream texts are preserved locally.</p>
+<p><strong>Original research:</strong> Gorman KB, Williams TD, Fraser WR (2014). Ecological Sexual Dimorphism and Environmental Variability within a Community of Antarctic Penguins (Genus Pygoscelis). <em>PLoS ONE</em>, 9(3), e90081. <a href="https://doi.org/10.1371/journal.pone.0090081">doi:10.1371/journal.pone.0090081</a>.</p>
+<p><strong>Underlying public data:</strong> <a href="https://doi.org/10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f">Adélie</a>, <a href="https://doi.org/10.6073/pasta/7fca67fb28d56ee2ffa3d9370ebda689">Gentoo</a>, and <a href="https://doi.org/10.6073/pasta/c14dfcfada8ea13a17536e73eb6fbe9e">Chinstrap</a> datasets, attributed by the upstream project to Palmer Station Antarctica LTER and K. Gorman.</p>
+<h2 id="license">License</h2>
+<p>The upstream repository distributes these data under <strong>CC0 1.0 Universal</strong>. <a href="data/public/LICENSE_DATA.txt">LICENSE_DATA.txt</a> is a byte-for-byte copy of the pinned upstream license, with only its local filename changed. Consult that complete license for its terms. The course's own content license does not replace the dataset's license. Dataset authors and the course author have different roles; preserve both attributions when reusing this folder.</p>
+<h2 id="files-and-exact-transformations">Files and exact transformations</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Contents and transformation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>penguins.csv</code></td>
+<td>Original downloaded CSV bytes, unchanged. The source missing-value token is <code>NA</code>.</td>
+</tr>
+<tr>
+<td><code>penguins.tsv</code></td>
+<td>Identical header and record text written with tab separators and LF line endings. Original <code>NA</code> tokens remain.</td>
+</tr>
+<tr>
+<td><code>penguins.txt</code></td>
+<td>Identical header and record text written with semicolon separators after two <code>#</code> comment lines. Read with <code>sep=";", comment="#"</code>.</td>
+</tr>
+<tr>
+<td><code>penguins.xlsx</code></td>
+<td><code>Penguins</code> has the same 344 records in A1:H345, including its one header row. Numbers are numeric cells and source <code>NA</code> values are blank cells. <code>Data_Dictionary!A1:D9</code> contains field definitions, units, and missing counts; source notes are outside that table in column F. No formulas or index column are added.</td>
+</tr>
+<tr>
+<td><code>penguins.records.json</code></td>
+<td>An array of 344 objects. Source <code>NA</code> becomes JSON <code>null</code>. Bill measurements are JSON numbers; flipper length, body mass, and year are integer numbers when known. Categories retain their original spelling.</td>
+</tr>
+<tr>
+<td><code>penguins.jsonl</code></td>
+<td>The same typed objects, one per line, with no enclosing array. Read with <code>lines=True</code>.</td>
+</tr>
+<tr>
+<td><code>penguins.nested.json</code></td>
+<td>The same records with the four measurements moved into a <code>measurements</code> object. This nesting was made for teaching <code>json_normalize</code>; it is not an upstream API response.</td>
+</tr>
+<tr>
+<td><code>penguins.data_dictionary.json</code></td>
+<td>Descriptions and units adapted from the official field definitions; missing counts computed from the source CSV.</td>
+</tr>
+<tr>
+<td><code>UPSTREAM_CITATION.txt</code> / <code>UPSTREAM_DESCRIPTION.txt</code></td>
+<td>Exact upstream text bytes, preserved for attribution and version context.</td>
+</tr>
+<tr>
+<td><code>source_retrieval.json</code></td>
+<td>Retrieval timestamp, immutable commit, download URLs, and downloaded byte counts.</td>
+</tr>
+<tr>
+<td><code>import_practice_semicolon.csv</code></td>
+<td>A separate <strong>original fictional</strong> three-record parsing exercise, described below. It is not research data.</td>
+</tr>
+</tbody>
+</table>
+<p>All public-data representations retain the same row order, values, categories, and missingness. JSON and Excel express missing values differently from CSV, and readers may infer different pandas dtypes. Compare parsed values and missingness after choosing consistent dtypes; identical file bytes are not expected across different formats.</p>
+<h2 id="field-dictionary">Field dictionary</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+<th>Unit</th>
+<th style="text-align: right;">Missing records</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>species</code></td>
+<td>Adelie, Chinstrap, or Gentoo</td>
+<td>Category</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>island</code></td>
+<td>Biscoe, Dream, or Torgersen</td>
+<td>Category</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>bill_length_mm</code></td>
+<td>Bill length</td>
+<td>mm</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td><code>bill_depth_mm</code></td>
+<td>Bill depth</td>
+<td>mm</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td><code>flipper_length_mm</code></td>
+<td>Flipper length</td>
+<td>mm</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td><code>body_mass_g</code></td>
+<td>Body mass</td>
+<td>g</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td><code>sex</code></td>
+<td>Recorded female or male</td>
+<td>Category</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr>
+<td><code>year</code></td>
+<td>Study year, 2007–2009</td>
+<td>Year</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>There are <strong>342 known body masses</strong> and <strong>333 complete records across all eight fields</strong>. These are different denominators. For a body-mass-only summary, missing sex is not automatically a reason to exclude an otherwise usable measurement. State the required fields and report how many observations support each summary. Missingness is not proof of a zero value or of random omission.</p>
+<p>The simplified table has no animal identifier. A row position is a trace to the source file, not evidence of individual identity. Group averages describe the sampled observations and do not establish causes or a universal species/island population average.</p>
+<h2 id="separate-fictional-import-exercise">Separate fictional import exercise</h2>
+<p><code>import_practice_semicolon.csv</code> is original course material. It contains three invented records with leading-zero IDs <code>001</code>, <code>010</code>, and <code>100</code>. Within this exercise, <code>NA</code> is a literal code for <strong>North Area</strong>, <code>EU</code> means <strong>East Unit</strong>, and <code>MISSING</code> marks one unavailable amount. The numeric amounts are 12.50 EUR, missing, and a recorded 0.00 EUR.</p>
+<p>The file uses UTF-8 with a byte-order mark, two <code>#</code> comment lines, semicolon delimiters, comma decimal separators, and CSV quoting around an embedded semicolon. These choices are intentional parsing challenges. Do not describe this fixture as Palmer Penguins data or as real transactions.</p>
+<h2 id="checksums">Checksums</h2>
+<p>SHA-256 hashes below identify the supplied bytes. Per-file transformations and hashes are also machine-readable in <code>provenance.json</code>. That manifest does not attempt to hash itself.</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th style="text-align: right;">Bytes</th>
+<th>SHA-256</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>penguins.csv</code></td>
+<td style="text-align: right;">15,241</td>
+<td><code>f204db2c753b0937caac3cb35258562c14f073e4bbc76be24b4c51ce22767a93</code></td>
+</tr>
+<tr>
+<td><code>penguins.tsv</code></td>
+<td style="text-align: right;">15,241</td>
+<td><code>cda75e6d5943231ef1c59bb6829013e4925941e65e6e77b08c5cc7a36e5b698c</code></td>
+</tr>
+<tr>
+<td><code>penguins.txt</code></td>
+<td style="text-align: right;">15,365</td>
+<td><code>23d79c843a611f80d5c6b6bd108818806f0239eaef8cd4d7f7fba4e105a08b31</code></td>
+</tr>
+<tr>
+<td><code>penguins.records.json</code></td>
+<td style="text-align: right;">70,725</td>
+<td><code>f21d9654d95494c26e4fa72c112a6f9e593c368a01984cfb629a1a7ab5a0222d</code></td>
+</tr>
+<tr>
+<td><code>penguins.jsonl</code></td>
+<td style="text-align: right;">52,146</td>
+<td><code>a675b15c29f3b4a9ba1f4dd2c1c42abf1acdfcf35c98723e8d669d16863e81c1</code></td>
+</tr>
+<tr>
+<td><code>penguins.nested.json</code></td>
+<td style="text-align: right;">83,109</td>
+<td><code>a3e462b5cf6aed72d9c91c529ded78ba88d347ffe330628d43659f389faab5e3</code></td>
+</tr>
+<tr>
+<td><code>penguins.xlsx</code></td>
+<td style="text-align: right;">17,509</td>
+<td><code>4f5515305590f36151bd58b2d01ca45fbcfa5534a09a58cb8b46871a6a5c62c5</code></td>
+</tr>
+<tr>
+<td><code>penguins.data_dictionary.json</code></td>
+<td style="text-align: right;">1,071</td>
+<td><code>2b69a01ae0154f9d48c0797850deee6abe59de73cd060ada9b9dbad6c67e45c0</code></td>
+</tr>
+<tr>
+<td><code>import_practice_semicolon.csv</code></td>
+<td style="text-align: right;">280</td>
+<td><code>6204c0374b32b751489254f89105f13867f2d851986d19b7ac1e022a03f76876</code></td>
+</tr>
+<tr>
+<td><code>LICENSE_DATA.txt</code></td>
+<td style="text-align: right;">6,966</td>
+<td><code>8e2c443dd9aea6fcd6c293dbf66935bd5ef502fc0ca9b466c773cf9316d5e04c</code></td>
+</tr>
+<tr>
+<td><code>UPSTREAM_CITATION.txt</code></td>
+<td style="text-align: right;">638</td>
+<td><code>5d408831f180a3cd1e4b5ca19f5614ebf3a59386650bcfd7c3b8fc4054dbdc01</code></td>
+</tr>
+<tr>
+<td><code>UPSTREAM_DESCRIPTION.txt</code></td>
+<td style="text-align: right;">1,454</td>
+<td><code>71ffb68cb47285e2ea534da56b2e9af4532148542a063868c38646bd8c990a31</code></td>
+</tr>
+<tr>
+<td><code>source_retrieval.json</code></td>
+<td style="text-align: right;">1,343</td>
+<td><code>1bdd45e16272dc68350dd6cbec4334e967536fb94ec4222ea88f5625c24dd036</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="course-attribution">Course attribution</h2>
+<p>GitHub: <a href="https://github.com/aalbatai">aalbatai</a></p><footer class="page-footer"><div class="author-signature"><strong>Dr. Ali Al Bataineh</strong><span>Computer Information Science</span><span>Higher Colleges of Technology, Ras Al Khaimah, United Arab Emirates</span></div><div class="footer-links"><a href="about.html">About &amp; citation</a><a href="sources.html">Sources &amp; licenses</a><a href="versions.html">Tested environments</a><a href="https://github.com/aalbatai/pandas-clearly">GitHub repository</a></div><p class="small-print">Pandas, Clearly · Version 1.0.0 · Original course material © 2026 Ali Al Bataineh</p></footer></main></div>
+<script type="application/json" id="site-config">{"root": "./", "runtimeBase": "runtime/", "manifest": "data/manifest.json", "setupURL": "setup.py", "pageType": "reading", "storageKey": "pandas-clearly-v1", "additionalWheels": ["runtime/et_xmlfile-2.0.0-py3-none-any.whl", "runtime/openpyxl-3.1.5-py2.py3-none-any.whl"], "timeoutMs": 60000, "totalCells": 120, "learningCellIds": ["M00C01", "M00C02", "M00C03", "M00C04", "M01C01", "M01C02", "M01C03", "M01C04", "M02C01", "M02C02", "M02C03", "M02C04", "M03C01", "M03C02", "M03C03", "M03C04", "M04C01", "M04C02", "M04C03", "M04C04", "M05C01", "M05C02", "M05C03", "M05C04", "M06C01", "M06C02", "M06C03", "M06C04", "M07C01", "M07C02", "M07C03", "M07C04", "M08C01", "M08C02", "M08C03", "M08C04", "M09C01", "M09C02", "M09C03", "M09C04", "M10C01", "M10C02", "M10C03", "M10C04", "M11C01", "M11C02", "M11C03", "M11C04", "M12C01", "M12C02", "M12C03", "M12C04", "M13C01", "M13C02", "M13C03", "M13C04", "M14C01", "M14C02", "M14C03", "M14C04", "M15C01", "M15C02", "M15C03", "M15C04", "M16C01", "M16C02", "M16C03", "M16C04", "M17C01", "M17C02", "M17C03", "M17C04", "M18C01", "M18C02", "M18C03", "M18C04", "M19C01", "M19C02", "M19C03", "M19C04", "M20C01", "M20C02", "M20C03", "M20C04", "M21C01", "M21C02", "M21C03", "M21C04", "M22C01", "M22C02", "M22C03", "M22C04", "M23C01", "M23C02", "M23C03", "M23C04", "M24C01", "M24C02", "M24C03", "M24C04", "M25C01", "M25C02", "M25C03", "M25C04", "M26C01", "M26C02", "M26C03", "M26C04", "M27C01", "M27C02", "M27C03", "M27C04", "M28C01", "M28C02", "M28C03", "M28C04", "M29C01", "M29C02", "M29C03", "M29C04"]}</script><script type="application/json" id="page-data">{}</script></body></html>

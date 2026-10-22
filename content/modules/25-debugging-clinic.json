@@ -1,0 +1,174 @@
+{
+  "id": 25,
+  "title": "Debugging clinic",
+  "level": "Apply",
+  "goal": "Find the reason a pandas result is wrong, then repair it.",
+  "prerequisites": "Modules 1–20; revisit selection, cleaning, and joins.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/copy_on_write.html",
+  "cells": [
+    {
+      "id": "M25C01",
+      "title": "A label is not a row position",
+      "explanation": "A table can use student IDs as its index. Position 0 still means the first row, but the label of that row is now S001. Read the index before choosing a selector.",
+      "code": "df = students().set_index(\"Student_ID\")\nby_position = df.iloc[0:2][[\"Name\", \"Score\"]]\nby_label = df.loc[\"S001\":\"S002\", [\"Name\", \"Score\"]]\nprint(by_position)\nprint(\"Same rows:\", by_position.equals(by_label))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What labels does df use now?",
+          "answer": "The Student_ID values, such as S001, are index labels."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Why do both selections contain two rows?",
+          "answer": "iloc excludes stop position 2; loc includes both existing endpoint labels S001 and S002."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Would df.loc[0] mean the first row here?",
+          "answer": "No. It asks for label 0, which is absent, so it raises KeyError."
+        }
+      ],
+      "task": "Select S003 through S005 by label, then select the same three students by position. Print both and confirm equality.",
+      "hint": "The first selected row has position 2. The excluded stop must be one position after S005.",
+      "solution": "df = students().set_index(\"Student_ID\")\nby_label = df.loc[\"S003\":\"S005\", [\"Name\", \"Score\"]]\nby_position = df.iloc[2:5][[\"Name\", \"Score\"]]\nprint(by_label)\nprint(by_position)\nprint(\"Same rows:\", by_label.equals(by_position))",
+      "solution_note": "Both results contain Chloe, Dana, and Ethan. Labels and positions happen to select the same records here, but they express different rules.",
+      "check": {
+        "prompt": "Which stop is excluded?",
+        "options": [
+          "The stop in an iloc slice",
+          "The stop in every loc label slice",
+          "Both stops are always excluded"
+        ],
+        "correct": 0,
+        "feedback": "iloc uses Python's stop-exclusive positional slicing. Existing loc slice endpoints are included."
+      },
+      "verify": "assert by_position.equals(by_label)\nassert by_label.index.tolist() == ['S001','S002']",
+      "solution_verify": "assert by_position.equals(by_label)\nassert by_label.index.tolist() == ['S003','S004','S005']",
+      "watch": "An integer inside loc is a label, even when it looks like a row number.",
+      "takeaway": "Choose a selector from the meaning of the request, not from habit."
+    },
+    {
+      "id": "M25C02",
+      "title": "Repair a condition with two rules",
+      "explanation": "A filter must produce one True or False value per row. Combine pandas conditions with & for AND or | for OR, with parentheses around each comparison. The broken expression is a comment so this example can run.",
+      "code": "df = students()\n# Broken: df[(df[\"Score\"] >= 80) and (df[\"Attendance\"] >= 90)]\nmask = (df[\"Score\"] >= 80) & (df[\"Attendance\"] >= 90)\nresult = df.loc[mask, [\"Student_ID\", \"Score\", \"Attendance\"]]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does each True in mask represent?",
+          "answer": "A student meeting both the score and attendance conditions."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will Lina be included?",
+          "answer": "Yes. Her score is 82 and attendance is 94."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is and wrong for these Series?",
+          "answer": "and expects a single truth value. Each comparison returns a Series of truth values, which & combines element by element."
+        }
+      ],
+      "task": "Find students whose Score is below 70 OR whose Attendance is below 80. Print their IDs and both values.",
+      "hint": "Use | and keep both comparisons in parentheses.",
+      "solution": "df = students()\nmask = (df[\"Score\"] < 70) | (df[\"Attendance\"] < 80)\nresult = df.loc[mask, [\"Student_ID\", \"Score\", \"Attendance\"]]\nprint(result)",
+      "solution_note": "S004, S008, and S011 meet at least one condition. S011 qualifies by score even though attendance is 82.",
+      "check": {
+        "prompt": "A student meets only one of two conditions. Which operator keeps that student?",
+        "options": [
+          "&",
+          "|",
+          "and"
+        ],
+        "correct": 1,
+        "feedback": "OR (|) accepts a row when either condition is True; AND (&) requires both."
+      },
+      "verify": "assert result['Student_ID'].tolist() == ['S001','S003','S006','S007','S010','S012']",
+      "solution_verify": "assert result['Student_ID'].tolist() == ['S004','S008','S011']",
+      "watch": "Do not remove the parentheses around each comparison.",
+      "takeaway": "Translate AND, OR, and NOT into &, |, and ~."
+    },
+    {
+      "id": "M25C03",
+      "title": "Change the table you actually intend to change",
+      "explanation": "A filtered table and the original table are different objects. Use a single .loc assignment when the original must change. Use .copy() when creating a separate working table, and inspect both afterward.",
+      "code": "df = students()\nmask = df[\"Student_ID\"].eq(\"S004\")\n# Avoid: df[mask][\"Score\"] = 70\ndf.loc[mask, \"Score\"] = 70\nresult = df.loc[mask, [\"Student_ID\", \"Score\"]]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which object receives the assignment?",
+          "answer": "df itself, through one .loc operation."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What score will S004 have now?",
+          "answer": "70. The original example value was 65."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why should you avoid the commented chained assignment?",
+          "answer": "It writes through an intermediate object. Under pandas Copy-on-Write it cannot update the original DataFrame."
+        }
+      ],
+      "task": "Start with a fresh df = students() and create a separate copy of its RAK rows named rak. Add 5 points to scores in rak. Show that Amira's copied score is 93 while her score in df remains 88.",
+      "hint": "Start with df.loc[df['Campus'].eq('RAK')].copy().",
+      "solution": "df = students()\nrak = df.loc[df[\"Campus\"].eq(\"RAK\")].copy()\nrak[\"Score\"] = rak[\"Score\"] + 5\nprint(\"Copied score:\", rak.loc[rak[\"Student_ID\"].eq(\"S001\"), \"Score\"].iloc[0])\nprint(\"Original score:\", df.loc[df[\"Student_ID\"].eq(\"S001\"), \"Score\"].iloc[0])",
+      "solution_note": "The working copy changes; the original data stays available for comparison. For these numeric columns, .copy() makes the intended separation explicit.",
+      "check": {
+        "prompt": "Which expression clearly updates df?",
+        "options": [
+          "df[mask]['Score'] = 70",
+          "df.loc[mask, 'Score'] = 70",
+          "df.loc[mask].copy()['Score'] = 70"
+        ],
+        "correct": 1,
+        "feedback": "Name the target DataFrame and select its rows and columns in one .loc assignment."
+      },
+      "verify": "assert df.loc[df['Student_ID'].eq('S004'),'Score'].iloc[0] == 70",
+      "solution_verify": "assert rak.loc[rak['Student_ID'].eq('S001'),'Score'].iloc[0] == 93\nassert df.loc[df['Student_ID'].eq('S001'),'Score'].iloc[0] == 88",
+      "watch": "A method returning a new object is not an instruction to update the old one.",
+      "takeaway": "Make every data change explicit."
+    },
+    {
+      "id": "M25C04",
+      "title": "A correct total can still hide a bad merge",
+      "explanation": "Two tables may contain the same key more than once. Matching repeated keys can multiply records. Validate the intended relationship and inspect unmatched IDs before calculating a report.",
+      "code": "left = students()[[\"Student_ID\", \"Name\"]]\nright = assessment()\nresult = left.merge(right, on=\"Student_ID\", how=\"outer\",\n                    validate=\"one_to_one\", indicator=True)\nprint(result.loc[result[\"_merge\"].ne(\"both\"), [\"Student_ID\", \"_merge\"]])\nprint(\"Rows:\", len(result))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does validate='one_to_one' check?",
+          "answer": "The merge keys must be unique in each input table."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which IDs will be unmatched?",
+          "answer": "S012 appears only in students; S013 appears only in assessment."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is a left merge alone insufficient to find extra assessment IDs?",
+          "answer": "It preserves left-side students but discards right-only records, including S013."
+        }
+      ],
+      "task": "Keep only enrolled students with a left merge stored in result. Keep the merge indicator column, and store the count of students with no assessment in missing_count.",
+      "hint": "Use how='left', validate='one_to_one', and indicator=True.",
+      "solution": "result = students().merge(assessment(), on=\"Student_ID\", how=\"left\",\n                          validate=\"one_to_one\", indicator=True)\nmissing_count = result[\"_merge\"].eq(\"left_only\").sum()\nprint(result[[\"Student_ID\", \"Quiz\", \"_merge\"]])\nprint(\"Enrolled students without assessment:\", missing_count)",
+      "solution_note": "The result has 12 enrolled students and one missing assessment, S012. The earlier outer audit also exposed S013 for follow-up.",
+      "check": {
+        "prompt": "What can a many-to-many merge do?",
+        "options": [
+          "Always delete duplicates",
+          "Guarantee one row per student",
+          "Create multiple matches for each repeated key"
+        ],
+        "correct": 2,
+        "feedback": "Repeated keys match every compatible combination. Check uniqueness and use validate before summarizing."
+      },
+      "verify": "assert len(result) == 13\nassert set(result.loc[result['_merge'].ne('both'),'Student_ID']) == {'S012','S013'}",
+      "solution_verify": "assert len(result) == 12\nassert missing_count == 1\nassert result.loc[result['_merge'].eq('left_only'),'Student_ID'].tolist() == ['S012']",
+      "watch": "Do not remove duplicate keys without understanding why they exist.",
+      "takeaway": "Audit the join before trusting the summary."
+    }
+  ]
+}

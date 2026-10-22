@@ -1,0 +1,174 @@
+{
+  "id": 18,
+  "title": "Concatenate and align",
+  "level": "Core",
+  "goal": "Combine rows or columns while respecting index labels.",
+  "prerequisites": "Understand DataFrame indexes and missing values.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/merging.html#concat",
+  "cells": [
+    {
+      "id": "M18C01",
+      "title": "Stack row batches",
+      "explanation": "concat stacks tables when axis=0, the default. ignore_index=True assigns new position labels. This changes the index, not the Student_ID values.",
+      "code": "df = students()\nfirst = df.iloc[:6]\nsecond = df.iloc[6:]\nresult = pd.concat([first, second], ignore_index=True)\nprint(result[[\"Student_ID\", \"Name\"]])",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What is the list inside concat?",
+          "answer": "It contains the two DataFrames to combine."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many student rows will result have?",
+          "answer": "12, the 6 rows from each batch."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Does ignore_index remove duplicate students?",
+          "answer": "No. It only creates a fresh integer index; duplicate data would still remain."
+        }
+      ],
+      "task": "Stack the second batch before the first, and reset the index in the combined result.",
+      "hint": "Reverse the order of the two DataFrames passed to concat.",
+      "solution": "df = students()\nresult = pd.concat([df.iloc[6:], df.iloc[:6]], ignore_index=True)\nprint(result[[\"Student_ID\", \"Name\"]])",
+      "solution_note": "S007 is first because concat keeps the order of the input batches.",
+      "check": {
+        "prompt": "What changes with ignore_index=True?",
+        "options": [
+          "The Student_ID values",
+          "The output row index",
+          "The column names"
+        ],
+        "correct": 1,
+        "feedback": "A fresh range index is assigned; data values stay unchanged."
+      },
+      "verify": "assert len(result) == 12\nassert result[\"Student_ID\"].tolist() == students()[\"Student_ID\"].tolist()",
+      "solution_verify": "assert result.iloc[0][\"Student_ID\"] == \"S007\"\nassert result.index.tolist() == list(range(12))",
+      "watch": "Build a list of batches and concatenate once instead of repeatedly growing a DataFrame in a loop.",
+      "takeaway": "Use concat for batches with the same meaning and schema."
+    },
+    {
+      "id": "M18C02",
+      "title": "Align columns by labels",
+      "explanation": "concat with axis=1 places objects side by side. It matches index labels, even when their order differs. This is why an ID index is safer than assuming row positions match.",
+      "code": "names = pd.Series([\"Amira\", \"Bilal\"], index=[\"S001\", \"S002\"], name=\"Name\")\nscores = pd.Series([72, 88], index=[\"S002\", \"S001\"], name=\"Score\")\nresult = pd.concat([names, scores], axis=1)\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why are the two Series given names?",
+          "answer": "Their names become output column labels."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which score will Amira receive?",
+          "answer": "88, because both values use index label S001."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is assigning scores.to_numpy() risky here?",
+          "answer": "It discards labels, so the first score, 72, would be assigned by position to Amira."
+        }
+      ],
+      "task": "Add score 91 for S003, then concatenate using join=\"inner\" so only shared IDs remain.",
+      "hint": "Construct a three-value scores Series and set join=\"inner\".",
+      "solution": "names = pd.Series([\"Amira\", \"Bilal\"], index=[\"S001\", \"S002\"], name=\"Name\")\nscores = pd.Series([72, 88, 91], index=[\"S002\", \"S001\", \"S003\"], name=\"Score\")\nresult = pd.concat([names, scores], axis=1, join=\"inner\")\nprint(result)",
+      "solution_note": "S003 is excluded because its label is absent from names.",
+      "check": {
+        "prompt": "What does axis=1 concatenate side by side?",
+        "options": [
+          "Columns aligned on row labels",
+          "Rows matched by physical position",
+          "Only numeric values"
+        ],
+        "correct": 0,
+        "feedback": "Column concatenation aligns the row indexes."
+      },
+      "verify": "assert result.loc[\"S001\", \"Score\"] == 88\nassert result.loc[\"S002\", \"Score\"] == 72",
+      "solution_verify": "assert set(result.index) == {\"S001\", \"S002\"}\nassert result.loc[\"S001\", \"Score\"] == 88",
+      "watch": "Resetting indexes before concatenating unrelated tables can hide a mismatched-key problem.",
+      "takeaway": "Alignment follows labels, not visual row order."
+    },
+    {
+      "id": "M18C03",
+      "title": "Request a specific index order",
+      "explanation": "reindex requests specific labels in a specific order. A requested label that does not exist produces missing values. It can also omit existing labels that were not requested.",
+      "code": "df = students().set_index(\"Student_ID\")\nresult = df.reindex([\"S003\", \"S001\", \"S099\"])[[\"Name\", \"Score\"]]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What controls the row order?",
+          "answer": "The label list supplied to reindex."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What will appear for S099?",
+          "answer": "Missing Name and Score values because the ID does not exist."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "How is this different from loc with a missing label?",
+          "answer": "With a list of IDs, loc raises KeyError if any requested ID is absent. reindex can create rows with missing values for absent labels. Label slices have different endpoint rules."
+        }
+      ],
+      "task": "Reindex to S012, S002, S001 and print the Name and Score columns in that order.",
+      "hint": "Supply a different list of labels to reindex.",
+      "solution": "df = students().set_index(\"Student_ID\")\nresult = df.reindex([\"S012\", \"S002\", \"S001\"])[[\"Name\", \"Score\"]]\nprint(result)",
+      "solution_note": "All three labels exist, so this result has no missing values.",
+      "check": {
+        "prompt": "What does an absent label create during reindex?",
+        "options": [
+          "A KeyError in every case",
+          "A row of missing values",
+          "A copy of the preceding row"
+        ],
+        "correct": 1,
+        "feedback": "reindex creates missing entries for labels not present in the original unique index."
+      },
+      "verify": "assert result.index.tolist() == [\"S003\", \"S001\", \"S099\"]\nassert result.loc[\"S099\"].isna().all()",
+      "solution_verify": "assert result.index.tolist() == [\"S012\", \"S002\", \"S001\"]\nassert result.notna().all().all()",
+      "watch": "Reindexing generally requires unique labels on the axis being reindexed.",
+      "takeaway": "Reindex is an explicit request for labels and order."
+    },
+    {
+      "id": "M18C04",
+      "title": "Fill from a second source",
+      "explanation": "combine_first fills missing values from matching labels in another object. Existing non-missing values in the first source win. Agree which source has priority before applying this rule.",
+      "code": "primary = pd.Series([88, pd.NA, 91], index=[\"S001\", \"S002\", \"S003\"], dtype=\"Int64\")\nbackup = pd.Series([85, 72, 90], index=[\"S001\", \"S002\", \"S003\"], dtype=\"Int64\")\nresult = primary.combine_first(backup)\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which source has priority?",
+          "answer": "primary, because combine_first is called on it."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will S001 become 85?",
+          "answer": "No. Its primary score 88 is already present."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is this different from an unconditional overwrite?",
+          "answer": "Only missing primary entries are filled; existing values remain."
+        }
+      ],
+      "task": "Reverse the source priority by calling combine_first on backup. Explain the S001 result.",
+      "hint": "Place backup before the dot.",
+      "solution": "primary = pd.Series([88, pd.NA, 91], index=[\"S001\", \"S002\", \"S003\"], dtype=\"Int64\")\nbackup = pd.Series([85, 72, 90], index=[\"S001\", \"S002\", \"S003\"], dtype=\"Int64\")\nresult = backup.combine_first(primary)\nprint(result)",
+      "solution_note": "Backup now wins wherever it has a value; S001 is 85.",
+      "check": {
+        "prompt": "Which primary values are replaced by combine_first?",
+        "options": [
+          "Every value",
+          "Only missing values with an available backup",
+          "Only zero values"
+        ],
+        "correct": 1,
+        "feedback": "Existing primary values are retained, including legitimate zero values."
+      },
+      "verify": "assert result.tolist() == [88, 72, 91]",
+      "solution_verify": "assert result.tolist() == [85, 72, 90]",
+      "watch": "An unmatched backup label can expand the index; inspect the result size.",
+      "takeaway": "Filling from another source is a policy as well as a method."
+    }
+  ]
+}

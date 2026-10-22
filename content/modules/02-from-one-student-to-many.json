@@ -1,0 +1,174 @@
+{
+  "id": 2,
+  "title": "From one student to many",
+  "level": "Foundation",
+  "goal": "Represent several records with lists and dictionaries before building a table.",
+  "prerequisites": "Complete the dictionary examples in Module 1.",
+  "reference": "https://docs.python.org/3/tutorial/datastructures.html",
+  "cells": [
+    {
+      "id": "M02C01",
+      "title": "A list has positions",
+      "explanation": "A list stores values in order. Positions start at 0, so names[1] is the second value. A slice such as [0:2] includes positions 0 and 1 but excludes position 2. A negative position counts back from the end.",
+      "code": "names = [\"Amira\", \"Bilal\", \"Chloe\", \"Dana\"]\nprint(names[0])\nprint(names[-1])\nresult = names[0:2]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What do the square brackets mean when names is first created?",
+          "answer": "They create a list containing four text values in order."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What is printed by names[-1] and names[0:2]?",
+          "answer": "Dana, then [\"Amira\", \"Bilal\"]."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why does [0:2] return two names rather than three?",
+          "answer": "The start position is included, but the stop position 2 is excluded."
+        }
+      ],
+      "task": "Select only Bilal and Chloe into result using one slice. Then append Ethan and print the new list length.",
+      "hint": "Start the slice at position 1 and stop before position 3.",
+      "solution": "names = [\"Amira\", \"Bilal\", \"Chloe\", \"Dana\"]\nresult = names[1:3]\nnames.append(\"Ethan\")\nprint(result)\nprint(len(names))",
+      "solution_note": "The slice returns Bilal and Chloe. append() adds a value at the end, so the full list now has five names.",
+      "check": {
+        "prompt": "Which expression selects the second value?",
+        "options": [
+          "names[2]",
+          "names[1]",
+          "names[0]"
+        ],
+        "correct": 1,
+        "feedback": "Positions start at 0, so the second value is at position 1."
+      },
+      "verify": "assert result == ['Amira', 'Bilal']\nassert names[-1] == 'Dana'",
+      "solution_verify": "assert result == ['Bilal', 'Chloe']\nassert names[-1] == 'Ethan' and len(names) == 5",
+      "watch": "A single position returns one item; a slice returns a list, even if it contains one item.",
+      "takeaway": "I can predict list positions and slices."
+    },
+    {
+      "id": "M02C02",
+      "title": "A dictionary of lists describes columns",
+      "explanation": "Now each dictionary value is a list. The keys describe future column names, and values at the same position belong to the same student. data[\"Age\"] chooses a list; the second pair of brackets chooses an item inside that list.",
+      "code": "data = {\n    \"Name\": [\"Amira\", \"Bilal\", \"Chloe\"],\n    \"Age\": [20, 21, 19],\n    \"Campus\": [\"RAK\", \"Dubai\", \"RAK\"]\n}\nprint(data[\"Name\"])\nprint(data[\"Age\"][1])\nprint(data[\"Name\"][1], data[\"Campus\"][1])",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What is the type of data, and what is the type of data[\"Age\"]?",
+          "answer": "data is a dictionary. data[\"Age\"] is a list."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which student is described by position 1 in all three lists?",
+          "answer": "Bilal, age 21, at Dubai."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "What can go wrong if you reorder only the names list?",
+          "answer": "Names could become paired with another student's age and campus. The lists must stay aligned by position."
+        }
+      ],
+      "task": "Change Chloe's age from 19 to 20 without changing the other ages. Print Chloe's name and updated age.",
+      "hint": "Chloe is at position 2 inside each list.",
+      "solution": "data = {\n    \"Name\": [\"Amira\", \"Bilal\", \"Chloe\"],\n    \"Age\": [20, 21, 19],\n    \"Campus\": [\"RAK\", \"Dubai\", \"RAK\"]\n}\ndata[\"Age\"][2] = 20\nprint(data[\"Name\"][2], data[\"Age\"][2])",
+      "solution_note": "The age list becomes [20, 21, 20]. Updating one nested list position does not change the other positions.",
+      "check": {
+        "prompt": "What does data[\"Age\"][1] select?",
+        "options": [
+          "The first key.",
+          "Every age.",
+          "The second age value."
+        ],
+        "correct": 2,
+        "feedback": "The first brackets retrieve the Age list; the second retrieve its position 1."
+      },
+      "verify": "assert data['Age'][1] == 21 and data['Name'][1] == 'Bilal'",
+      "solution_verify": "assert data['Age'] == [20, 21, 20]\nassert data['Name'][2] == 'Chloe'",
+      "watch": "Positions in lists are numbers; dictionary keys can be text. Do not swap their roles.",
+      "takeaway": "I can read a value from a dictionary containing lists."
+    },
+    {
+      "id": "M02C03",
+      "title": "A list of dictionaries describes rows",
+      "explanation": "A second arrangement stores one dictionary per student inside a list. Each dictionary is a record, or row. rows[1] selects the second record; [\"Name\"] then selects a field within it. Both arrangements can later become a pandas DataFrame.",
+      "code": "rows = [\n    {\"Name\": \"Amira\", \"Age\": 20, \"Campus\": \"RAK\"},\n    {\"Name\": \"Bilal\", \"Age\": 21, \"Campus\": \"Dubai\"},\n    {\"Name\": \"Chloe\", \"Age\": 19, \"Campus\": \"RAK\"}\n]\nprint(rows[1])\nprint(rows[1][\"Name\"])\nprint(len(rows))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What is stored in each element of rows?",
+          "answer": "One dictionary describing one student record."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What will rows[1][\"Name\"] print?",
+          "answer": "Bilal."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is the order of the brackets different from data[\"Name\"][1] in the previous cell?",
+          "answer": "rows is organized as a list of records, so select the record first. data was organized as named columns, so select the column first."
+        }
+      ],
+      "task": "Add Dana, age 22, at Dubai as a fourth dictionary. Print the last student's name and the total record count.",
+      "hint": "Use rows.append({...}) and then rows[-1][\"Name\"].",
+      "solution": "rows = [\n    {\"Name\": \"Amira\", \"Age\": 20, \"Campus\": \"RAK\"},\n    {\"Name\": \"Bilal\", \"Age\": 21, \"Campus\": \"Dubai\"},\n    {\"Name\": \"Chloe\", \"Age\": 19, \"Campus\": \"RAK\"}\n]\nrows.append({\"Name\": \"Dana\", \"Age\": 22, \"Campus\": \"Dubai\"})\nprint(rows[-1][\"Name\"])\nprint(len(rows))",
+      "solution_note": "Dana is the last record and there are four records. This arrangement keeps each student's fields together.",
+      "check": {
+        "prompt": "Which arrangement stores one dictionary per row?",
+        "options": [
+          "A list of dictionaries.",
+          "A dictionary of numbers.",
+          "A single text string."
+        ],
+        "correct": 0,
+        "feedback": "A list of dictionaries groups each record's fields inside its own dictionary."
+      },
+      "verify": "assert rows[1]['Name'] == 'Bilal' and len(rows) == 3",
+      "solution_verify": "assert len(rows) == 4 and rows[-1] == {'Name': 'Dana', 'Age': 22, 'Campus': 'Dubai'}",
+      "watch": "Count records with len(rows); len(rows[0]) counts fields in the first record.",
+      "takeaway": "I can tell column-oriented data from row-oriented records."
+    },
+    {
+      "id": "M02C04",
+      "title": "Check lengths before making a table",
+      "explanation": "A rectangular table needs the same number of values in each plain list column. len() counts the values in a list. You can inspect all column lengths before constructing the DataFrame. A missing measurement still needs a position, often filled with None.",
+      "code": "data = {\n    \"Name\": [\"Amira\", \"Bilal\", \"Chloe\"],\n    \"Age\": [20, 21, 19]\n}\nlengths = {\"Name\": len(data[\"Name\"]), \"Age\": len(data[\"Age\"])}\nsame_length = lengths[\"Name\"] == lengths[\"Age\"]\nprint(lengths)\nprint(\"Ready for a rectangular table:\", same_length)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does == do here?",
+          "answer": "It compares two lengths and returns True or False. It does not assign a value."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What happens to same_length if you remove the last age only?",
+          "answer": "It becomes False: there would be three names but only two ages."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is adding a zero not always a good way to represent an unknown age?",
+          "answer": "Zero is a real numerical value. Using it could incorrectly suggest the student is zero years old and distort calculations."
+        }
+      ],
+      "task": "Add Dana to the Name list. Her age is unknown, so append None to Age. Confirm that the two lengths still match.",
+      "hint": "Append one value to each list; use None without quotes.",
+      "solution": "data = {\n    \"Name\": [\"Amira\", \"Bilal\", \"Chloe\"],\n    \"Age\": [20, 21, 19]\n}\ndata[\"Name\"].append(\"Dana\")\ndata[\"Age\"].append(None)\nsame_length = len(data[\"Name\"]) == len(data[\"Age\"])\nprint(data)\nprint(\"Matching lengths:\", same_length)",
+      "solution_note": "Both lists now contain four positions. None marks the missing age while preserving the row alignment.",
+      "check": {
+        "prompt": "What is needed for a DataFrame built from plain list columns?",
+        "options": [
+          "Every value must be text.",
+          "All column lists must have equal length.",
+          "Each column must have a different length."
+        ],
+        "correct": 1,
+        "feedback": "Plain list columns must have equal lengths. Indexed Series have separate alignment rules, introduced next."
+      },
+      "verify": "assert lengths == {'Name': 3, 'Age': 3} and same_length is True",
+      "solution_verify": "assert same_length is True and len(data['Name']) == 4\nassert data['Age'][-1] is None",
+      "watch": "None is a missing-value marker here; \"None\" in quotes is ordinary text.",
+      "takeaway": "I can check whether list-based columns form a consistent table."
+    }
+  ]
+}

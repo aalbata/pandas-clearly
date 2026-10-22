@@ -1,0 +1,174 @@
+{
+  "id": 28,
+  "title": "Work across Excel and JSON formats",
+  "level": "Extension",
+  "goal": "Read worksheets and JSON structures without changing the underlying observations.",
+  "prerequisites": "You can read files, interpret missing values, and compare DataFrames.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/io.html",
+  "cells": [
+    {
+      "id": "M28C01",
+      "title": "Choose the worksheet you actually need",
+      "explanation": "An Excel workbook can contain both observations and documentation. The bundled workbook has a Penguins data sheet and a Data_Dictionary sheet with field meanings and units. Specify the intended sheet so a change in tab order does not silently change your input.",
+      "code": "path = DATA_DIR / \"public\" / \"penguins.xlsx\"\nwith pd.ExcelFile(path, engine=\"openpyxl\") as book:\n    print(\"Worksheets:\", book.sheet_names)\n    result = pd.read_excel(book, sheet_name=\"Penguins\")\nprint(result.head(3))\nprint(\"Shape:\", result.shape)\nprint(\"Known body masses:\", result[\"body_mass_g\"].count())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why specify sheet_name=\"Penguins\"?",
+          "answer": "It identifies the observations sheet directly rather than assuming it is the first worksheet."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will the data sheet have the same 344 rows as the source CSV?",
+          "answer": "Yes. The workbook is a faithful format conversion, with missing source measurements represented by blank cells."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why should a data dictionary be kept separate from the observation rows?",
+          "answer": "Descriptions and units are metadata, not extra penguin observations."
+        }
+      ],
+      "task": "Read only A:D from Data_Dictionary into a DataFrame named dictionary. Select the fields measured in mm or g into result and print those rows.",
+      "hint": "Use usecols=\"A:D\", then filter unit with isin([\"mm\", \"g\"]).",
+      "solution": "path = DATA_DIR / \"public\" / \"penguins.xlsx\"\ndictionary = pd.read_excel(path, sheet_name=\"Data_Dictionary\", usecols=\"A:D\", engine=\"openpyxl\")\nresult = dictionary.loc[dictionary[\"unit\"].isin([\"mm\", \"g\"])]\nprint(result)",
+      "solution_note": "The four measurement fields appear with their units and two missing values each. The dictionary describes the data; it does not fill those missing measurements.",
+      "check": {
+        "prompt": "Which argument selects an Excel worksheet by name?",
+        "options": [
+          "sheet_name",
+          "orient",
+          "lines"
+        ],
+        "correct": 0,
+        "feedback": "sheet_name selects a worksheet. orient and lines are JSON-related arguments."
+      },
+      "verify": "assert result.shape == (344, 8)\nassert result[\"body_mass_g\"].count() == 342\nassert pd.isna(result.loc[3, \"body_mass_g\"])",
+      "solution_verify": "assert len(dictionary) == 8\nassert result[\"column\"].tolist() == [\"bill_length_mm\", \"bill_depth_mm\", \"flipper_length_mm\", \"body_mass_g\"]\nassert result[\"missing_count\"].eq(2).all()",
+      "watch": "The Excel lesson requires openpyxl. A .xlsx file is not plain delimited text and should not be passed to read_csv.",
+      "takeaway": "Inspect workbook structure and choose a worksheet explicitly."
+    },
+    {
+      "id": "M28C02",
+      "title": "Read an array of JSON records",
+      "explanation": "Records-oriented JSON represents each row as an object whose keys name fields. The bundled JSON is a documented conversion of the original public CSV. Its null values represent the same missing entries as the source NA tokens.",
+      "code": "path = DATA_DIR / \"public\" / \"penguins.records.json\"\ndf = pd.read_json(path, orient=\"records\")\nresult = df[[\"species\", \"island\", \"body_mass_g\"]].head(5)\nprint(result)\nprint(\"Loaded records:\", len(df))\nprint(\"Missing body masses:\", df[\"body_mass_g\"].isna().sum())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What corresponds to one table row in this JSON structure?",
+          "answer": "One object in the outer JSON array."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will JSON null become the text string \"null\" in the DataFrame?",
+          "answer": "No. It is parsed as a missing value."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why can equivalent CSV and JSON imports have different inferred pandas dtypes?",
+          "answer": "The formats carry values differently and the readers apply their own inference rules; choose a consistent schema when exact dtypes matter."
+        }
+      ],
+      "task": "Read the records JSON and summarize the number of observations and known body masses by species. Store the table in result with columns species, Observations, and Known_mass; keep species as a normal column.",
+      "hint": "Use groupby(..., as_index=False) with size and count.",
+      "solution": "df = pd.read_json(DATA_DIR / \"public\" / \"penguins.records.json\", orient=\"records\")\nresult = df.groupby(\"species\", as_index=False).agg(Observations=(\"species\", \"size\"), Known_mass=(\"body_mass_g\", \"count\"))\nprint(result)",
+      "solution_note": "Adelie has 152 observations and 151 known body masses; Chinstrap has 68 and 68; Gentoo has 124 and 123.",
+      "check": {
+        "prompt": "In records-oriented JSON, field names are stored as what?",
+        "options": [
+          "Object keys",
+          "Excel worksheet tabs",
+          "Pandas row positions"
+        ],
+        "correct": 0,
+        "feedback": "Each record object maps field names to values."
+      },
+      "verify": "assert df.shape == (344, 8)\nassert result.shape == (5, 3)\nassert df[\"body_mass_g\"].isna().sum() == 2",
+      "solution_verify": "assert result[\"Observations\"].sum() == 344\nassert result[\"Known_mass\"].sum() == 342\nassert result.set_index(\"species\").loc[\"Adelie\", \"Known_mass\"] == 151",
+      "watch": "JSON orientation describes structure. Use the orientation that matches the supplied document.",
+      "takeaway": "Read JSON according to its actual record structure."
+    },
+    {
+      "id": "M28C03",
+      "title": "Read JSON Lines in manageable batches",
+      "explanation": "JSON Lines stores one complete JSON object on each line, without an outer array. Use lines=True so pandas reads that structure correctly. Batch processing can summarize a larger file without retaining every row at once, provided you combine the statistics correctly.",
+      "code": "path = DATA_DIR / \"public\" / \"penguins.jsonl\"\ndf = pd.read_json(path, lines=True)\nresult = df.head(3)\nprint(result)\nprint(\"Rows:\", len(df))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What tells pandas that each line is a separate JSON record?",
+          "answer": "lines=True."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many records should this JSON Lines file contain?",
+          "answer": "344, the same number as the public CSV and records JSON."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is the average of chunk means generally not the overall mean?",
+          "answer": "Chunks may have different numbers of known observations; their means require weighting by those known counts."
+        }
+      ],
+      "task": "Read the file in chunks of 100 rows. Accumulate total rows, the sum of known body masses, and the count of known body masses. Store a dictionary named result with keys rows, mass_sum_g, known_mass, and mean_mass_g for those totals and the overall mean.",
+      "hint": "Add each chunk sum and count separately, then divide the combined sum by the combined known count.",
+      "solution": "path = DATA_DIR / \"public\" / \"penguins.jsonl\"\ntotal_rows = 0\nmass_sum = 0.0\nknown_count = 0\nwith pd.read_json(path, lines=True, chunksize=100) as reader:\n    for chunk in reader:\n        total_rows += len(chunk)\n        mass_sum += chunk[\"body_mass_g\"].sum()\n        known_count += chunk[\"body_mass_g\"].count()\nresult = {\"rows\": total_rows, \"known_mass\": int(known_count), \"mass_sum_g\": float(mass_sum), \"mean_mass_g\": mass_sum / known_count}\nprint(result)",
+      "solution_note": "The four chunks contain 344 rows in total. The 342 known body masses sum to 1,437,000 g, giving a mean of approximately 4,201.75 g. Missing values do not contribute zero measurements to that mean.",
+      "check": {
+        "prompt": "Which calculation correctly combines unequal chunks?",
+        "options": [
+          "The unweighted average of their means",
+          "Total known-value sum divided by total known-value count",
+          "The largest chunk mean"
+        ],
+        "correct": 1,
+        "feedback": "Accumulated sums and matching known counts preserve the proper denominator."
+      },
+      "verify": "assert df.shape == (344, 8)\nassert result.shape == (3, 8)",
+      "solution_verify": "assert result[\"rows\"] == 344\nassert result[\"known_mass\"] == 342\nassert result[\"mass_sum_g\"] == 1437000\nassert np.isclose(result[\"mean_mass_g\"], 1437000 / 342)",
+      "watch": "This file is small; chunking is taught as a technique, not claimed as a speed improvement here.",
+      "takeaway": "Combine batch statistics using the matching totals and counts."
+    },
+    {
+      "id": "M28C04",
+      "title": "Flatten nested JSON and verify the values",
+      "explanation": "Nested JSON can place related fields inside another object. The teaching version groups the four measurements under measurements while preserving all source values. json_normalize flattens those nested fields into columns with dotted names.",
+      "code": "path = DATA_DIR / \"public\" / \"penguins.nested.json\"\npayload = json.loads(path.read_text(encoding=\"utf-8\"))\nresult = pd.json_normalize(payload, sep=\".\")\nprint(result.head(3))\nprint(\"Columns:\", result.columns.tolist())\nprint(\"Known body masses:\", result[\"measurements.body_mass_g\"].count())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does measurements.body_mass_g describe in the flattened table?",
+          "answer": "The body_mass_g field that was inside each record's measurements object."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Does flattening change the number of penguin observations?",
+          "answer": "No. Each of the 344 record objects still contributes one row."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why should you check row counts and values after flattening a less familiar JSON document?",
+          "answer": "A different nesting structure, especially lists, can change what one output row represents."
+        }
+      ],
+      "task": "Flatten the file, remove the measurements. prefix from column names, and restore the CSV column order. Store the source CSV in reference and the flattened table in result, using the same explicit nullable schema for both. Compare all values and missing entries.",
+      "hint": "Use rename for the four measurement columns, reindex columns from the reference, then astype with the shared schema.",
+      "solution": "folder = DATA_DIR / \"public\"\npayload = json.loads((folder / \"penguins.nested.json\").read_text(encoding=\"utf-8\"))\nflat = pd.json_normalize(payload, sep=\".\")\nmeasurements = [\"bill_length_mm\", \"bill_depth_mm\", \"flipper_length_mm\", \"body_mass_g\"]\nflat = flat.rename(columns={\"measurements.\" + name: name for name in measurements})\nschema = {\"species\": \"string\", \"island\": \"string\", \"bill_length_mm\": \"Float64\", \"bill_depth_mm\": \"Float64\", \"flipper_length_mm\": \"Int64\", \"body_mass_g\": \"Int64\", \"sex\": \"string\", \"year\": \"Int64\"}\nreference = pd.read_csv(folder / \"penguins.csv\", dtype=schema, na_values=[\"NA\"])\nresult = flat.loc[:, reference.columns].astype(schema)\npd.testing.assert_frame_equal(result, reference)\nprint(result.head(3))\nprint(\"All source values, missing entries, columns, and row order match.\")",
+      "solution_note": "Flattening and renaming change the representation, not the observations. An explicit shared schema makes missing-value and dtype comparisons predictable across file readers.",
+      "check": {
+        "prompt": "Does json_normalize recover missing research measurements?",
+        "options": [
+          "Yes, from the field names",
+          "No, it changes the structure while preserving missingness",
+          "Only for nested numbers"
+        ],
+        "correct": 1,
+        "feedback": "Normalization flattens a representation; it does not infer missing observations."
+      },
+      "verify": "assert result.shape == (344, 8)\nassert \"measurements.body_mass_g\" in result.columns\nassert result[\"measurements.body_mass_g\"].count() == 342",
+      "solution_verify": "assert result.shape == (344, 8)\npd.testing.assert_frame_equal(result, reference)",
+      "watch": "The nested structure is a course-created representation, not a claim about an upstream research API.",
+      "takeaway": "Verify semantic equality after changing a data representation."
+    }
+  ]
+}

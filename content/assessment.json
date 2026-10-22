@@ -1,0 +1,310 @@
+{
+  "title": "Independent pandas assessment: Campus Café",
+  "intro": "Use pandas to answer eight questions about a fictional campus café. These are invented practice records, not real orders or business evidence. Every task starts from fresh data and can be attempted independently. Read the three questions, write your code, and explain your choices in plain words. Use a fresh helper table at the start of each task. Suggested working time is 60–90 minutes, followed by a short oral check. The 40-point score gives evidence of these skills; it does not guarantee mastery of pandas.",
+  "minutes": 90,
+  "setup_code": "# Fictional café data. Run once before the assessment.\n# Questions: What does each helper return? Why return a fresh table?\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom pathlib import Path\n\nOUTPUT_DIR = Path.cwd() / \"outputs\"\nOUTPUT_DIR.mkdir(exist_ok=True)\n\ndef cafe_orders():\n    \"\"\"One complete order per row; all times use the same local time zone.\"\"\"\n    return pd.DataFrame({\n        \"Order_ID\": [\"C001\", \"C002\", \"C003\", \"C004\", \"C005\", \"C006\", \"C007\", \"C008\"],\n        \"Ordered_At\": [\"2026-10-01 09:00\", \"2026-10-01 10:00\", \"2026-10-02 09:30\", \"2026-10-02 11:00\", \"2026-10-03 10:15\", \"2026-10-03 12:00\", \"2026-10-04 09:45\", \"2026-10-04 11:30\"],\n        \"Campus\": [\"RAK\", \"Dubai\", \"RAK\", \"Dubai\", \"RAK\", \"Dubai\", \"RAK\", \"Dubai\"],\n        \"Item\": [\"Tea\", \"Coffee\", \"Sandwich\", \"Tea\", \"Coffee\", \"Sandwich\", \"Tea\", \"Coffee\"],\n        \"Quantity\": [2, 1, 3, 1, 2, 1, 4, 3],\n        \"Unit_Price\": [5, 10, 15, 5, 10, 15, 5, 10],\n    })\n\ndef raw_cafe_orders():\n    \"\"\"Fresh data with known problems for the cleaning task only.\"\"\"\n    df = cafe_orders()\n    df[\"Quantity\"] = df[\"Quantity\"].astype(object)\n    df[\"Unit_Price\"] = df[\"Unit_Price\"].astype(object)\n    df.loc[0, \"Item\"] = \" tea \"\n    df.loc[0, \"Quantity\"] = \"2\"\n    df.loc[1, \"Campus\"] = \" dubai \"\n    df.loc[2, \"Quantity\"] = \"three\"\n    df.loc[4, \"Unit_Price\"] = None\n    df.loc[5, \"Quantity\"] = 0\n    df.loc[6, \"Campus\"] = \"\"\n    return pd.concat([df, df.iloc[[3]]], ignore_index=True)\n\ndef cafe_menu():\n    \"\"\"The incomplete exercise catalog deliberately lacks Sandwich.\"\"\"\n    return pd.DataFrame({\n        \"Item\": [\"Tea\", \"Coffee\", \"Juice\"],\n        \"Category\": [\"Hot drink\", \"Hot drink\", \"Cold drink\"],\n    })\n\nprint(\"Ready: eight fictional orders. Prices and revenues are in AED.\")\nprint(\"Use cafe_orders(), raw_cafe_orders(), and cafe_menu() for fresh tables.\")",
+  "tasks": [
+    {
+      "id": "A01",
+      "title": "Build the table from a dictionary",
+      "prompt": "Create a dictionary named order_data with four keys. Use Order_ID = [\"P001\", \"P002\", \"P003\"], Item = [\"Tea\", \"Coffee\", \"Sandwich\"], Quantity = [2, 1, 3], and Unit_Price = [5, 10, 15]. Convert it to a DataFrame named result. Print the table, its shape, and the total quantity. Explain what one row represents.",
+      "questions": [
+        "What are the dictionary keys, and what do their values contain?",
+        "Why must these lists have equal lengths?",
+        "How many rows and columns do you expect before running the code?"
+      ],
+      "starter": "# Build the dictionary here, then create the DataFrame.\norder_data = {}",
+      "solution": "order_data = {\n    \"Order_ID\": [\"P001\", \"P002\", \"P003\"],\n    \"Item\": [\"Tea\", \"Coffee\", \"Sandwich\"],\n    \"Quantity\": [2, 1, 3],\n    \"Unit_Price\": [5, 10, 15],\n}\nresult = pd.DataFrame(order_data)\nprint(result)\nprint(\"Shape:\", result.shape)\nprint(\"Total quantity:\", result[\"Quantity\"].sum())",
+      "verify": "assert set(order_data) == {\"Order_ID\", \"Item\", \"Quantity\", \"Unit_Price\"}\nassert result.shape == (3, 4)\nassert result[\"Order_ID\"].tolist() == [\"P001\", \"P002\", \"P003\"]\nassert result[\"Quantity\"].sum() == 6",
+      "points": 5,
+      "rubric": [
+        {
+          "criterion": "Correct dictionary keys and supplied values",
+          "points": 2
+        },
+        {
+          "criterion": "DataFrame construction and row/column interpretation",
+          "points": 1
+        },
+        {
+          "criterion": "Correct shape and total quantity",
+          "points": 1
+        },
+        {
+          "criterion": "Explains why list lengths must match",
+          "points": 1
+        }
+      ],
+      "explanation": "The dictionary maps column names to equal-length lists. Each row is one fictional order with one item type. The table has three rows, four columns, and six units ordered. Columns must line up by list position."
+    },
+    {
+      "id": "A02",
+      "title": "Inspect, select, filter, and sort",
+      "prompt": "Start with cafe_orders(). Print its shape and column types. Select RAK orders with Quantity at least 2. Show only Order_ID, Item, and Quantity. Sort by Quantity descending, then Order_ID ascending to resolve ties. Store this table in result and print its first two rows using iloc.",
+      "questions": [
+        "What is the difference between selecting columns and filtering rows?",
+        "Why does the combined condition need parentheses and &?",
+        "Which order should appear first, and how are tied quantities ordered?"
+      ],
+      "starter": "df = cafe_orders()\n# Inspect the table, build the mask, then select and sort.",
+      "solution": "df = cafe_orders()\nprint(\"Shape:\", df.shape)\nprint(df.dtypes)\nmask = (df[\"Campus\"] == \"RAK\") & (df[\"Quantity\"] >= 2)\nresult = df.loc[mask, [\"Order_ID\", \"Item\", \"Quantity\"]].sort_values([\"Quantity\", \"Order_ID\"], ascending=[False, True])\nprint(result)\nprint(\"First two rows:\")\nprint(result.iloc[:2])",
+      "verify": "assert df.shape == (8, 6)\nassert result.columns.tolist() == [\"Order_ID\", \"Item\", \"Quantity\"]\nassert result[\"Order_ID\"].tolist() == [\"C007\", \"C003\", \"C001\", \"C005\"]\nassert result.iloc[:2][\"Quantity\"].tolist() == [4, 3]",
+      "points": 5,
+      "rubric": [
+        {
+          "criterion": "Inspects shape and column types",
+          "points": 1
+        },
+        {
+          "criterion": "Correct combined row filter",
+          "points": 2
+        },
+        {
+          "criterion": "Correct selected columns and deterministic sorting",
+          "points": 1
+        },
+        {
+          "criterion": "Correct positional slice and explanation",
+          "points": 1
+        }
+      ],
+      "explanation": "The original table has eight rows and six columns. Four RAK orders meet the quantity rule. C007 comes first with four units, followed by C003 with three. C001 precedes C005 because their quantities tie and IDs are sorted ascending."
+    },
+    {
+      "id": "A03",
+      "title": "Clean with an audit trail",
+      "prompt": "Start with raw_cafe_orders(). Each Order_ID should identify one complete order. Remove exact duplicate rows. Strip Item text and use title case. Standardize Campus to RAK or Dubai, and treat blank Campus as Unknown while retaining a Campus_was_missing flag. Preserve original quantity and price in Quantity_raw and Unit_Price_raw, then parse the working columns as numbers. For this exercise, valid revenue requires a known positive whole-number quantity and a known positive unit price. Do not guess replacements. Put valid orders in result and excluded orders with reason flags in audit. Show both tables and explain which values you excluded. A missing campus alone does not exclude an order from this revenue-ready table.",
+      "questions": [
+        "Why is the text \"three\" different from a number that parsed successfully?",
+        "Why should you preserve original values and reason flags?",
+        "Why does a missing campus not necessarily prevent revenue calculation?"
+      ],
+      "starter": "df = raw_cafe_orders()\n# Clean labels, preserve source values, and build separate validity masks.\n# Keep accepted rows in result and excluded rows with reasons in audit.",
+      "solution": "df = raw_cafe_orders().drop_duplicates().reset_index(drop=True)\ndf[\"Item\"] = df[\"Item\"].astype(\"string\").str.strip().str.title()\ncampus_text = df[\"Campus\"].astype(\"string\").str.strip().replace(\"\", pd.NA)\ndf[\"Campus_was_missing\"] = campus_text.isna()\ndf[\"Campus\"] = campus_text.str.lower().map({\"rak\": \"RAK\", \"dubai\": \"Dubai\"}).fillna(\"Unknown\")\ndf[\"Quantity_raw\"] = df[\"Quantity\"]\ndf[\"Unit_Price_raw\"] = df[\"Unit_Price\"]\ndf[\"Quantity\"] = pd.to_numeric(df[\"Quantity\"], errors=\"coerce\")\ndf[\"Unit_Price\"] = pd.to_numeric(df[\"Unit_Price\"], errors=\"coerce\")\ndf[\"Quantity_unparsed\"] = df[\"Quantity\"].isna()\ndf[\"Quantity_not_positive_integer\"] = df[\"Quantity\"].notna() & ((df[\"Quantity\"] <= 0) | (df[\"Quantity\"] % 1 != 0))\ndf[\"Price_missing_or_invalid\"] = df[\"Unit_Price\"].isna() | (df[\"Unit_Price\"] <= 0)\nbad = df[[\"Quantity_unparsed\", \"Quantity_not_positive_integer\", \"Price_missing_or_invalid\"]].any(axis=1)\naudit = df.loc[bad, [\"Order_ID\", \"Quantity_raw\", \"Unit_Price_raw\", \"Quantity_unparsed\", \"Quantity_not_positive_integer\", \"Price_missing_or_invalid\"]].copy()\nresult = df.loc[~bad].copy()\nprint(\"Accepted orders:\")\nprint(result[[\"Order_ID\", \"Item\", \"Campus\", \"Campus_was_missing\", \"Quantity\", \"Unit_Price\"]])\nprint(\"Excluded orders and reasons:\")\nprint(audit)",
+      "verify": "assert len(df) == 8\nassert df[\"Order_ID\"].is_unique\nassert result[\"Order_ID\"].tolist() == [\"C001\", \"C002\", \"C004\", \"C007\", \"C008\"]\nassert audit[\"Order_ID\"].tolist() == [\"C003\", \"C005\", \"C006\"]\nassert result.loc[result[\"Order_ID\"] == \"C001\", \"Item\"].iloc[0] == \"Tea\"\nassert result.loc[result[\"Order_ID\"] == \"C007\", \"Campus\"].iloc[0] == \"Unknown\"\nassert result.loc[result[\"Order_ID\"] == \"C007\", \"Campus_was_missing\"].iloc[0]\nassert (result[\"Quantity\"] * result[\"Unit_Price\"]).sum() == 75\nassert audit.set_index(\"Order_ID\").loc[\"C003\", \"Quantity_unparsed\"]\nassert audit.set_index(\"Order_ID\").loc[\"C006\", \"Quantity_not_positive_integer\"]\nassert audit.set_index(\"Order_ID\").loc[\"C005\", \"Price_missing_or_invalid\"]",
+      "points": 5,
+      "rubric": [
+        {
+          "criterion": "Removes only the exact duplicate and preserves source values",
+          "points": 1
+        },
+        {
+          "criterion": "Standardizes text and retains a missing-campus flag",
+          "points": 1
+        },
+        {
+          "criterion": "Parses numbers and checks stated validity rules",
+          "points": 1
+        },
+        {
+          "criterion": "Separates accepted rows from an informative exclusion audit",
+          "points": 1
+        },
+        {
+          "criterion": "Explains the policy without guessing missing measurements",
+          "points": 1
+        }
+      ],
+      "explanation": "Nine raw rows become eight after removing one exact duplicate. C003 has an unparseable quantity, C005 lacks a price, and C006 has zero quantity under the stated positive-quantity rule. Five orders remain. Their known revenue would total AED 75. C007 remains because its quantity and price are valid; its unknown campus must stay visible in any campus report. \"Unknown\" is a label, not a recovered location."
+    },
+    {
+      "id": "A04",
+      "title": "Calculate revenue and summarize by campus",
+      "prompt": "Start again with clean cafe_orders(), not the cleaned subset from Task 3. Add Revenue = Quantity × Unit_Price. Group by Campus and report Orders, Units, and Revenue_AED using readable column names. Keep Campus as an ordinary column. Store the campus summary in result. Check that grouped revenue equals the total before grouping.",
+      "questions": [
+        "Why are order count and total units different measures?",
+        "What does each output row represent?",
+        "Why should the grouped revenue reconcile with the original total?"
+      ],
+      "starter": "df = cafe_orders()\n# Add Revenue, group with named aggregations, and reconcile totals.",
+      "solution": "df = cafe_orders()\ndf[\"Revenue\"] = df[\"Quantity\"] * df[\"Unit_Price\"]\nresult = df.groupby(\"Campus\", as_index=False).agg(Orders=(\"Order_ID\", \"size\"), Units=(\"Quantity\", \"sum\"), Revenue_AED=(\"Revenue\", \"sum\"))\nprint(result)\nprint(\"Original total:\", df[\"Revenue\"].sum())\nprint(\"Grouped total:\", result[\"Revenue_AED\"].sum())\nassert result[\"Revenue_AED\"].sum() == df[\"Revenue\"].sum()",
+      "verify": "assert result[\"Orders\"].sum() == 8\nassert result[\"Units\"].sum() == 17\nassert result[\"Revenue_AED\"].sum() == 155\nassert result.set_index(\"Campus\").loc[\"RAK\", \"Revenue_AED\"] == 95\nassert result.set_index(\"Campus\").loc[\"Dubai\", \"Revenue_AED\"] == 60\nassert result.set_index(\"Campus\").loc[\"RAK\", \"Units\"] == 11",
+      "points": 5,
+      "rubric": [
+        {
+          "criterion": "Correct vectorized revenue calculation",
+          "points": 1
+        },
+        {
+          "criterion": "Correct grouping key and readable named aggregations",
+          "points": 1
+        },
+        {
+          "criterion": "Distinguishes order count from units",
+          "points": 1
+        },
+        {
+          "criterion": "Correct campus totals",
+          "points": 1
+        },
+        {
+          "criterion": "Reconciles grouped and original revenue",
+          "points": 1
+        }
+      ],
+      "explanation": "RAK has four orders, eleven units, and AED 95 revenue. Dubai has four orders, six units, and AED 60 revenue. Total revenue is AED 155 from seventeen units. These are revenues before considering any costs; they are not profits."
+    },
+    {
+      "id": "A05",
+      "title": "Join tables and account for unmatched rows",
+      "prompt": "Start with fresh cafe_orders() and cafe_menu(). The menu intentionally omits Sandwich and includes Juice, which was not ordered. Perform an outer merge on Item with validate=\"many_to_one\" and indicator=True. Store the merged table in result. Build audit with every row whose indicator is not both. Report the counts of both, left_only, and right_only. Explain why merged row count differs from order count, and identify which rows represent unmatched orders versus unused catalog entries.",
+      "questions": [
+        "Which table must have at most one row per Item for this merge validation?",
+        "What do left_only and right_only mean here?",
+        "Why would an inner join hide information needed for this audit?"
+      ],
+      "starter": "orders = cafe_orders()\nmenu = cafe_menu()\n# Merge with validation and an indicator, then inspect unmatched rows.",
+      "solution": "orders = cafe_orders()\nmenu = cafe_menu()\nresult = orders.merge(menu, on=\"Item\", how=\"outer\", validate=\"many_to_one\", indicator=True)\naudit = result.loc[result[\"_merge\"] != \"both\", [\"Order_ID\", \"Item\", \"Category\", \"_merge\"]]\nprint(result[[\"Order_ID\", \"Item\", \"Category\", \"_merge\"]])\nprint(\"Unmatched rows:\")\nprint(audit)\nprint(\"Merge counts:\")\nprint(result[\"_merge\"].value_counts())\nprint(\"Rows representing orders:\", result[\"Order_ID\"].notna().sum())",
+      "verify": "assert len(result) == 9\nassert result[\"Order_ID\"].notna().sum() == 8\nassert result[\"_merge\"].value_counts().to_dict() == {\"both\": 6, \"left_only\": 2, \"right_only\": 1}\nassert set(audit.loc[audit[\"_merge\"] == \"left_only\", \"Order_ID\"]) == {\"C003\", \"C006\"}\nassert audit.loc[audit[\"_merge\"] == \"right_only\", \"Item\"].tolist() == [\"Juice\"]",
+      "points": 5,
+      "rubric": [
+        {
+          "criterion": "Correct outer merge on the intended key",
+          "points": 1
+        },
+        {
+          "criterion": "Uses and explains many_to_one validation",
+          "points": 1
+        },
+        {
+          "criterion": "Correct indicator-based audit",
+          "points": 1
+        },
+        {
+          "criterion": "Correct matched and unmatched counts",
+          "points": 1
+        },
+        {
+          "criterion": "Explains nine merged rows versus eight actual orders",
+          "points": 1
+        }
+      ],
+      "explanation": "Six order rows match the catalog. Two Sandwich orders are left_only because the catalog lacks Sandwich. Juice is one right_only catalog row. The outer merge has nine rows but still represents eight orders; the extra catalog-only row is not a transaction. The menu must be unique on Item for many_to_one validation."
+    },
+    {
+      "id": "A06",
+      "title": "Reshape without losing the total",
+      "prompt": "Start with cafe_orders() and calculate Revenue. Create a Campus-by-Item revenue table using pivot_table with sum as the aggregation and 0 for empty combinations. Store it in result. Convert that wide result back to long form in tidy with columns Campus, Item, Revenue_AED. Confirm that the revenue total in tidy equals the original order-level total. Explain why ordinary pivot is unsuitable for these repeated Campus-Item combinations.",
+      "questions": [
+        "What do the rows, columns, and cell values of the wide table represent?",
+        "Why is sum the appropriate aggregation for this question?",
+        "Does a wide-to-long conversion create new revenue?"
+      ],
+      "starter": "df = cafe_orders()\n# Create the wide table, then melt it into tidy long form.",
+      "solution": "df = cafe_orders()\ndf[\"Revenue\"] = df[\"Quantity\"] * df[\"Unit_Price\"]\nresult = df.pivot_table(index=\"Campus\", columns=\"Item\", values=\"Revenue\", aggfunc=\"sum\", fill_value=0)\ntidy = result.reset_index().melt(id_vars=\"Campus\", var_name=\"Item\", value_name=\"Revenue_AED\")\nprint(\"Wide:\")\nprint(result)\nprint(\"Long:\")\nprint(tidy)\nassert tidy[\"Revenue_AED\"].sum() == df[\"Revenue\"].sum()",
+      "verify": "assert result.shape == (2, 3)\nassert result.loc[\"RAK\", \"Tea\"] == 30\nassert result.loc[\"Dubai\", \"Coffee\"] == 40\nassert result.loc[\"RAK\", \"Sandwich\"] == 45\nassert tidy.shape == (6, 3)\nassert tidy[\"Revenue_AED\"].sum() == 155\nassert not tidy.duplicated([\"Campus\", \"Item\"]).any()",
+      "points": 5,
+      "rubric": [
+        {
+          "criterion": "Correct pivot_table axes, value, and sum aggregation",
+          "points": 2
+        },
+        {
+          "criterion": "Clearly labeled wide result",
+          "points": 1
+        },
+        {
+          "criterion": "Correct melt to long form",
+          "points": 1
+        },
+        {
+          "criterion": "Reconciles totals and explains repeated keys",
+          "points": 1
+        }
+      ],
+      "explanation": "The wide table has two campus rows and three item columns. RAK totals are Coffee 20, Sandwich 45, Tea 30; Dubai totals are Coffee 40, Sandwich 15, Tea 5. Melting yields six Campus-Item rows with the same AED 155 total. Ordinary pivot cannot aggregate repeated Campus-Item keys. Filling absent combinations with zero is appropriate here only under the exercise assumption that the provided order list is complete."
+    },
+    {
+      "id": "A07",
+      "title": "Parse timestamps and summarize each day",
+      "prompt": "Start with cafe_orders(). Parse Ordered_At using the explicit year-month-day hour:minute format. Calculate Revenue. Build daily totals for Orders and Revenue_AED in chronological order, storing the date-indexed table in result. Identify every day tied for the highest revenue in best_days. All timestamps represent the same local time zone. Explain why a comparison ending at \"2026-10-04\" midnight could miss October 4 orders later in the day.",
+      "questions": [
+        "Why parse Ordered_At before using resample?",
+        "What does the D frequency mean?",
+        "If two days tie for the maximum, how will you avoid reporting just one?"
+      ],
+      "starter": "df = cafe_orders()\n# Parse timestamps, resample by day, and preserve all maximum ties.",
+      "solution": "df = cafe_orders()\ndf[\"Ordered_At\"] = pd.to_datetime(df[\"Ordered_At\"], format=\"%Y-%m-%d %H:%M\")\ndf[\"Revenue\"] = df[\"Quantity\"] * df[\"Unit_Price\"]\nresult = df.set_index(\"Ordered_At\").resample(\"D\").agg(Orders=(\"Order_ID\", \"size\"), Revenue_AED=(\"Revenue\", \"sum\"))\nbest_days = result.loc[result[\"Revenue_AED\"] == result[\"Revenue_AED\"].max()]\nprint(result)\nprint(\"Highest-revenue days:\")\nprint(best_days)",
+      "verify": "assert isinstance(result.index, pd.DatetimeIndex)\nassert result.index.is_monotonic_increasing\nassert result[\"Orders\"].tolist() == [2, 2, 2, 2]\nassert result[\"Revenue_AED\"].tolist() == [20, 50, 35, 50]\nassert best_days.index.strftime(\"%Y-%m-%d\").tolist() == [\"2026-10-02\", \"2026-10-04\"]\nassert result[\"Revenue_AED\"].sum() == 155",
+      "points": 5,
+      "rubric": [
+        {
+          "criterion": "Explicit correct datetime parsing",
+          "points": 1
+        },
+        {
+          "criterion": "Correct daily resampling and chronological index",
+          "points": 1
+        },
+        {
+          "criterion": "Correct counts and revenue totals",
+          "points": 1
+        },
+        {
+          "criterion": "Identifies both maximum-revenue days",
+          "points": 1
+        },
+        {
+          "criterion": "Explains timestamp boundary behavior",
+          "points": 1
+        }
+      ],
+      "explanation": "Daily revenue is AED 20, 50, 35, and 50 on October 1 through 4. Each day has two orders. October 2 and October 4 tie for the maximum. A filter for the complete period through October 4 can use timestamps >= October 1 and < October 5, preserving all October 4 times."
+    },
+    {
+      "id": "A08",
+      "title": "Make a readable chart and export the result",
+      "prompt": "Start with cafe_orders(), calculate Revenue, and build a two-row campus summary named result with Campus and Revenue_AED columns. Create a bar chart with a descriptive title, a campus axis label, a revenue axis label including AED, and a zero baseline. Save the chart as cafe_revenue_by_campus.png in OUTPUT_DIR. Export the summary as cafe_revenue_by_campus.csv in OUTPUT_DIR without an extra index column. Read the CSV back and check that it matches result. State one supported comparison and one claim the data cannot support.",
+      "questions": [
+        "Why should the axis include a currency unit and begin at zero for this bar chart?",
+        "What extra column can appear if you export a DataFrame index by accident?",
+        "What can revenue alone tell us, and what is missing for a profit claim?"
+      ],
+      "starter": "df = cafe_orders()\n# Build the summary, create the chart, and export only to OUTPUT_DIR.\n# Write your interpretation in the answer space, not as a fabricated business conclusion.",
+      "solution": "df = cafe_orders()\ndf[\"Revenue\"] = df[\"Quantity\"] * df[\"Unit_Price\"]\nresult = df.groupby(\"Campus\", as_index=False).agg(Revenue_AED=(\"Revenue\", \"sum\"))\nfig, ax = plt.subplots(figsize=(6, 4))\nresult.plot.bar(x=\"Campus\", y=\"Revenue_AED\", ax=ax, legend=False, color=\"#286b69\", rot=0)\nax.set_title(\"Fictional café revenue by campus\")\nax.set_xlabel(\"Campus\")\nax.set_ylabel(\"Revenue (AED)\")\nax.set_ylim(bottom=0)\nfig.tight_layout()\ncsv_path = OUTPUT_DIR / \"cafe_revenue_by_campus.csv\"\nplot_path = OUTPUT_DIR / \"cafe_revenue_by_campus.png\"\nresult.to_csv(csv_path, index=False)\nfig.savefig(plot_path, dpi=160)\nround_trip = pd.read_csv(csv_path)\npd.testing.assert_frame_equal(round_trip, result)\nprint(result)\nprint(\"RAK revenue exceeds Dubai revenue by AED 35 in these eight fictional orders.\")\nprint(\"Costs are unavailable, so the table does not establish profit or predict future sales.\")\nplt.show()",
+      "verify": "assert result.shape == (2, 2)\nassert result[\"Revenue_AED\"].sum() == 155\nassert csv_path.exists() and plot_path.exists()\nassert round_trip.columns.tolist() == [\"Campus\", \"Revenue_AED\"]\npd.testing.assert_frame_equal(round_trip, result)\nassert ax.get_ylabel() == \"Revenue (AED)\"\nassert ax.get_ylim()[0] == 0\nassert result.set_index(\"Campus\").loc[\"RAK\", \"Revenue_AED\"] - result.set_index(\"Campus\").loc[\"Dubai\", \"Revenue_AED\"] == 35",
+      "points": 5,
+      "rubric": [
+        {
+          "criterion": "Correct campus summary",
+          "points": 1
+        },
+        {
+          "criterion": "Readable chart with units and a zero baseline",
+          "points": 1
+        },
+        {
+          "criterion": "Exports CSV without an index and saves the chart",
+          "points": 1
+        },
+        {
+          "criterion": "Reads back and verifies the CSV",
+          "points": 1
+        },
+        {
+          "criterion": "States a supported comparison and a clear limitation",
+          "points": 1
+        }
+      ],
+      "explanation": "The chart compares AED 60 for Dubai with AED 95 for RAK. RAK exceeds Dubai by AED 35 in the supplied records. CSV export with index=False keeps only the intended two columns. The result describes fictional revenue, not profit, demand, or a forecast. Re-running the task replaces only its two named output files."
+    }
+  ],
+  "oral_checks": [
+    {
+      "prompt": "In your cleaning task, which records were excluded and why did you keep the missing-campus order?",
+      "answer": "C003 has unparseable quantity text, C005 has no unit price, and C006 has zero quantity under the stated positive-quantity rule. C007 can still contribute known revenue; its campus is marked Unknown and flagged as originally missing. Different analysis questions may require different completeness rules."
+    },
+    {
+      "prompt": "Your outer merge has nine rows, although there were only eight orders. Where did the extra row come from?",
+      "answer": "Juice occurs only in the menu. An outer merge preserves it as a right_only row, which is not an order. Sandwich creates two left_only order rows because it is missing from the menu. The merge did not invent a ninth transaction."
+    },
+    {
+      "prompt": "Why did you use pivot_table instead of pivot for the revenue matrix?",
+      "answer": "Some Campus-Item combinations have multiple orders. pivot requires unique row-column combinations, while pivot_table can aggregate them using sum. The chosen aggregation answers total-revenue questions."
+    },
+    {
+      "prompt": "RAK has higher revenue in these records. Does that prove its café is more profitable or that the difference will continue?",
+      "answer": "No. Revenue is not profit; costs are absent. These are only eight fictional orders over four days, so they do not support a real business conclusion or forecast."
+    }
+  ]
+}

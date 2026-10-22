@@ -1,0 +1,177 @@
+[
+  {
+    "title": "Build a table from a dictionary",
+    "text": "dictionary columns rows DataFrame I can turn a dictionary of lists into a DataFrame.",
+    "url": "lessons/04-build-and-inspect-a-dataframe.html#M04C01",
+    "module": "Build and inspect a DataFrame",
+    "id": "M04C01"
+  },
+  {
+    "title": "Select columns and keep a table",
+    "text": "brackets Series DataFrame I can predict whether a column selection returns a Series or a DataFrame.",
+    "url": "lessons/05-select-exactly-what-you-need.html#M05C01",
+    "module": "Select exactly what you need",
+    "id": "M05C01"
+  },
+  {
+    "title": "Select rows by label or position",
+    "text": "loc iloc index row number I can read selected records and one value using meaningful labels.",
+    "url": "lessons/05-select-exactly-what-you-need.html#M05C02",
+    "module": "Select exactly what you need",
+    "id": "M05C02"
+  },
+  {
+    "title": "Filter with two conditions",
+    "text": "and or boolean mask I can translate both, either, and at least into correct filter logic.",
+    "url": "lessons/06-filter-with-conditions.html#M06C02",
+    "module": "Filter with conditions",
+    "id": "M06C02"
+  },
+  {
+    "title": "Check membership or a range",
+    "text": "isin between not I can express allowed categories, numerical ranges, and excluded categories.",
+    "url": "lessons/06-filter-with-conditions.html#M06C03",
+    "module": "Filter with conditions",
+    "id": "M06C03"
+  },
+  {
+    "title": "Sort and choose a tie rule",
+    "text": "sort_values latest duplicates I can make the order of tied records explicit.",
+    "url": "lessons/07-sorting-and-index-decisions.html#M07C02",
+    "module": "Sorting and index decisions",
+    "id": "M07C02"
+  },
+  {
+    "title": "Update matching rows safely",
+    "text": "assignment chained Copy-on-Write I can modify selected values using one explicit loc assignment.",
+    "url": "lessons/08-create-and-update-columns.html#M08C03",
+    "module": "Create and update columns",
+    "id": "M08C03"
+  },
+  {
+    "title": "Convert messy numbers",
+    "text": "to_numeric errors coerce invalid Audit conversion failures before deciding how to handle them.",
+    "url": "lessons/09-data-types-and-safe-conversion.html#M09C02",
+    "module": "Data types and safe conversion",
+    "id": "M09C02"
+  },
+  {
+    "title": "Understand missing, empty, and zero",
+    "text": "isna fillna dropna Define what missing means in your dataset.",
+    "url": "lessons/10-missing-values-and-honest-cleaning.html#M10C01",
+    "module": "Missing values and honest cleaning",
+    "id": "M10C01"
+  },
+  {
+    "title": "Find repeated IDs",
+    "text": "duplicated drop_duplicates unique Choose a key and a documented conflict rule.",
+    "url": "lessons/11-duplicates-and-data-quality.html#M11C02",
+    "module": "Duplicates and data quality",
+    "id": "M11C02"
+  },
+  {
+    "title": "Clean whitespace and text",
+    "text": "str strip case strings Standardize categories without destroying their meaning.",
+    "url": "lessons/12-clean-and-search-text.html#M12C01",
+    "module": "Clean and search text",
+    "id": "M12C01"
+  },
+  {
+    "title": "Parse dates deliberately",
+    "text": "to_datetime format errors Parse known date formats explicitly.",
+    "url": "lessons/13-dates-times-and-durations.html#M13C01",
+    "module": "Dates, times, and durations",
+    "id": "M13C01"
+  },
+  {
+    "title": "Map labels from a dictionary",
+    "text": "map replace mapping Check what a lookup leaves unmatched.",
+    "url": "lessons/14-map-apply-and-vectorize.html#M14C01",
+    "module": "Map, apply, and vectorize",
+    "id": "M14C01"
+  },
+  {
+    "title": "Summarize each group",
+    "text": "groupby agg mean count Summarize each group with readable labels and counts.",
+    "url": "lessons/16-group-summarize-and-compare.html#M16C01",
+    "module": "Group, summarize, and compare",
+    "id": "M16C01"
+  },
+  {
+    "title": "Return a group result to each row",
+    "text": "transform groupby Use transform when the result belongs beside the original records.",
+    "url": "lessons/16-group-summarize-and-compare.html#M16C03",
+    "module": "Group, summarize, and compare",
+    "id": "M16C03"
+  },
+  {
+    "title": "Audit a join",
+    "text": "merge indicator unmatched Use indicator to make unmatched records visible.",
+    "url": "lessons/17-merge-related-tables.html#M17C03",
+    "module": "Merge related tables",
+    "id": "M17C03"
+  },
+  {
+    "title": "Prevent a join from multiplying rows",
+    "text": "merge validate cardinality Check key uniqueness before trusting merged row counts.",
+    "url": "lessons/17-merge-related-tables.html#M17C04",
+    "module": "Merge related tables",
+    "id": "M17C04"
+  },
+  {
+    "title": "Stack batches of rows",
+    "text": "concat ignore_index append Use concat for batches with the same meaning and schema.",
+    "url": "lessons/18-concatenate-and-align.html#M18C01",
+    "module": "Concatenate and align",
+    "id": "M18C01"
+  },
+  {
+    "title": "Change wide data to long",
+    "text": "melt reshape tidy Long form keeps one measured value per row.",
+    "url": "lessons/19-reshape-tables.html#M19C01",
+    "module": "Reshape tables",
+    "id": "M19C01"
+  },
+  {
+    "title": "Read and export CSV",
+    "text": "read_csv to_csv index Inspect imports and choose export columns deliberately.",
+    "url": "lessons/20-read-and-write-files.html#M20C01",
+    "module": "Read and write files",
+    "id": "M20C01"
+  },
+  {
+    "title": "Select an Excel sheet",
+    "text": "xlsx read_excel sheet_name Excel I/O needs a workbook path and the correct worksheet.",
+    "url": "lessons/20-read-and-write-files.html#M20C03",
+    "module": "Read and write files",
+    "id": "M20C03"
+  },
+  {
+    "title": "Query a SQLite table",
+    "text": "SQL read_sql sqlite3 Pandas can receive SQL results without loading every source row.",
+    "url": "lessons/20-read-and-write-files.html#M20C04",
+    "module": "Read and write files",
+    "id": "M20C04"
+  },
+  {
+    "title": "Expose missing calendar dates",
+    "text": "date_range asfreq reindex A gap in records is not automatically a zero.",
+    "url": "lessons/21-work-with-time-series.html#M21C01",
+    "module": "Work with time series",
+    "id": "M21C01"
+  },
+  {
+    "title": "Calculate a rolling average",
+    "text": "rolling time series window Window size and missing-data rules both affect a moving average.",
+    "url": "lessons/21-work-with-time-series.html#M21C03",
+    "module": "Work with time series",
+    "id": "M21C03"
+  },
+  {
+    "title": "Flatten nested JSON",
+    "text": "json_normalize nested records Verify semantic equality after changing a data representation.",
+    "url": "lessons/28-work-across-excel-and-json-formats.html#M28C04",
+    "module": "Work across Excel and JSON formats",
+    "id": "M28C04"
+  }
+]

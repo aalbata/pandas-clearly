@@ -1,0 +1,174 @@
+{
+  "id": 7,
+  "title": "Sorting and index decisions",
+  "level": "Core",
+  "goal": "Order records deliberately and control which labels identify rows.",
+  "prerequisites": "Know filtering, loc, iloc, and table shape.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/indexing.html#the-index-object",
+  "cells": [
+    {
+      "id": "M07C01",
+      "title": "Sort rows by a value",
+      "explanation": "sort_values() orders whole rows by one or more column values. ascending=False puts larger values first. It returns a new table, so assign the result if you want to keep the order. The index labels travel with their rows and are not automatically renumbered.",
+      "code": "df = students()\nresult = df.sort_values(\"Score\", ascending=False).head(3)\nprint(result[[\"Student_ID\", \"Name\", \"Score\"]])\nprint(\"Index labels:\", result.index.tolist())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does ascending=False request?",
+          "answer": "Descending order, from larger scores to smaller scores."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Who are the top three students by Score?",
+          "answer": "Fatima with 95, Chloe with 91, and Jamal with 89."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why are the printed index labels 5, 2, and 9 instead of 0, 1, and 2?",
+          "answer": "The original row labels stay attached to the records when the rows are sorted."
+        }
+      ],
+      "task": "Find the three lowest scores instead. Keep Student_ID, Name, and Score in result.",
+      "hint": "Sort ascending and then take head(3).",
+      "solution": "df = students()\nresult = df.sort_values(\"Score\", ascending=True).head(3)[[\"Student_ID\", \"Name\", \"Score\"]]\nprint(result)",
+      "solution_note": "The three lowest scores are Hassan 58, Dana 65, and Khalid 68. Sorting whole rows keeps each score matched with its student.",
+      "check": {
+        "prompt": "Does sort_values rearrange only the selected column's values?",
+        "options": [
+          "Yes, other columns stay fixed.",
+          "No, it reorders whole rows.",
+          "It always removes the column."
+        ],
+        "correct": 1,
+        "feedback": "Whole rows move together so their fields stay associated."
+      },
+      "verify": "assert result['Name'].tolist() == ['Fatima', 'Chloe', 'Jamal']\nassert result.index.tolist() == [5, 2, 9]",
+      "solution_verify": "assert result['Name'].tolist() == ['Hassan', 'Dana', 'Khalid']\nassert result['Score'].tolist() == [58, 65, 68]",
+      "watch": "head(3) before sorting chooses the first three source rows, not the three highest scores.",
+      "takeaway": "I can sort a table and identify the top or bottom records."
+    },
+    {
+      "id": "M07C02",
+      "title": "Specify a tie rule",
+      "explanation": "Rows can tie on a sort column. With one column, kind=\"stable\" preserves their existing order within a tie. To define a new tie rule, sort by several columns and give one ascending flag per column. Clear tie rules make results easier to reproduce and explain.",
+      "code": "df = pd.DataFrame({\n    \"Name\": [\"Chloe\", \"Amira\", \"Bilal\", \"Dana\"],\n    \"Score\": [80, 80, 95, 80]\n})\nresult = df.sort_values(\"Score\", ascending=False, kind=\"stable\")\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which rows share a score?",
+          "answer": "Chloe, Amira, and Dana all have 80."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What is their order after this stable sort?",
+          "answer": "Chloe, Amira, then Dana, preserving their order in the original table."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why might a report need a second sort column?",
+          "answer": "It provides a clear order among equal values, such as alphabetical order among students with the same score."
+        }
+      ],
+      "task": "Sort by Score descending, then Name ascending to break ties alphabetically.",
+      "hint": "Pass [\"Score\", \"Name\"] and ascending=[False, True].",
+      "solution": "df = pd.DataFrame({\n    \"Name\": [\"Chloe\", \"Amira\", \"Bilal\", \"Dana\"],\n    \"Score\": [80, 80, 95, 80]\n})\nresult = df.sort_values([\"Score\", \"Name\"], ascending=[False, True])\nprint(result)",
+      "solution_note": "Bilal remains first with 95. The three scores of 80 are then ordered Amira, Chloe, Dana.",
+      "check": {
+        "prompt": "What does a stable sort preserve for equal sort values?",
+        "options": [
+          "The existing relative order.",
+          "Only the highest value.",
+          "Alphabetical order automatically."
+        ],
+        "correct": 0,
+        "feedback": "Stability preserves the source order of rows that tie on the sort key."
+      },
+      "verify": "assert result['Name'].tolist() == ['Bilal', 'Chloe', 'Amira', 'Dana']",
+      "solution_verify": "assert result['Name'].tolist() == ['Bilal', 'Amira', 'Chloe', 'Dana']",
+      "watch": "Alphabetical tie order must be requested explicitly; a stable sort preserves source order instead.",
+      "takeaway": "I can make the order of tied records explicit."
+    },
+    {
+      "id": "M07C03",
+      "title": "Set, check, and reset an index",
+      "explanation": "An index labels rows; it is not automatically a unique ID. set_index() chooses the labels, and index.is_unique tells you whether any label repeats. reset_index() moves the current index back into a column and supplies new default row labels. Use reset_index(drop=True) only when you deliberately want to discard the current labels.",
+      "code": "df = students()\nindexed = df.set_index(\"Student_ID\")\nprint(\"Unique index:\", indexed.index.is_unique)\nresult = indexed.reset_index()\nprint(result[[\"Student_ID\", \"Name\"]].head(3))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does indexed.index.is_unique tell you?",
+          "answer": "It is True when no index label repeats. Separate checks are still needed for missing or invalid IDs."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "After reset_index(), is Student_ID a data column again?",
+          "answer": "Yes. It is restored as a column, while the row index becomes 0 through 11."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why could reset_index(drop=True) lose useful information here?",
+          "answer": "Student_ID is currently the index, so drop=True would discard those IDs instead of restoring them to a column."
+        }
+      ],
+      "task": "Set Student_ID as the index, select S003 and S001 in that order, and reset the selected index without losing the IDs.",
+      "hint": "Use .loc[[\"S003\", \"S001\"]] followed by .reset_index().",
+      "solution": "df = students()\nindexed = df.set_index(\"Student_ID\")\nselected = indexed.loc[[\"S003\", \"S001\"]]\nresult = selected.reset_index()\nprint(result[[\"Student_ID\", \"Name\"]])",
+      "solution_note": "The selected rows are Chloe and Amira. Their IDs remain in the Student_ID column, and their new row labels are 0 and 1.",
+      "check": {
+        "prompt": "Which operation keeps the old index as a column?",
+        "options": [
+          "reset_index(drop=True)",
+          "reset_index()",
+          "sort_index()"
+        ],
+        "correct": 1,
+        "feedback": "reset_index() preserves the old index values in a column unless drop=True is specified."
+      },
+      "verify": "assert indexed.index.is_unique and result.equals(df)\nassert result.index.tolist() == list(range(12))",
+      "solution_verify": "assert result['Student_ID'].tolist() == ['S003', 'S001']\nassert result.index.tolist() == [0, 1]",
+      "watch": "Having an index does not guarantee that its labels are unique or non-missing.",
+      "takeaway": "I can change an index without accidentally discarding record IDs."
+    },
+    {
+      "id": "M07C04",
+      "title": "Reindex to a requested order",
+      "explanation": "reindex() aligns a table to a specified set of labels and their requested order. Existing labels bring their rows with them; new labels create missing values. This differs from sorting because you supply the desired labels explicitly. Use isna() to inspect newly missing cells.",
+      "code": "df = students().set_index(\"Student_ID\")\nresult = df.reindex([\"S003\", \"S001\", \"S999\"])[[\"Name\", \"Score\"]]\nprint(result)\nprint(\"Missing name:\")\nprint(result[\"Name\"].isna())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Where did the S999 row come from?",
+          "answer": "It was requested in reindex but was absent from the source index, so pandas created a row of missing values."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which order will the index have?",
+          "answer": "S003, S001, S999, matching the order passed to reindex."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is a missing S999 score not automatically a failing score?",
+          "answer": "There is no source record for S999. Missing data does not establish a measured score or a fail decision."
+        }
+      ],
+      "task": "Reindex to S002, S001, and S004, in that order. Confirm that none of their names is missing.",
+      "hint": "Use only existing IDs and count missing names with .isna().sum().",
+      "solution": "df = students().set_index(\"Student_ID\")\nresult = df.reindex([\"S002\", \"S001\", \"S004\"])[[\"Name\", \"Score\"]]\nprint(result)\nprint(\"Missing names:\", result[\"Name\"].isna().sum())",
+      "solution_note": "The output is Bilal, Amira, Dana in the requested order, with no missing names. All requested labels exist.",
+      "check": {
+        "prompt": "What can reindex do when a requested label does not exist?",
+        "options": [
+          "Guess the nearest record.",
+          "Raise an error in every case.",
+          "Create a row with missing values."
+        ],
+        "correct": 2,
+        "feedback": "For this unique index, reindex creates missing data for an absent requested label."
+      },
+      "verify": "assert result.index.tolist() == ['S003', 'S001', 'S999']\nassert pd.isna(result.loc['S999', 'Score']) and result.loc['S003', 'Name'] == 'Chloe'",
+      "solution_verify": "assert result.index.tolist() == ['S002', 'S001', 'S004']\nassert result['Name'].isna().sum() == 0",
+      "watch": "Reindexing can fail when source labels are duplicated; check uniqueness before using labels as identifiers.",
+      "takeaway": "I can distinguish sorting existing rows from aligning to a requested index."
+    }
+  ]
+}

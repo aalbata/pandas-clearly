@@ -1,0 +1,174 @@
+{
+  "id": 10,
+  "title": "Missing values and honest cleaning",
+  "level": "Core",
+  "goal": "Find missing entries and choose a treatment that fits the question.",
+  "prerequisites": "You can convert columns and use Boolean masks.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/missing_data.html",
+  "cells": [
+    {
+      "id": "M10C01",
+      "title": "Missing is not the same as empty or zero",
+      "explanation": "`isna()` gives True where a value is missing. Zero is a recorded value, and an empty string is text unless you explicitly treat it as missing. Counting True values with `.sum()` counts missing entries.",
+      "code": "values = pd.Series([0, None, \"\", pd.NA, np.nan], dtype=\"object\")\nresult = values.isna()\nprint(result.tolist())\nprint(\"Missing count:\", result.sum())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What type of values does `isna()` return?",
+          "answer": "True/False values, one for each entry."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many missing entries will be counted?",
+          "answer": "Three: None, pd.NA, and np.nan."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is the empty string not automatically missing?",
+          "answer": "It is a stored text value. A cleaning rule must say whether blank text represents missing data."
+        }
+      ],
+      "task": "Treat the empty string as missing, but keep zero. Store the cleaned Series in `result` and count missing entries.",
+      "hint": "Use `.replace(\"\", pd.NA)`.",
+      "solution": "values = pd.Series([0, None, \"\", pd.NA, np.nan], dtype=\"object\")\nresult = values.replace(\"\", pd.NA)\nprint(result)\nprint(\"Missing count:\", result.isna().sum())",
+      "solution_note": "Four values are now missing. The recorded zero is still zero.",
+      "check": {
+        "prompt": "Which original value is known rather than missing?",
+        "options": [
+          "None",
+          "0",
+          "np.nan"
+        ],
+        "correct": 1,
+        "feedback": "Zero is a numeric value; it should not disappear just because some data are missing."
+      },
+      "verify": "assert result.tolist() == [False, True, False, True, True]",
+      "solution_verify": "assert result.isna().sum() == 4\nassert result.iloc[0] == 0",
+      "watch": "Use `.isna()`, not `== np.nan`, to detect missing values.",
+      "takeaway": "Define what missing means in your dataset."
+    },
+    {
+      "id": "M10C02",
+      "title": "Drop rows only for required fields",
+      "explanation": "`dropna(subset=[...])` removes rows missing the specified fields. It does not remove a row just because an unrelated field is missing. Keep a count of excluded records and consider how the exclusion affects the answer.",
+      "code": "df = raw_students()\ndf[\"Score\"] = pd.to_numeric(df[\"Score\"], errors=\"coerce\")\nresult = df.dropna(subset=[\"Score\"])\nprint(result[[\"Student_ID\", \"Score\", \"Study_Hours\"]])\nprint(\"Rows kept:\", len(result))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which column controls row removal in this cell?",
+          "answer": "Score only."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will S006 remain even though Study_Hours is missing?",
+          "answer": "Yes. S006 has a score, so it passes the Score-only requirement."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why not use `df.dropna()` without thinking?",
+          "answer": "It may remove rows for fields the analysis does not need, changing the sample unnecessarily."
+        }
+      ],
+      "task": "Keep only rows with both Score and Study_Hours available. Leave the intentional duplicate for the next module.",
+      "hint": "Pass both required column names to `subset`.",
+      "solution": "df = raw_students()\ndf[\"Score\"] = pd.to_numeric(df[\"Score\"], errors=\"coerce\")\nresult = df.dropna(subset=[\"Score\", \"Study_Hours\"])\nprint(result[[\"Student_ID\", \"Score\", \"Study_Hours\"]])\nprint(\"Rows kept:\", len(result))",
+      "solution_note": "Ten rows remain out of thirteen. S004, S008, and S006 were excluded for the stated requirements.",
+      "check": {
+        "prompt": "What does subset specify?",
+        "options": [
+          "The fields that must be present",
+          "The first few rows to show",
+          "A replacement for missing values"
+        ],
+        "correct": 0,
+        "feedback": "Only missing values in those columns trigger removal."
+      },
+      "verify": "assert len(result) == 11\nassert \"S006\" in result[\"Student_ID\"].tolist()",
+      "solution_verify": "assert len(result) == 10\nassert not set([\"S004\", \"S006\", \"S008\"]) & set(result[\"Student_ID\"])",
+      "watch": "Removing incomplete records can change the composition of your data; report what was excluded.",
+      "takeaway": "Match required fields to the analysis question."
+    },
+    {
+      "id": "M10C03",
+      "title": "Fill a label without inventing a measurement",
+      "explanation": "`fillna()` replaces missing values with a value you specify. A label such as \"Unknown\" can make a missing category visible in a report. The same idea does not justify inventing a score or age.",
+      "code": "campuses = pd.Series([\"RAK\", None, \"Dubai\", None], dtype=\"string\")\nresult = campuses.fillna(\"Unknown\")\nprint(result.tolist())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What is being filled here: a measured number or a category label?",
+          "answer": "A category label."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many Unknown labels will appear?",
+          "answer": "Two."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Does Unknown tell us the actual campus?",
+          "answer": "No. It makes the missing information explicit; it does not recover the campus."
+        }
+      ],
+      "task": "Use the same Series, but first record a Boolean Was_missing flag. Store a DataFrame named result with the filled Campus column and the Was_missing flag.",
+      "hint": "Call `.isna()` before replacing missing values.",
+      "solution": "campuses = pd.Series([\"RAK\", None, \"Dubai\", None], dtype=\"string\")\nresult = pd.DataFrame({\"Campus\": campuses.fillna(\"Unknown\"), \"Was_missing\": campuses.isna()})\nprint(result)",
+      "solution_note": "The flag preserves which labels were originally missing, even after every cell contains text.",
+      "check": {
+        "prompt": "Why retain a missingness flag?",
+        "options": [
+          "To restore information about which entries were filled",
+          "To make every row identical",
+          "To prove the missing values were incorrect"
+        ],
+        "correct": 0,
+        "feedback": "After filling, the flag distinguishes observed labels from replacements."
+      },
+      "verify": "assert result.tolist() == [\"RAK\", \"Unknown\", \"Dubai\", \"Unknown\"]",
+      "solution_verify": "assert result[\"Was_missing\"].sum() == 2\nassert (result.loc[result[\"Was_missing\"], \"Campus\"] == \"Unknown\").all()",
+      "watch": "Do not use zero as a universal replacement for missing numbers.",
+      "takeaway": "Keep missingness visible when replacements are used."
+    },
+    {
+      "id": "M10C04",
+      "title": "Compare a fill policy with keeping missing data",
+      "explanation": "Preview of Module 16: the groupby, transform, and named aggregation syntax in this cell will be explained there. First focus on the difference between a technical replacement and a justified data policy. A group median is one possible imputation rule, not a universal answer. `transform()` returns a group result for every original row. This small example compares a proposed fill with the original values so its effect is visible.",
+      "code": "df = pd.DataFrame({\"Program\": [\"AI\", \"AI\", \"AI\", \"IT\", \"IT\"], \"Hours\": [4.0, 8.0, np.nan, 2.0, np.nan]})\ngroup_median = df.groupby(\"Program\")[\"Hours\"].transform(\"median\")\nresult = df.assign(Hours_filled=df[\"Hours\"].fillna(group_median), Was_missing=df[\"Hours\"].isna())\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why does transform return five values instead of two group summaries?",
+          "answer": "It repeats each group median on the rows belonging to that group."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which values fill the missing AI and IT hours?",
+          "answer": "AI gets 6.0, the median of 4 and 8; IT gets 2.0, its only observed value."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is filling the IT value with 2.0 a weakly supported choice?",
+          "answer": "It is based on only one observed IT value and can hide uncertainty or reduce apparent variation."
+        }
+      ],
+      "task": "Use the same original table. Keep the missing values and store a summary in result with Program as its index. Name the known Hours count Known_hours, the row count Rows, and the median Median_hours.",
+      "hint": "Use named aggregation; count counts known Hours, while size counts rows.",
+      "solution": "df = pd.DataFrame({\"Program\": [\"AI\", \"AI\", \"AI\", \"IT\", \"IT\"], \"Hours\": [4.0, 8.0, np.nan, 2.0, np.nan]})\nresult = df.groupby(\"Program\").agg(Known_hours=(\"Hours\", \"count\"), Rows=(\"Hours\", \"size\"), Median_hours=(\"Hours\", \"median\"))\nprint(result)",
+      "solution_note": "AI has 2 known values in 3 rows; IT has 1 in 2. The report shows the missing information rather than replacing it.",
+      "check": {
+        "prompt": "Should every missing measurement be filled with a mean or median?",
+        "options": [
+          "Yes, always",
+          "Only when the policy fits the context and its effects are checked",
+          "Only if the column is first converted to text"
+        ],
+        "correct": 1,
+        "feedback": "Choose and document a treatment; retaining missing values or excluding specific rows may be more appropriate."
+      },
+      "verify": "assert result.loc[2, \"Hours_filled\"] == 6.0\nassert result.loc[4, \"Hours_filled\"] == 2.0\nassert result[\"Was_missing\"].sum() == 2",
+      "solution_verify": "assert result.loc[\"AI\", \"Known_hours\"] == 2\nassert result.loc[\"IT\", \"Rows\"] == 2\nassert df[\"Hours\"].isna().sum() == 2",
+      "watch": "In predictive modeling, fit any imputation rule on training data only; do not learn it from held-out test data.",
+      "takeaway": "Explain the assumption behind every fill policy."
+    }
+  ]
+}

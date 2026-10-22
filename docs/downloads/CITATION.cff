@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use or adapt this course in teaching, research, or training, please cite it using this metadata."
+type: software
+title: "Pandas, Clearly: Pandas for Data Science"
+abstract: >-
+  A free practical course that starts with Python values and dictionaries and
+  develops pandas skills through guided examples, predictions, explanations,
+  code changes, debugging, and independent data-analysis tasks. Includes a
+  browser classroom, student notebooks, worked solutions, and teaching notes.
+authors:
+  - family-names: "Al Bataineh"
+    given-names: "Ali"
+    affiliation: "Computer Information Science, Higher Colleges of Technology, Ras Al Khaimah, United Arab Emirates"
+    orcid: "https://orcid.org/0000-0001-9530-7950"
+version: 1.0.0
+date-released: 2026-10-22
+repository-code: "https://github.com/aalbatai/pandas-clearly"
+url: "https://github.com/aalbatai/pandas-clearly"
+license: MIT
+keywords:
+  - pandas
+  - Python
+  - data analysis
+  - data science education
+  - interactive learning
+  - Jupyter notebooks

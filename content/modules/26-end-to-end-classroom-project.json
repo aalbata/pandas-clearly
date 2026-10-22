@@ -1,0 +1,174 @@
+{
+  "id": 26,
+  "title": "End-to-end classroom project",
+  "level": "Apply",
+  "goal": "Clean, audit, summarize, visualize, and export a small dataset with an explanation of every choice.",
+  "prerequisites": "Core modules and plotting; keep raw and clean data distinct.",
+  "reference": "https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html",
+  "cells": [
+    {
+      "id": "M26C01",
+      "title": "Clean the raw table and keep an audit trail",
+      "explanation": "Bring the cleaning skills together. Remove the known exact duplicate, normalize labels, preserve why a score is unavailable, and flag impossible attendance as missing. This exercise makes no assumption that an absent score equals zero.",
+      "code": "df = raw_students().drop_duplicates().copy()\ndf[\"Name\"] = df[\"Name\"].astype(\"string\").str.strip()\ndf[\"Campus\"] = df[\"Campus\"].astype(\"string\").str.strip().str.title()\ndf[\"Campus\"] = df[\"Campus\"].replace({\"Rak\": \"RAK\"})\ndf[\"Score_Status\"] = \"recorded\"\ndf.loc[df[\"Score\"].isna(), \"Score_Status\"] = \"missing\"\ndf.loc[df[\"Score\"].eq(\"absent\"), \"Score_Status\"] = \"absent\"\ndf[\"Score\"] = pd.to_numeric(df[\"Score\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Study_Hours\"] = pd.to_numeric(df[\"Study_Hours\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Attendance\"] = df[\"Attendance\"].astype(\"Float64\")\ndf.loc[~df[\"Attendance\"].between(0, 100), \"Attendance\"] = pd.NA\ndf[\"Join_Date\"] = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\n\nprint(df[[\"Student_ID\", \"Name\", \"Campus\", \"Score\", \"Score_Status\", \"Attendance\"]])\nprint(\"Rows:\", len(df))\nprint(\"Unavailable scores:\", df[\"Score\"].isna().sum())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why is Score_Status created before numeric conversion?",
+          "answer": "The original text distinguishes an absent student from an already missing score. Conversion alone would erase that distinction."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many rows and missing numeric scores remain?",
+          "answer": "12 unique students remain; two scores are missing numerically, S004 and S008."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why not replace attendance 105 with 100 automatically?",
+          "answer": "The correct attendance is unknown. Capping would invent a value; flagging allows later correction from a source."
+        }
+      ],
+      "task": "Use the cleaned table to create a review list containing students with a missing Score, Study_Hours, or Attendance. Store it in result with columns Student_ID, Score, Study_Hours, and Attendance, then print result.",
+      "hint": "Use isna().any(axis=1) across the three columns.",
+      "solution": "df = raw_students().drop_duplicates().copy()\ndf[\"Name\"] = df[\"Name\"].astype(\"string\").str.strip()\ndf[\"Campus\"] = df[\"Campus\"].astype(\"string\").str.strip().str.title()\ndf[\"Campus\"] = df[\"Campus\"].replace({\"Rak\": \"RAK\"})\ndf[\"Score_Status\"] = \"recorded\"\ndf.loc[df[\"Score\"].isna(), \"Score_Status\"] = \"missing\"\ndf.loc[df[\"Score\"].eq(\"absent\"), \"Score_Status\"] = \"absent\"\ndf[\"Score\"] = pd.to_numeric(df[\"Score\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Study_Hours\"] = pd.to_numeric(df[\"Study_Hours\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Attendance\"] = df[\"Attendance\"].astype(\"Float64\")\ndf.loc[~df[\"Attendance\"].between(0, 100), \"Attendance\"] = pd.NA\ndf[\"Join_Date\"] = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\n\nreview_columns = [\"Score\", \"Study_Hours\", \"Attendance\"]\nresult = df.loc[df[review_columns].isna().any(axis=1), [\"Student_ID\"] + review_columns]\nprint(result)",
+      "solution_note": "Review S004, S006, S008, and S011. Each record has at least one unavailable or invalid value. A review flag does not tell you how the missing value should be replaced.",
+      "check": {
+        "prompt": "What evidence supports changing 105 to missing?",
+        "options": [
+          "Attendance is defined as a percentage from 0 to 100",
+          "Every high value is an outlier to remove",
+          "Pandas does not support numbers above 100"
+        ],
+        "correct": 0,
+        "feedback": "The column's documented range makes 105 invalid. Pandas itself has no such numeric limit."
+      },
+      "verify": "assert len(df) == 12\nassert df['Student_ID'].is_unique\nassert df['Score'].isna().sum() == 2\nassert df['Attendance'].isna().sum() == 1",
+      "solution_verify": "assert result['Student_ID'].tolist() == ['S004','S006','S008','S011']",
+      "watch": "Do not discard the raw labels before you have recorded their meaning.",
+      "takeaway": "Clean with documented rules and preserve the reasons for missing values."
+    },
+    {
+      "id": "M26C02",
+      "title": "Report a mean with its denominator",
+      "explanation": "A group average is easier to interpret when its sample count is visible. Count all students and count recorded scores separately. Pandas mean skips missing numeric scores by default; say that in your report.",
+      "code": "df = raw_students().drop_duplicates().copy()\ndf[\"Name\"] = df[\"Name\"].astype(\"string\").str.strip()\ndf[\"Campus\"] = df[\"Campus\"].astype(\"string\").str.strip().str.title()\ndf[\"Campus\"] = df[\"Campus\"].replace({\"Rak\": \"RAK\"})\ndf[\"Score_Status\"] = \"recorded\"\ndf.loc[df[\"Score\"].isna(), \"Score_Status\"] = \"missing\"\ndf.loc[df[\"Score\"].eq(\"absent\"), \"Score_Status\"] = \"absent\"\ndf[\"Score\"] = pd.to_numeric(df[\"Score\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Study_Hours\"] = pd.to_numeric(df[\"Study_Hours\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Attendance\"] = df[\"Attendance\"].astype(\"Float64\")\ndf.loc[~df[\"Attendance\"].between(0, 100), \"Attendance\"] = pd.NA\ndf[\"Join_Date\"] = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\n\nresult = (df.groupby(\"Campus\", as_index=False)\n          .agg(Students=(\"Student_ID\", \"size\"),\n               Recorded_Scores=(\"Score\", \"count\"),\n               Mean_Score=(\"Score\", \"mean\")))\nprint(result.round(2))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "How are Students and Recorded_Scores different?",
+          "answer": "Students counts rows. Recorded_Scores counts non-missing scores."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which campus has fewer recorded scores than students?",
+          "answer": "Dubai has six students but only four recorded scores in the cleaned raw table."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "May you report the mean as an average of all six Dubai students?",
+          "answer": "No. It is based on four recorded scores. The missing observations may also affect the interpretation."
+        }
+      ],
+      "task": "Produce the same report by Program. Add Missing_Scores = Students - Recorded_Scores, then sort from highest to lowest Mean_Score.",
+      "hint": "Use groupby('Program'), named aggregation, and a new column.",
+      "solution": "df = raw_students().drop_duplicates().copy()\ndf[\"Name\"] = df[\"Name\"].astype(\"string\").str.strip()\ndf[\"Campus\"] = df[\"Campus\"].astype(\"string\").str.strip().str.title()\ndf[\"Campus\"] = df[\"Campus\"].replace({\"Rak\": \"RAK\"})\ndf[\"Score_Status\"] = \"recorded\"\ndf.loc[df[\"Score\"].isna(), \"Score_Status\"] = \"missing\"\ndf.loc[df[\"Score\"].eq(\"absent\"), \"Score_Status\"] = \"absent\"\ndf[\"Score\"] = pd.to_numeric(df[\"Score\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Study_Hours\"] = pd.to_numeric(df[\"Study_Hours\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Attendance\"] = df[\"Attendance\"].astype(\"Float64\")\ndf.loc[~df[\"Attendance\"].between(0, 100), \"Attendance\"] = pd.NA\ndf[\"Join_Date\"] = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\n\nresult = (df.groupby(\"Program\", as_index=False)\n          .agg(Students=(\"Student_ID\", \"size\"),\n               Recorded_Scores=(\"Score\", \"count\"),\n               Mean_Score=(\"Score\", \"mean\")))\nresult[\"Missing_Scores\"] = result[\"Students\"] - result[\"Recorded_Scores\"]\nresult = result.sort_values(\"Mean_Score\", ascending=False)\nprint(result.round(2))",
+      "solution_note": "AI has six recorded scores and a mean of 85.83. IT has four recorded scores, two missing scores, and a mean of 77.25. These fictional data do not establish a general difference between programs.",
+      "check": {
+        "prompt": "Which denominator does mean use here?",
+        "options": [
+          "Every row, treating missing values as zero",
+          "Only non-missing score values in each group",
+          "The number of campuses"
+        ],
+        "correct": 1,
+        "feedback": "mean skips missing numeric values by default. Reporting count beside it makes the denominator clear."
+      },
+      "verify": "assert result['Students'].sum() == 12\nassert result['Recorded_Scores'].sum() == 10\nassert result.loc[result['Campus'].eq('Dubai'),'Recorded_Scores'].iloc[0] == 4",
+      "solution_verify": "assert result['Program'].tolist() == ['AI','IT']\nassert result['Missing_Scores'].tolist() == [0,2]\nassert np.isclose(result.iloc[0]['Mean_Score'],515/6)\nassert np.isclose(result.iloc[1]['Mean_Score'],77.25)",
+      "watch": "A polished mean without the number of observed values can mislead.",
+      "takeaway": "Attach counts and missingness to summary statistics."
+    },
+    {
+      "id": "M26C03",
+      "title": "Join, audit, and select a follow-up list",
+      "explanation": "Combine the cleaned records with assessment results, checking both match quality and row counts. The follow-up rule below uses an observed Score under 75 or a missing assessment. Unknown scores need separate review, not automatic failure.",
+      "code": "df = raw_students().drop_duplicates().copy()\ndf[\"Name\"] = df[\"Name\"].astype(\"string\").str.strip()\ndf[\"Campus\"] = df[\"Campus\"].astype(\"string\").str.strip().str.title()\ndf[\"Campus\"] = df[\"Campus\"].replace({\"Rak\": \"RAK\"})\ndf[\"Score_Status\"] = \"recorded\"\ndf.loc[df[\"Score\"].isna(), \"Score_Status\"] = \"missing\"\ndf.loc[df[\"Score\"].eq(\"absent\"), \"Score_Status\"] = \"absent\"\ndf[\"Score\"] = pd.to_numeric(df[\"Score\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Study_Hours\"] = pd.to_numeric(df[\"Study_Hours\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Attendance\"] = df[\"Attendance\"].astype(\"Float64\")\ndf.loc[~df[\"Attendance\"].between(0, 100), \"Attendance\"] = pd.NA\ndf[\"Join_Date\"] = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\n\njoined = df.merge(assessment(), on=\"Student_ID\", how=\"left\",\n                  validate=\"one_to_one\", indicator=True)\nmask = joined[\"Score\"].lt(75).fillna(False) | joined[\"_merge\"].eq(\"left_only\")\nresult = joined.loc[mask, [\"Student_ID\", \"Score\", \"Quiz\", \"_merge\"]]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why is fillna(False) used in the score condition?",
+          "answer": "An unknown score should not be classified as below 75. Missing scores are handled by a separate review process."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which student is selected because an assessment is missing?",
+          "answer": "S012, Lina."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Does excluding an unknown score mean the student passed?",
+          "answer": "No. It only means this specific rule does not classify that student. Missing data still need review."
+        }
+      ],
+      "task": "Create a separate audit with an outer merge. Show only unmatched IDs and whether each ID belongs to the student table or the assessment table.",
+      "hint": "Use how='outer', indicator=True, then filter _merge != 'both'.",
+      "solution": "df = raw_students().drop_duplicates().copy()\ndf[\"Name\"] = df[\"Name\"].astype(\"string\").str.strip()\ndf[\"Campus\"] = df[\"Campus\"].astype(\"string\").str.strip().str.title()\ndf[\"Campus\"] = df[\"Campus\"].replace({\"Rak\": \"RAK\"})\ndf[\"Score_Status\"] = \"recorded\"\ndf.loc[df[\"Score\"].isna(), \"Score_Status\"] = \"missing\"\ndf.loc[df[\"Score\"].eq(\"absent\"), \"Score_Status\"] = \"absent\"\ndf[\"Score\"] = pd.to_numeric(df[\"Score\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Study_Hours\"] = pd.to_numeric(df[\"Study_Hours\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Attendance\"] = df[\"Attendance\"].astype(\"Float64\")\ndf.loc[~df[\"Attendance\"].between(0, 100), \"Attendance\"] = pd.NA\ndf[\"Join_Date\"] = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\n\naudit = df.merge(assessment(), on=\"Student_ID\", how=\"outer\",\n                 validate=\"one_to_one\", indicator=True)\nresult = audit.loc[audit[\"_merge\"].ne(\"both\"), [\"Student_ID\", \"_merge\"]]\nprint(result)",
+      "solution_note": "S012 is student-only; S013 is assessment-only. Investigate both before treating the assessment file as complete.",
+      "check": {
+        "prompt": "A missing score should automatically become a failing score.",
+        "options": [
+          "True for every dataset",
+          "True whenever mean() is used",
+          "False; a documented rule or source correction is needed"
+        ],
+        "correct": 2,
+        "feedback": "A missing observation is not an observed zero or a confirmed failure."
+      },
+      "verify": "assert len(joined) == 12\nassert result['Student_ID'].tolist() == ['S002','S011','S012']",
+      "solution_verify": "assert result['Student_ID'].tolist() == ['S012','S013']",
+      "watch": "A missing comparison may propagate pd.NA; decide how the rule treats unknowns.",
+      "takeaway": "Keep classification rules separate from data-quality review."
+    },
+    {
+      "id": "M26C04",
+      "title": "Create a table, a plot, and a reproducible export",
+      "explanation": "Finish with a compact report and a plot that answers a stated question. Keep the clean table and the summary as separate outputs. On a new run, rebuild the report from the source and the written cleaning rules.",
+      "code": "df = raw_students().drop_duplicates().copy()\ndf[\"Name\"] = df[\"Name\"].astype(\"string\").str.strip()\ndf[\"Campus\"] = df[\"Campus\"].astype(\"string\").str.strip().str.title()\ndf[\"Campus\"] = df[\"Campus\"].replace({\"Rak\": \"RAK\"})\ndf[\"Score_Status\"] = \"recorded\"\ndf.loc[df[\"Score\"].isna(), \"Score_Status\"] = \"missing\"\ndf.loc[df[\"Score\"].eq(\"absent\"), \"Score_Status\"] = \"absent\"\ndf[\"Score\"] = pd.to_numeric(df[\"Score\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Study_Hours\"] = pd.to_numeric(df[\"Study_Hours\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Attendance\"] = df[\"Attendance\"].astype(\"Float64\")\ndf.loc[~df[\"Attendance\"].between(0, 100), \"Attendance\"] = pd.NA\ndf[\"Join_Date\"] = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\n\nresult = df.pivot_table(index=\"Campus\", columns=\"Program\", values=\"Score\",\n                        aggfunc=\"mean\", observed=True)\ncounts = df.pivot_table(index=\"Campus\", columns=\"Program\", values=\"Score\",\n                        aggfunc=\"count\", observed=True)\nprint(\"Recorded mean scores:\")\nprint(result.round(2))\nprint(\"Recorded score counts:\")\nprint(counts)\nax = result.plot.bar(color=[\"#216b62\", \"#b58b45\"], rot=0)\nax.set_title(\"Recorded mean score by campus and program\")\nax.set_ylabel(\"Mean score (0–100)\")\nax.set_ylim(0, 100)\nplt.tight_layout()\nplt.show()\ndf.to_csv(OUTPUT_DIR / \"capstone_cleaned_students.csv\", index=False)\nresult.round(2).to_csv(OUTPUT_DIR / \"capstone_score_summary.csv\")\ncounts.to_csv(OUTPUT_DIR / \"capstone_recorded_counts.csv\")\nprint(\"Saved cleaned data, summary, and recorded counts in outputs/.\")",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why does the summary CSV keep its index?",
+          "answer": "Campus is stored in the pivot table index and carries meaning. Removing it would lose the campus labels."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many mean values appear in this 2-by-2 table?",
+          "answer": "Four: AI and IT within Dubai and RAK."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "What must accompany this chart in a report?",
+          "answer": "The number of recorded scores per group, the missing-score policy, and a note that these are fictional teaching data. Bar differences do not prove causation."
+        }
+      ],
+      "task": "Make a Program-level report with columns Program, Recorded_Scores, and Mean_Score. Export it without a DataFrame index to capstone_program_report.csv. Read the exported file back into read_back and verify its columns and row count.",
+      "hint": "Use groupby, agg, to_csv(index=False), and read_csv.",
+      "solution": "df = raw_students().drop_duplicates().copy()\ndf[\"Name\"] = df[\"Name\"].astype(\"string\").str.strip()\ndf[\"Campus\"] = df[\"Campus\"].astype(\"string\").str.strip().str.title()\ndf[\"Campus\"] = df[\"Campus\"].replace({\"Rak\": \"RAK\"})\ndf[\"Score_Status\"] = \"recorded\"\ndf.loc[df[\"Score\"].isna(), \"Score_Status\"] = \"missing\"\ndf.loc[df[\"Score\"].eq(\"absent\"), \"Score_Status\"] = \"absent\"\ndf[\"Score\"] = pd.to_numeric(df[\"Score\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Study_Hours\"] = pd.to_numeric(df[\"Study_Hours\"], errors=\"coerce\").astype(\"Float64\")\ndf[\"Attendance\"] = df[\"Attendance\"].astype(\"Float64\")\ndf.loc[~df[\"Attendance\"].between(0, 100), \"Attendance\"] = pd.NA\ndf[\"Join_Date\"] = pd.to_datetime(df[\"Join_Date\"], format=\"%Y-%m-%d\")\n\nresult = (df.groupby(\"Program\", as_index=False)\n          .agg(Recorded_Scores=(\"Score\", \"count\"), Mean_Score=(\"Score\", \"mean\")))\nresult[\"Mean_Score\"] = result[\"Mean_Score\"].round(2)\npath = OUTPUT_DIR / \"capstone_program_report.csv\"\nresult.to_csv(path, index=False)\nread_back = pd.read_csv(path)\nprint(read_back)\nprint(\"Columns preserved:\", read_back.columns.tolist() == result.columns.tolist())",
+      "solution_note": "The CSV contains Program, Recorded_Scores, and Mean_Score, with no extra unnamed index column. Reading the file back checks the delivered table, not just the in-memory object.",
+      "check": {
+        "prompt": "When is index=False appropriate for this Program report?",
+        "options": [
+          "When all meaningful labels already live in columns",
+          "Whenever the table contains numbers",
+          "Only for Excel files"
+        ],
+        "correct": 0,
+        "feedback": "This report has Program as a normal column. Its default numeric index adds no useful information to the CSV."
+      },
+      "verify": "assert result.shape == (2,2)\nassert np.isclose(result.loc['Dubai','IT'],77)\nassert (OUTPUT_DIR/'capstone_cleaned_students.csv').exists()",
+      "solution_verify": "assert read_back.columns.tolist() == ['Program','Recorded_Scores','Mean_Score']\nassert read_back['Recorded_Scores'].sum() == 10\nassert read_back.shape == (2,3)",
+      "watch": "CSV does not preserve every pandas dtype. Recheck dtypes when loading it later.",
+      "takeaway": "Deliver a report that another person can reproduce and interpret."
+    }
+  ]
+}

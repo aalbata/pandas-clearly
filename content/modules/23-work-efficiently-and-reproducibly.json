@@ -1,0 +1,174 @@
+{
+  "id": 23,
+  "title": "Work efficiently and reproducibly",
+  "level": "Extension",
+  "goal": "Read less data, combine chunk summaries correctly, and make repeatable samples.",
+  "prerequisites": "Understand grouping, CSV I/O, and data types.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/scale.html",
+  "cells": [
+    {
+      "id": "M23C01",
+      "title": "Measure memory use",
+      "explanation": "memory_usage(deep=True) estimates memory including text stored by object columns. Repeated labels may use less memory as categories. The benefit depends on the data, so measure it instead of assuming.",
+      "code": "labels = pd.Series([\"RAK\", \"Dubai\"] * 500, dtype=object)\ncategory = labels.astype(\"category\")\nresult = pd.Series({\"Object_bytes\": labels.memory_usage(deep=True), \"Category_bytes\": category.memory_usage(deep=True)})\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why repeat only two labels many times?",
+          "answer": "It demonstrates data with few unique text values and many repeated occurrences."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will converting to category change the label values?",
+          "answer": "No. It changes their representation, not the label meanings."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Are exact byte counts guaranteed on every computer?",
+          "answer": "No. They depend on versions and storage details; compare the measurements in your environment."
+        }
+      ],
+      "task": "Measure 1,000 unique text labels before and after category conversion. Explain why the saving may shrink or disappear.",
+      "hint": "Build labels such as \"ID_0\" through \"ID_999\".",
+      "solution": "labels = pd.Series([f\"ID_{i}\" for i in range(1000)], dtype=object)\ncategory = labels.astype(\"category\")\nresult = pd.Series({\"Object_bytes\": labels.memory_usage(deep=True), \"Category_bytes\": category.memory_usage(deep=True)})\nprint(result)",
+      "solution_note": "Categories also store the distinct labels and codes. With nearly every label unique, that overhead can outweigh any benefit.",
+      "check": {
+        "prompt": "When is category often useful for memory?",
+        "options": [
+          "Many repeated values from a small set",
+          "Every value is unique, always",
+          "Only when the column is numeric"
+        ],
+        "correct": 0,
+        "feedback": "A small category dictionary can represent many repeated labels compactly."
+      },
+      "verify": "assert category.astype(object).equals(labels)\nassert result[\"Category_bytes\"] < result[\"Object_bytes\"]",
+      "solution_verify": "assert len(category.cat.categories) == 1000\nassert category.astype(object).equals(labels)",
+      "watch": "This is a small storage demonstration, not a benchmark of all pandas workloads.",
+      "takeaway": "Choose data types based on meaning and measurement."
+    },
+    {
+      "id": "M23C02",
+      "title": "Load only needed columns",
+      "explanation": "usecols avoids reading columns that the question does not need. Explicit dtypes make the import contract clearer. This small file demonstrates a habit that becomes useful with larger files.",
+      "code": "result = pd.read_csv(DATA_DIR / \"students.csv\", usecols=[\"Student_ID\", \"Program\", \"Score\"], dtype={\"Student_ID\": \"string\", \"Program\": \"category\"})\nprint(result.head())\nprint(result.dtypes)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which six source columns are omitted?",
+          "answer": "Name, Campus, Age, Study_Hours, Attendance, and Join_Date."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many rows are loaded?",
+          "answer": "All 12 rows; usecols limits columns, not rows."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why not load every field just in case?",
+          "answer": "Unneeded columns use memory and add distractions to the analysis."
+        }
+      ],
+      "task": "Read only Student_ID and Attendance, and limit the preview to the first four file rows with nrows.",
+      "hint": "Use nrows=4 inside read_csv.",
+      "solution": "result = pd.read_csv(DATA_DIR / \"students.csv\", usecols=[\"Student_ID\", \"Attendance\"], nrows=4, dtype={\"Student_ID\": \"string\"})\nprint(result)",
+      "solution_note": "Only four rows and two columns are loaded. This preview does not represent the whole dataset.",
+      "check": {
+        "prompt": "What does nrows=4 do?",
+        "options": [
+          "Loads only the first four data rows",
+          "Chooses four random rows",
+          "Loads four columns"
+        ],
+        "correct": 0,
+        "feedback": "nrows limits the number of parsed data rows from the beginning of the file."
+      },
+      "verify": "assert result.shape == (12, 3)\nassert str(result[\"Program\"].dtype) == \"category\"",
+      "solution_verify": "assert result.shape == (4, 2)\nassert result.iloc[-1][\"Student_ID\"] == \"S004\"",
+      "watch": "A file preview can miss problems that occur later in the file.",
+      "takeaway": "Read the fields and rows needed for the current step."
+    },
+    {
+      "id": "M23C03",
+      "title": "Combine chunk totals correctly",
+      "explanation": "chunksize reads a CSV in pieces. A total and a non-missing count can be accumulated across pieces without keeping all rows. Divide the overall total by the overall count to calculate the overall mean.",
+      "code": "total = 0\ncount = 0\nfor chunk in pd.read_csv(DATA_DIR / \"students.csv\", usecols=[\"Score\"], chunksize=5):\n    total += chunk[\"Score\"].sum()\n    count += chunk[\"Score\"].count()\nresult = total / count\nprint(\"Known scores:\", count)\nprint(\"Mean score:\", round(result, 2))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What is chunk in each loop iteration?",
+          "answer": "A DataFrame containing the next group of file rows, up to five rows here."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many chunks are processed?",
+          "answer": "3 chunks, with 5, 5, and 2 rows."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why not average the three chunk means equally?",
+          "answer": "The chunks have different counts; equal weighting would give the two-row chunk too much influence."
+        }
+      ],
+      "task": "Use chunks of four rows and calculate how many students score at least 80 without retaining all rows.",
+      "hint": "Add the sum of a Boolean condition for each chunk.",
+      "solution": "result = 0\nfor chunk in pd.read_csv(DATA_DIR / \"students.csv\", usecols=[\"Score\"], chunksize=4):\n    result += chunk[\"Score\"].ge(80).sum()\nprint(\"Students with Score >= 80:\", result)",
+      "solution_note": "Six students meet the threshold, regardless of the chosen chunk boundaries.",
+      "check": {
+        "prompt": "What is needed for an exact combined mean?",
+        "options": [
+          "An unweighted mean of chunk means",
+          "A combined sum and non-missing count",
+          "Only the last chunk"
+        ],
+        "correct": 1,
+        "feedback": "The overall mean is the total of known values divided by their total count."
+      },
+      "verify": "assert count == 12\nassert np.isclose(result, students()[\"Score\"].mean())",
+      "solution_verify": "assert result == 6",
+      "watch": "Not every operation is easy to compute in chunks. A global sort or median needs a different strategy.",
+      "takeaway": "Combine summaries using their correct mathematical weights."
+    },
+    {
+      "id": "M23C04",
+      "title": "Take a repeatable sample",
+      "explanation": "sample chooses rows randomly. random_state makes the selection repeatable for this data and environment. Reproducibility does not make a tiny sample representative of the population.",
+      "code": "df = students()\nresult = df.sample(n=3, random_state=7)\nrepeat = df.sample(n=3, random_state=7)\nprint(result[[\"Student_ID\", \"Campus\", \"Score\"]])\nprint(\"Same sample:\", result.equals(repeat))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does n=3 request?",
+          "answer": "Three sampled rows."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will the repeated call with the same input and seed match?",
+          "answer": "Yes, within the same sampling environment."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Does a fixed seed remove sampling bias?",
+          "answer": "No. It makes the selection reproducible; it does not guarantee a balanced or representative sample."
+        }
+      ],
+      "task": "Take two students from each campus using groupby.sample with random_state=7.",
+      "hint": "Group by Campus before calling sample(n=2, random_state=7).",
+      "solution": "df = students()\nresult = df.groupby(\"Campus\", group_keys=False).sample(n=2, random_state=7)\nprint(result[[\"Student_ID\", \"Campus\", \"Score\"]])\nprint(result[\"Campus\"].value_counts())",
+      "solution_note": "The result has four students, two from each campus. Equal counts here are a chosen design, not a universal sampling rule.",
+      "check": {
+        "prompt": "What does a seed mainly provide?",
+        "options": [
+          "Guaranteed representativeness",
+          "Repeatability under the same setup",
+          "Higher scores"
+        ],
+        "correct": 1,
+        "feedback": "A seed controls the random sequence; it does not establish statistical validity."
+      },
+      "verify": "assert len(result) == 3\nassert result.equals(repeat)",
+      "solution_verify": "assert len(result) == 4\nassert result[\"Campus\"].value_counts().to_dict() == {\"Dubai\": 2, \"RAK\": 2}",
+      "watch": "Document input data, row order, library versions, and seed when an exact sample matters.",
+      "takeaway": "Repeatability and representativeness are different goals."
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+{
+  "id": 5,
+  "title": "Select exactly what you need",
+  "level": "Foundation",
+  "goal": "Choose rows, columns, and individual cells using labels and positions.",
+  "prerequisites": "Know the difference between a Series and a DataFrame and recognize an index.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/indexing.html",
+  "cells": [
+    {
+      "id": "M05C01",
+      "title": "One bracket or two?",
+      "explanation": "df[\"Score\"] selects one column as a Series. df[[\"Score\"]] passes a list of column names and returns a DataFrame, even with only one column. To select several columns, put their names in that inner list. The distinction matters when another operation expects a table.",
+      "code": "df = students()\ncolumn = df[\"Score\"]\ntable = df[[\"Score\"]]\nresult = df[[\"Name\", \"Score\"]]\nprint(type(column).__name__, column.shape)\nprint(type(table).__name__, table.shape)\nprint(result.head(3))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What is the inner [\"Name\", \"Score\"]?",
+          "answer": "A Python list containing the names of the columns to select."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What are the shapes of column and table?",
+          "answer": "(12,) for the Series and (12, 1) for the one-column DataFrame."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why use brackets rather than df.Score as the main teaching pattern?",
+          "answer": "Brackets work consistently with names containing spaces and names that could conflict with DataFrame attributes or methods."
+        }
+      ],
+      "task": "Select Campus and Program, in that order, into a DataFrame named result. Print its first four rows and shape.",
+      "hint": "Place both exact column names inside one inner list.",
+      "solution": "df = students()\nresult = df[[\"Campus\", \"Program\"]]\nprint(result.head(4))\nprint(result.shape)",
+      "solution_note": "result has 12 rows and two columns in the requested order: Campus, then Program.",
+      "check": {
+        "prompt": "Which returns a one-column DataFrame?",
+        "options": [
+          "df[\"Score\"]",
+          "df[[\"Score\"]]",
+          "df.shape"
+        ],
+        "correct": 1,
+        "feedback": "Passing a list of column names preserves a DataFrame result."
+      },
+      "verify": "assert isinstance(column, pd.Series) and isinstance(table, pd.DataFrame)\nassert column.shape == (12,) and table.shape == (12, 1)\nassert result.columns.tolist() == ['Name', 'Score']",
+      "solution_verify": "assert isinstance(result, pd.DataFrame) and result.shape == (12, 2)\nassert result.columns.tolist() == ['Campus', 'Program']",
+      "watch": "df[\"Name\", \"Score\"] is not the same as df[[\"Name\", \"Score\"]] for these ordinary columns.",
+      "takeaway": "I can predict whether a column selection returns a Series or a DataFrame."
+    },
+    {
+      "id": "M05C02",
+      "title": "Select row and column labels with loc",
+      "explanation": "set_index(\"Student_ID\") uses the student IDs as row labels and, by default, removes that field from the data columns. loc has the form table.loc[row_labels, column_labels]. A list keeps the selection table-shaped. at is convenient when you need a single value with a row label and column label.",
+      "code": "df = students().set_index(\"Student_ID\")\nresult = df.loc[[\"S001\", \"S003\"], [\"Name\", \"Score\"]]\none_score = df.at[\"S003\", \"Score\"]\nprint(result)\nprint(\"One score:\", one_score)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What separates row selection from column selection inside loc?",
+          "answer": "The comma. The row labels are on the left; the column labels are on the right."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which two names appear, and what is one_score?",
+          "answer": "Amira and Chloe appear. one_score is 91."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why must Student_ID be the index for this exact loc expression?",
+          "answer": "loc looks for row labels. Without set_index, the default row labels are numbers rather than S001 and S003."
+        }
+      ],
+      "task": "Select S002 and S004 with Name and Campus into result. Use at to get S004's Score into one_score.",
+      "hint": "Provide a list of IDs on the left of the comma and a list of column names on the right.",
+      "solution": "df = students().set_index(\"Student_ID\")\nresult = df.loc[[\"S002\", \"S004\"], [\"Name\", \"Campus\"]]\none_score = df.at[\"S004\", \"Score\"]\nprint(result)\nprint(\"One score:\", one_score)",
+      "solution_note": "Bilal and Dana both belong to Dubai. Dana's individual score is 65.",
+      "check": {
+        "prompt": "What does loc use to select rows?",
+        "options": [
+          "Only row positions.",
+          "Only alphabetical sorting.",
+          "Index labels or a Boolean mask."
+        ],
+        "correct": 2,
+        "feedback": "loc is label-based and can also accept a Boolean mask for row selection."
+      },
+      "verify": "assert result.index.tolist() == ['S001', 'S003'] and result['Name'].tolist() == ['Amira', 'Chloe']\nassert one_score == 91",
+      "solution_verify": "assert result.index.tolist() == ['S002', 'S004'] and result['Campus'].tolist() == ['Dubai', 'Dubai']\nassert one_score == 65",
+      "watch": "set_index does not automatically check that IDs are unique; uniqueness needs its own check.",
+      "takeaway": "I can read selected records and one value using meaningful labels."
+    },
+    {
+      "id": "M05C03",
+      "title": "Select row and column positions with iloc",
+      "explanation": "iloc uses numerical positions for both rows and columns. Positions start at 0 even when the printed index labels are student IDs. A slice excludes its stop position. iat reads one value using a row position and a column position.",
+      "code": "df = students()[[\"Name\", \"Campus\", \"Score\"]]\nresult = df.iloc[1:4, [0, 2]]\none_score = df.iat[1, 2]\nprint(result)\nprint(\"One score:\", one_score)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which row positions are included by 1:4?",
+          "answer": "Positions 1, 2, and 3: Bilal, Chloe, and Dana."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which columns do positions 0 and 2 represent here?",
+          "answer": "Name and Score. The table was first arranged with columns Name, Campus, Score."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why can a hard-coded column position become risky after reordering columns?",
+          "answer": "The same numerical position can refer to a different column after the order changes."
+        }
+      ],
+      "task": "Select the first two rows and all three columns into result. Read the first student's score with iat into one_score.",
+      "hint": "Use :2 for the first two row positions and : for all column positions.",
+      "solution": "df = students()[[\"Name\", \"Campus\", \"Score\"]]\nresult = df.iloc[:2, :]\none_score = df.iat[0, 2]\nprint(result)\nprint(\"One score:\", one_score)",
+      "solution_note": "result contains Amira and Bilal across all three selected columns. Amira's score is 88.",
+      "check": {
+        "prompt": "What does df.iloc[1:4] include?",
+        "options": [
+          "Row positions 1, 2, and 3.",
+          "Row positions 1, 2, 3, and 4.",
+          "Only a row whose label is 4."
+        ],
+        "correct": 0,
+        "feedback": "The stop position is excluded, so 1:4 includes 1, 2, and 3."
+      },
+      "verify": "assert result['Name'].tolist() == ['Bilal', 'Chloe', 'Dana']\nassert result.columns.tolist() == ['Name', 'Score'] and one_score == 72",
+      "solution_verify": "assert result.shape == (2, 3) and result['Name'].tolist() == ['Amira', 'Bilal']\nassert one_score == 88",
+      "watch": "iloc expects positions, so df.iloc[\"S001\"] is not valid positional selection.",
+      "takeaway": "I can select a rectangular portion of a table by position."
+    },
+    {
+      "id": "M05C04",
+      "title": "Compare the two slice endpoints",
+      "explanation": "For this sorted, unique index, a loc label slice includes both its start and stop labels. An iloc position slice excludes its stop position. Compare the selected IDs instead of assuming the two expressions return the same rows. Label slicing works best when the index is appropriately sorted and its labels are understood.",
+      "code": "df = students().set_index(\"Student_ID\").sort_index()\nby_label = df.loc[\"S002\":\"S004\", [\"Name\", \"Score\"]]\nby_position = df.iloc[1:3][[\"Name\", \"Score\"]]\nprint(\"Label slice:\")\nprint(by_label)\nprint(\"Position slice:\")\nprint(by_position)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which expression includes the stop value?",
+          "answer": "The loc label slice includes the existing stop label S004 in this sorted unique index."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many rows appear in each result?",
+          "answer": "Three in by_label: S002, S003, S004. Two in by_position: S002 and S003."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Does df.iloc[1:3] mean index labels 1 through 3?",
+          "answer": "No. It means row positions 1 and 2, regardless of their index labels."
+        }
+      ],
+      "task": "Change by_position so that its position slice returns exactly the same three rows as by_label. Store the Boolean equality check in same, then print the selected rows and the check.",
+      "hint": "To include row position 3, stop at position 4.",
+      "solution": "df = students().set_index(\"Student_ID\").sort_index()\nby_label = df.loc[\"S002\":\"S004\", [\"Name\", \"Score\"]]\nby_position = df.iloc[1:4][[\"Name\", \"Score\"]]\nsame = by_label.equals(by_position)\nprint(by_position)\nprint(\"Same result:\", same)",
+      "solution_note": "Both results now contain S002, S003, and S004 with the same column order and labels. equals() reports True.",
+      "check": {
+        "prompt": "On this sorted index, which is true?",
+        "options": [
+          "Both loc and iloc exclude the stop.",
+          "loc includes its stop label; iloc excludes its stop position.",
+          "Both selectors ignore their start."
+        ],
+        "correct": 1,
+        "feedback": "This label slice includes S004, while a positional slice stops before its endpoint."
+      },
+      "verify": "assert by_label.index.tolist() == ['S002', 'S003', 'S004']\nassert by_position.index.tolist() == ['S002', 'S003']",
+      "solution_verify": "assert same is True and by_position.index.tolist() == ['S002', 'S003', 'S004']",
+      "watch": "Selecting from a selection is fine for reading; use one .loc assignment when changing the original table.",
+      "takeaway": "I can explain why a label slice and a position slice can return different rows."
+    }
+  ]
+}

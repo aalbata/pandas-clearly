@@ -1,0 +1,40 @@
+/* Conceptual walkthroughs share the course's readable teal palette. */
+.visual-walkthrough{margin:28px 0 35px;padding:23px;background:var(--paper,#fff);border:1px solid var(--line,#d6e2df);border-top:3px solid var(--brand,#086957);border-radius:9px;min-width:0;color:var(--ink,#20343b)}
+.visual-heading{margin-bottom:16px}.visual-eyebrow{font-size:10px;font-weight:650;text-transform:uppercase;letter-spacing:.11em;color:var(--brand,#086957);margin-bottom:7px}
+.visual-heading h2{font-size:24px;line-height:1.35;letter-spacing:-.4px;margin:0 0 7px}.visual-model-note{font-size:12px;color:var(--muted,#536770);margin:0;line-height:1.6}
+.visual-prediction{font-size:14px;line-height:1.7;max-width:850px;margin:16px 0 20px}
+.visual-controls{display:flex;align-items:flex-end;gap:13px 18px;flex-wrap:wrap;padding:16px;background:var(--soft,#f0f5f3);border:1px solid var(--line,#d6e2df);border-radius:7px;margin:0 0 16px}
+.visual-field{flex:1 1 180px;min-width:0}.visual-field label{display:block;font-size:12px;font-weight:600;line-height:1.55;margin-bottom:7px;color:var(--ink,#20343b)}
+.visual-field select{display:block;width:100%;min-width:0;max-width:100%;font:inherit;font-size:13px;line-height:1.5;padding:9px 32px 9px 10px;border:1px solid #b3c9bf;border-radius:5px;background:var(--paper,#fff);color:var(--ink,#20343b)}
+.visual-toggle{display:flex;gap:11px;align-items:flex-start;font-size:13px;font-weight:600;line-height:1.7;cursor:pointer}.visual-toggle input{width:18px;height:18px;flex:none;margin:3px 0 0;accent-color:var(--brand,#086957)}
+.visual-field select:focus-visible,.visual-toggle input:focus-visible,.visual-table-wrap:focus-visible{outline:3px solid var(--focus,#986818);outline-offset:3px}
+.visual-legend{display:flex;flex-wrap:wrap;gap:8px;font-size:10px;line-height:1.6;margin:15px 0}.visual-legend>span{padding:3px 7px;border-radius:3px;border:1px solid #bdcdc6}
+.visual-stage{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:19px;align-items:start;min-width:0;margin:19px 0}
+.visual-pane{min-width:0}.visual-pane h3{font-size:14px;line-height:1.5;font-weight:650;margin:0 0 9px;color:var(--ink,#20343b)}
+.visual-pane-note{font-size:11px;color:var(--muted,#536770);line-height:1.6;margin:8px 0}
+.visual-table-wrap{width:100%;min-width:0;overflow:auto;border:1px solid var(--line,#d6e2df);border-radius:6px;overscroll-behavior-x:contain}
+.visual-table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;background:var(--paper,#fff);color:var(--ink,#20343b);line-height:1.5;margin:0}
+.visual-table caption{text-align:left;font-size:11px;line-height:1.6;color:var(--muted,#536770);padding:9px 10px;background:var(--soft,#f0f5f3);border-bottom:1px solid var(--line,#d6e2df)}
+.visual-table th,.visual-table td{padding:9px 10px;white-space:normal;border-bottom:1px solid var(--line,#d6e2df);text-align:left;vertical-align:middle;font-size:12px;line-height:1.5}
+.visual-table thead th{font-weight:600;background:var(--soft,#f0f5f3);color:var(--ink,#20343b);overflow-wrap:normal}
+.visual-table tbody th{font-weight:500;background:transparent;color:inherit}
+.visual-table tbody tr:last-child th,.visual-table tbody tr:last-child td{border-bottom:0}
+.visual-table .visual-empty{padding:20px 12px;color:#70571f;font-size:12px;text-align:center}
+.visual-key{background:#e5f2ec!important;color:#174f42!important}
+.visual-row{background:#edf0f8!important;color:#3e4f72!important}
+.visual-hit{background:#d8ece3!important;color:#124d3c!important;font-weight:650!important;box-shadow:inset 0 -2px #43846b}
+tr.visual-hit th,tr.visual-hit td{background:#d8ece3!important;color:#124d3c!important}
+.visual-duplicate{background:#fbf1d9!important;color:#715015!important;box-shadow:inset 0 -2px #b18a35}
+tr.visual-duplicate th,tr.visual-duplicate td{background:#fbf1d9!important;color:#715015!important}
+.visual-drop{background:#f7f8f7!important;color:#5d6966!important}
+tr.visual-drop th,tr.visual-drop td{background:#f7f8f7!important;color:#5d6966!important}
+.visual-summary{font-size:13px;line-height:1.75;border-left:3px solid var(--brand,#086957);background:#edf6f0;color:#20343b;padding:13px 15px;margin:20px 0 17px;overflow-wrap:anywhere}
+.visual-summary[data-state="warning"]{border-left-color:#b18a35;background:#fbf5e8;color:#6e4e17}
+.visual-code-label{font-size:10px;letter-spacing:.07em;text-transform:uppercase;font-weight:650;color:var(--muted,#536770);margin:17px 0 7px}
+.visual-code{font:12px/1.8 var(--mono,ui-monospace,monospace);padding:13px 15px;margin:0;background:var(--code,#edf3f2);border:1px solid var(--line,#d6e2df);border-radius:6px;white-space:pre;max-width:100%;overflow:auto}
+.visual-code code{font:inherit;padding:0;background:transparent;color:inherit;white-space:pre;overflow-wrap:normal}
+.visual-merge-inputs{display:grid;grid-template-columns:1fr;gap:16px;min-width:0}
+@media(max-width:1150px){.visual-stage{grid-template-columns:1fr}.visual-merge-inputs{grid-template-columns:repeat(2,minmax(0,1fr))}.visual-table th,.visual-table td{padding:9px}}
+@media(min-width:901px) and (max-width:1150px){.visual-merge-inputs{grid-template-columns:1fr}}
+@media(max-width:620px){.visual-walkthrough{padding:19px 15px;margin:24px 0}.visual-heading h2{font-size:22px}.visual-prediction{font-size:13px}.visual-controls{padding:12px;gap:13px}.visual-field{flex-basis:100%}.visual-field select{font-size:14px;min-height:44px}.visual-toggle{font-size:13px}.visual-table th,.visual-table td{padding:6px;font-size:11px}.visual-table caption{font-size:10px}.visual-stage{gap:19px}.visual-merge-inputs{grid-template-columns:1fr}.visual-summary{font-size:12px;padding:12px}.visual-code{font-size:11px;padding:12px}.visual-legend{font-size:10px}.visual-code-label{line-height:1.6}}
+@media print{.visual-walkthrough{border:1px solid #bbb;border-top:2px solid #555;background:#fff;padding:14px;break-inside:avoid}.visual-heading h2{font-size:16pt}.visual-controls{background:#fff;padding:8px}.visual-field select{font-size:9pt;padding:4px}.visual-stage{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.visual-table-wrap{overflow:visible}.visual-table th,.visual-table td{font-size:8pt;padding:5px}.visual-table caption{font-size:8pt}.visual-summary{font-size:9pt;background:#f5f5f5}.visual-code{white-space:pre-wrap;overflow:visible;font-size:8pt}.visual-code code{white-space:pre-wrap}.visual-merge-inputs{grid-template-columns:1fr}}

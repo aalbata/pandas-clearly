@@ -1,0 +1,174 @@
+{
+  "id": 12,
+  "title": "Clean and search text",
+  "level": "Core",
+  "goal": "Standardize labels and extract useful pieces from text columns.",
+  "prerequisites": "You can select columns and filter with Boolean masks.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/text.html",
+  "cells": [
+    {
+      "id": "M12C01",
+      "title": "Clean spaces and preserve meaningful labels",
+      "explanation": "The `.str` accessor applies text operations to each entry in a Series. `strip()` removes spaces at the beginning and end. A label map can then standardize spelling while preserving the exact labels you want.",
+      "code": "df = raw_students()\ndf[\"Name\"] = df[\"Name\"].astype(\"string\").str.strip()\nresult = df.loc[df[\"Student_ID\"] == \"S001\", [\"Student_ID\", \"Name\"]]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does `.str.strip()` remove?",
+          "answer": "Leading and trailing whitespace from each text value."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What will S001 Name become?",
+          "answer": "Amira, without the surrounding spaces."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Will strip remove the space inside a two-word name?",
+          "answer": "No. Internal spaces are preserved."
+        }
+      ],
+      "task": "Standardize all Campus labels as exactly RAK or Dubai. Handle case and surrounding spaces before mapping. Store Student_ID and the cleaned Campus for every source row in result.",
+      "hint": "Use `.str.strip().str.lower()` followed by `.map({\"rak\": \"RAK\", \"dubai\": \"Dubai\"})`.",
+      "solution": "df = raw_students()\ncampus_text = df[\"Campus\"].astype(\"string\").str.strip().str.lower()\ndf[\"Campus\"] = campus_text.map({\"rak\": \"RAK\", \"dubai\": \"Dubai\"})\nresult = df[[\"Student_ID\", \"Campus\"]]\nprint(result)",
+      "solution_note": "S002 changes from dubai to Dubai. The abbreviation RAK remains uppercase.",
+      "check": {
+        "prompt": "Would .str.title() alone preserve RAK exactly?",
+        "options": [
+          "Yes",
+          "No, it would produce Rak",
+          "It would remove the whole value"
+        ],
+        "correct": 1,
+        "feedback": "A known-label map is useful when abbreviations require special capitalization."
+      },
+      "verify": "assert result[\"Name\"].tolist() == [\"Amira\"]",
+      "solution_verify": "assert set(result[\"Campus\"]) == {\"RAK\", \"Dubai\"}\nassert result.loc[1, \"Campus\"] == \"Dubai\"\nassert result[\"Campus\"].notna().all()",
+      "watch": "An unrecognized value passed through a dictionary map becomes missing; inspect unmatched labels.",
+      "takeaway": "Standardize categories without destroying their meaning."
+    },
+    {
+      "id": "M12C02",
+      "title": "Literal text and regular expressions",
+      "explanation": "`str.contains()` checks whether text contains a pattern. Use `regex=False` when you want the characters literally. With a regular expression, characters such as a dot can have special meanings.",
+      "code": "files = pd.Series([\"report.csv\", \"reportXcsv\", \"notes.csv\", None, \"csv.backup\"], dtype=\"string\")\nmask = files.str.contains(\".csv\", regex=False, na=False)\nresult = files[mask]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why does the code set regex=False?",
+          "answer": "The dot should be an actual dot, not a pattern matching any character."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which two filenames are selected?",
+          "answer": "report.csv and notes.csv."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "What does na=False do?",
+          "answer": "It treats a missing text entry as not matching the search."
+        }
+      ],
+      "task": "Select all nonmissing filenames that begin with report. Use a regular expression and store the result.",
+      "hint": "The ^ symbol anchors a regular expression to the start of the text.",
+      "solution": "files = pd.Series([\"report.csv\", \"reportXcsv\", \"notes.csv\", None, \"csv.backup\"], dtype=\"string\")\nmask = files.str.contains(r\"^report\", regex=True, na=False)\nresult = files[mask]\nprint(result)",
+      "solution_note": "Both report.csv and reportXcsv begin with report. Their extensions do not matter for this question.",
+      "check": {
+        "prompt": "Which argument makes a search literal?",
+        "options": [
+          "regex=False",
+          "na=False",
+          "ascending=False"
+        ],
+        "correct": 0,
+        "feedback": "regex=False turns off regular-expression interpretation."
+      },
+      "verify": "assert result.tolist() == [\"report.csv\", \"notes.csv\"]",
+      "solution_verify": "assert result.tolist() == [\"report.csv\", \"reportXcsv\"]",
+      "watch": "Always be clear whether a pattern is literal text or a regular expression.",
+      "takeaway": "Choose text-search semantics deliberately."
+    },
+    {
+      "id": "M12C03",
+      "title": "Split a value into separate columns",
+      "explanation": "`str.split()` separates text at a delimiter. `expand=True` creates separate columns rather than a list in each cell. Limiting splits can protect the rest of a string when a delimiter appears repeatedly.",
+      "code": "emails = pd.Series([\"amira@example.edu\", \"bilal@example.edu\", None], dtype=\"string\")\nresult = emails.str.split(\"@\", n=1, expand=True, regex=False)\nresult.columns = [\"Username\", \"Domain\"]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What character divides the email into two parts?",
+          "answer": "The @ character."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What will the first Username be?",
+          "answer": "amira."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why use expand=True?",
+          "answer": "We want two table columns, so each piece can be selected and analyzed separately."
+        }
+      ],
+      "task": "Use the same emails. Extract Domain as a Series, then store the frequency of each known domain in result as a value_counts() Series.",
+      "hint": "Select the second split piece with `.str[1]`, then call `.value_counts()`.",
+      "solution": "emails = pd.Series([\"amira@example.edu\", \"bilal@example.edu\", None], dtype=\"string\")\ndomains = emails.str.split(\"@\", n=1, regex=False).str[1]\nresult = domains.value_counts()\nprint(result)",
+      "solution_note": "example.edu has two known occurrences. Missing domains are excluded by value_counts() by default.",
+      "check": {
+        "prompt": "What object does expand=True produce here?",
+        "options": [
+          "A two-column DataFrame",
+          "A single Python string",
+          "A number"
+        ],
+        "correct": 0,
+        "feedback": "The split pieces become columns in a DataFrame."
+      },
+      "verify": "assert result.loc[0, \"Username\"] == \"amira\"\nassert result.loc[1, \"Domain\"] == \"example.edu\"\nassert result.iloc[2].isna().all()",
+      "solution_verify": "assert result.loc[\"example.edu\"] == 2\nassert len(result) == 1",
+      "watch": "This is a string-processing exercise, not full validation of every legal email address.",
+      "takeaway": "Split text into fields before summarizing its parts."
+    },
+    {
+      "id": "M12C04",
+      "title": "Extract only values that match a structure",
+      "explanation": "`str.extract()` uses capture groups to pull parts out of a matching pattern. Named groups become useful column names. A nonmatching string produces missing fields, which you should inspect.",
+      "code": "codes = pd.Series([\"AI-101\", \"IT-205\", None, \"bad\"], dtype=\"string\")\nresult = codes.str.extract(r\"^(?P<Program>[A-Z]+)-(?P<Number>\\d+)$\")\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What do Program and Number name in the pattern?",
+          "answer": "The two captured fields, which become output columns."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What happens to the value bad?",
+          "answer": "Both extracted fields are missing because the whole pattern does not match."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why are ^ and $ useful here?",
+          "answer": "They require the full string to match the structure, rather than accepting a matching piece inside other text."
+        }
+      ],
+      "task": "Use the same codes. Extract the fields and convert Number to nullable Int64.",
+      "hint": "Pass the extracted Number column through `pd.to_numeric(..., errors=\"coerce\")`.",
+      "solution": "codes = pd.Series([\"AI-101\", \"IT-205\", None, \"bad\"], dtype=\"string\")\nresult = codes.str.extract(r\"^(?P<Program>[A-Z]+)-(?P<Number>\\d+)$\")\nresult[\"Number\"] = pd.to_numeric(result[\"Number\"], errors=\"coerce\").astype(\"Int64\")\nprint(result)",
+      "solution_note": "The valid numeric codes are 101 and 205. The missing and nonmatching source entries remain missing.",
+      "check": {
+        "prompt": "Does extract automatically turn captured digits into integers?",
+        "options": [
+          "Yes",
+          "No; convert the extracted text explicitly",
+          "Only when the group has a name"
+        ],
+        "correct": 1,
+        "feedback": "Matching digits is different from choosing a numeric data type."
+      },
+      "verify": "assert result.loc[0, \"Program\"] == \"AI\"\nassert result.loc[1, \"Number\"] == \"205\"\nassert result[\"Number\"].isna().sum() == 2",
+      "solution_verify": "assert str(result[\"Number\"].dtype) == \"Int64\"\nassert result.loc[0, \"Number\"] == 101\nassert result[\"Number\"].isna().sum() == 2",
+      "watch": "A successful pattern match checks structure, not whether the code exists in an official registry.",
+      "takeaway": "Extract structured pieces and then assign appropriate types."
+    }
+  ]
+}

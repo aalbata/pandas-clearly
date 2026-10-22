@@ -1,0 +1,174 @@
+{
+  "id": 27,
+  "title": "Import CSV and text with confidence",
+  "level": "Extension",
+  "goal": "Choose explicit parsing rules, preserve identifiers, and verify imported records.",
+  "prerequisites": "You can inspect a DataFrame, identify missing values, and read a CSV file.",
+  "reference": "https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html",
+  "cells": [
+    {
+      "id": "M27C01",
+      "title": "Inspect a real CSV before analyzing it",
+      "explanation": "The bundled Palmer Penguins CSV is a real public dataset, preserved from its authoritative upstream source. Read the field definitions in data/public/README.md before interpreting its values. The simplified table records 344 observations, eight fields, and source missing values written as NA.",
+      "code": "path = DATA_DIR / \"public\" / \"penguins.csv\"\ndf = pd.read_csv(path, na_values=[\"NA\"])\nresult = df.head(5)\nprint(result)\nprint(\"Shape:\", df.shape)\nprint(\"Columns:\", df.columns.tolist())\nprint(\"Missing values:\")\nprint(df.isna().sum())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does one row describe, according to the source documentation?",
+          "answer": "One observed penguin in this simplified research dataset. The table does not provide an animal ID."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will the preview contain only complete observations?",
+          "answer": "No. The fourth source record lacks its measurements and sex, so missing values are visible in the first five rows."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why does a successful read_csv call not prove the data are ready for every analysis?",
+          "answer": "You still need to check field meaning, units, types, missingness, and which records the question requires."
+        }
+      ],
+      "task": "Read only species, island, and body_mass_g using usecols. Store the full three-column table in result and print its shape and the number of known body masses.",
+      "hint": "Pass the three names as a list to usecols; count() counts known values.",
+      "solution": "path = DATA_DIR / \"public\" / \"penguins.csv\"\nresult = pd.read_csv(path, usecols=[\"species\", \"island\", \"body_mass_g\"], na_values=[\"NA\"])\nprint(result.head())\nprint(\"Shape:\", result.shape)\nprint(\"Known body masses:\", result[\"body_mass_g\"].count())",
+      "solution_note": "The result has 344 rows and three columns. There are 342 known body masses; two missing measurements remain missing.",
+      "check": {
+        "prompt": "How many body masses support a summary of the available measurements?",
+        "options": [
+          "344",
+          "342",
+          "333"
+        ],
+        "correct": 1,
+        "feedback": "Two of the 344 body-mass entries are missing. The 333 complete-record count answers a different question."
+      },
+      "verify": "assert df.shape == (344, 8)\nassert result.shape == (5, 8)\nassert pd.isna(result.loc[3, \"body_mass_g\"])\nassert df[\"body_mass_g\"].count() == 342",
+      "solution_verify": "assert result.shape == (344, 3)\nassert result.columns.tolist() == [\"species\", \"island\", \"body_mass_g\"]\nassert result[\"body_mass_g\"].count() == 342",
+      "watch": "These are historical study observations from 2007–2009, not current measurements or a population census.",
+      "takeaway": "Inspect the parsed table and its documentation together."
+    },
+    {
+      "id": "M27C02",
+      "title": "The separator is part of the file contract",
+      "explanation": "A text file does not need a .csv extension to hold a table. Its delimiter determines where fields begin and end. The TSV and TXT files here are documented format conversions of the same public observations, so you can compare the imports directly.",
+      "code": "path = DATA_DIR / \"public\" / \"penguins.tsv\"\nwrong = pd.read_csv(path, sep=\",\")\nresult = pd.read_csv(path, sep=\"\\t\", na_values=[\"NA\"])\nprint(\"With a comma separator:\", wrong.shape)\nprint(\"With a tab separator:\", result.shape)\nprint(result.head(3))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why does the comma-based import have only one column?",
+          "answer": "The TSV uses tabs between fields; a comma separator does not split those fields."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What shape should the correctly parsed TSV have?",
+          "answer": "344 rows and eight columns, matching the original CSV."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Does changing a filename extension change its internal delimiter?",
+          "answer": "No. Parsing must follow the actual file contents and documented format."
+        }
+      ],
+      "task": "Read penguins.txt into result using its semicolon separator and skip its two comment lines using comment=\"#\". Read penguins.csv into reference and compare the two parsed tables.",
+      "hint": "Use pd.read_csv even though the extension is .txt.",
+      "solution": "folder = DATA_DIR / \"public\"\nresult = pd.read_csv(folder / \"penguins.txt\", sep=\";\", comment=\"#\", encoding=\"utf-8\", na_values=[\"NA\"])\nreference = pd.read_csv(folder / \"penguins.csv\", na_values=[\"NA\"])\npd.testing.assert_frame_equal(result, reference)\nprint(result.head(3))\nprint(\"Same parsed values, columns, and row order as the source CSV.\")",
+      "solution_note": "The comment lines are excluded from the table, and all 344 observations remain. No conversion to an Excel file is necessary to read this text format.",
+      "check": {
+        "prompt": "Which setting separates a TSV into fields?",
+        "options": [
+          "sep=\";\"",
+          "sep=\",\"",
+          "sep=\"\\t\""
+        ],
+        "correct": 2,
+        "feedback": "TSV means tab-separated values, so the delimiter is a tab."
+      },
+      "verify": "assert wrong.shape == (344, 1)\nassert result.shape == (344, 8)\nassert result.loc[0, \"bill_length_mm\"] == 39.1",
+      "solution_verify": "assert result.shape == (344, 8)\npd.testing.assert_frame_equal(result, reference)",
+      "watch": "Do not use skiprows to hide unexpected malformed records; first identify what those rows mean.",
+      "takeaway": "Read a table according to its actual delimiter and header rules."
+    },
+    {
+      "id": "M27C03",
+      "title": "Preserve leading zeros and literal NA codes",
+      "explanation": "This small import fixture is explicitly fictional and separate from the penguin research data. Its IDs contain leading zeros, NA is a literal site code, and MISSING marks one unavailable amount. Encoding, quoting, decimal symbols, and missing-value rules all affect what a reader produces.",
+      "code": "path = DATA_DIR / \"public\" / \"import_practice_semicolon.csv\"\nresult = pd.read_csv(path, sep=\";\", comment=\"#\", encoding=\"utf-8-sig\", dtype=\"string\", keep_default_na=False)\nprint(result)\nprint(\"IDs:\", result[\"record_id\"].tolist())\nprint(\"Site codes:\", result[\"site_code\"].tolist())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why is record_id read as text?",
+          "answer": "It is an identifier, not a quantity. Converting 001 to an integer would lose its leading zeros."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Does the NA site code become a missing value in this import?",
+          "answer": "No. keep_default_na=False preserves the literal code as text."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why does the semicolon inside the second note not create an extra column?",
+          "answer": "The field is quoted using CSV quoting rules, so the embedded separator belongs to the note."
+        }
+      ],
+      "task": "Read the fixture again with record_id and site_code as strings, comma decimal symbols for amount_eur, and only MISSING in amount_eur treated as missing. Keep the NA site code unchanged. Print the known amount count and sum.",
+      "hint": "Use decimal=\",\" and a column-specific na_values dictionary while keeping keep_default_na=False.",
+      "solution": "path = DATA_DIR / \"public\" / \"import_practice_semicolon.csv\"\nresult = pd.read_csv(path, sep=\";\", comment=\"#\", encoding=\"utf-8-sig\", dtype={\"record_id\": \"string\", \"site_code\": \"string\"}, decimal=\",\", keep_default_na=False, na_values={\"amount_eur\": [\"MISSING\"]})\nprint(result)\nprint(\"Known amounts:\", result[\"amount_eur\"].count())\nprint(\"Known amount sum:\", result[\"amount_eur\"].sum())",
+      "solution_note": "The amounts are 12.5, missing, and 0.0 EUR. Two known amounts sum to 12.5; the missing value was not replaced with zero. Both NA site codes and all leading-zero IDs are preserved.",
+      "check": {
+        "prompt": "Which is a safe way to preserve leading-zero identifiers?",
+        "options": [
+          "Read the identifier column with dtype=\"string\"",
+          "Convert every column to integers",
+          "Remove all zeros before importing"
+        ],
+        "correct": 0,
+        "feedback": "Identifiers need their full text representation even when they contain only digits."
+      },
+      "verify": "assert result.shape == (3, 4)\nassert result[\"record_id\"].tolist() == [\"001\", \"010\", \"100\"]\nassert result[\"site_code\"].tolist() == [\"NA\", \"EU\", \"NA\"]\nassert result.loc[1, \"note\"] == \"quoted; semicolon\"",
+      "solution_verify": "assert result[\"record_id\"].tolist() == [\"001\", \"010\", \"100\"]\nassert result[\"site_code\"].tolist() == [\"NA\", \"EU\", \"NA\"]\nassert result[\"amount_eur\"].count() == 2\nassert result[\"amount_eur\"].sum() == 12.5\nassert result.loc[2, \"amount_eur\"] == 0.0",
+      "watch": "The meanings NA=North Area and EU=East Unit apply only to this invented fixture. Do not impose those meanings on other sources.",
+      "takeaway": "Specify identifiers, missing tokens, and number formats deliberately."
+    },
+    {
+      "id": "M27C04",
+      "title": "Verify a CSV round trip with explicit types",
+      "explanation": "A CSV stores text and does not carry a pandas dtype schema. A repeatable import can specify its expected text, integer, and measurement types. Exporting and reading back the table lets you check that values, missingness, and the chosen schema survive.",
+      "code": "schema = {\"species\": \"string\", \"island\": \"string\", \"bill_length_mm\": \"Float64\", \"bill_depth_mm\": \"Float64\", \"flipper_length_mm\": \"Int64\", \"body_mass_g\": \"Int64\", \"sex\": \"string\", \"year\": \"Int64\"}\ndf = pd.read_csv(DATA_DIR / \"public\" / \"penguins.csv\", dtype=schema, na_values=[\"NA\"])\npath = OUTPUT_DIR / \"penguins_round_trip.csv\"\ndf.to_csv(path, index=False, na_rep=\"NA\")\nresult = pd.read_csv(path, dtype=schema, na_values=[\"NA\"])\npd.testing.assert_frame_equal(result, df)\nprint(\"Rows and columns:\", result.shape)\nprint(result.dtypes)\nprint(\"Round-trip values and declared types match.\")",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why use nullable Int64 for body_mass_g?",
+          "answer": "The source contains whole-number masses and missing entries; nullable Int64 represents both without inventing values."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many columns should the exported CSV contain?",
+          "answer": "Eight, because index=False does not add the DataFrame index as a ninth field."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why specify the schema again when reading the exported CSV?",
+          "answer": "CSV has no embedded pandas dtype contract, so the reader would otherwise infer types again."
+        }
+      ],
+      "task": "Using the same explicit schema, store only Gentoo observations in gentoo with a reset index. Export gentoo to penguins_gentoo.csv, read the file back into result, and compare result with gentoo.",
+      "hint": "Reset the filtered index because the CSV intentionally does not store it.",
+      "solution": "schema = {\"species\": \"string\", \"island\": \"string\", \"bill_length_mm\": \"Float64\", \"bill_depth_mm\": \"Float64\", \"flipper_length_mm\": \"Int64\", \"body_mass_g\": \"Int64\", \"sex\": \"string\", \"year\": \"Int64\"}\ndf = pd.read_csv(DATA_DIR / \"public\" / \"penguins.csv\", dtype=schema, na_values=[\"NA\"])\ngentoo = df.loc[df[\"species\"] == \"Gentoo\"].reset_index(drop=True)\npath = OUTPUT_DIR / \"penguins_gentoo.csv\"\ngentoo.to_csv(path, index=False, na_rep=\"NA\")\nresult = pd.read_csv(path, dtype=schema, na_values=[\"NA\"])\npd.testing.assert_frame_equal(result, gentoo)\nprint(\"Gentoo rows:\", len(result))\nprint(\"Known body masses:\", result[\"body_mass_g\"].count())",
+      "solution_note": "The subset contains 124 Gentoo observations, with 123 known body masses. Its row labels are newly created positions, not animal identities.",
+      "check": {
+        "prompt": "Does a CSV automatically preserve a pandas nullable-integer dtype?",
+        "options": [
+          "Yes, every dtype is stored inside CSV",
+          "No; provide the intended dtype when importing",
+          "Only if the filename contains Int64"
+        ],
+        "correct": 1,
+        "feedback": "CSV stores fields as text; the receiving reader applies the type rules."
+      },
+      "verify": "assert result.shape == (344, 8)\nassert str(result[\"body_mass_g\"].dtype) == \"Int64\"\npd.testing.assert_frame_equal(result, df)",
+      "solution_verify": "assert result.shape == (124, 8)\nassert result[\"body_mass_g\"].count() == 123\npd.testing.assert_frame_equal(result, gentoo)",
+      "watch": "An export should go to OUTPUT_DIR, leaving the downloaded source unchanged.",
+      "takeaway": "Treat an import/export schema as part of reproducibility."
+    }
+  ]
+}

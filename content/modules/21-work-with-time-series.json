@@ -1,0 +1,174 @@
+{
+  "id": 21,
+  "title": "Work with time series",
+  "level": "Extension",
+  "goal": "Distinguish calendar dates, observed records, windows, and changes over time.",
+  "prerequisites": "Parse dates and understand missing values and sorting.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/timeseries.html",
+  "cells": [
+    {
+      "id": "M21C01",
+      "title": "Expose a missing day",
+      "explanation": "A DatetimeIndex lets pandas work with calendar dates. asfreq(\"D\") requests a daily index between the first and last observations. The missing October 4 row appears as unknown, not zero.",
+      "code": "df = attendance()\ndf[\"Date\"] = pd.to_datetime(df[\"Date\"], format=\"%Y-%m-%d\")\nresult = df.set_index(\"Date\")[\"Visitors\"].sort_index().asfreq(\"D\")\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does freq=\"D\" represent?",
+          "answer": "One index label per calendar day."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many rows will result contain?",
+          "answer": "7 calendar days, although the source has only 6 observations."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why not fill the missing day with zero automatically?",
+          "answer": "No record does not prove that nobody visited; the value is unknown."
+        }
+      ],
+      "task": "Build the daily Series and select only entries whose visitor count is missing. Store that filtered Series, retaining its date index, in result and print it.",
+      "hint": "Filter the daily Series with its isna() mask.",
+      "solution": "df = attendance()\ndf[\"Date\"] = pd.to_datetime(df[\"Date\"], format=\"%Y-%m-%d\")\ndaily = df.set_index(\"Date\")[\"Visitors\"].sort_index().asfreq(\"D\")\nresult = daily[daily.isna()]\nprint(result)",
+      "solution_note": "Only 2026-10-04 is missing between the observed start and end dates.",
+      "check": {
+        "prompt": "What can asfreq(\"D\") reveal?",
+        "options": [
+          "Missing calendar dates",
+          "The true counts for missing days",
+          "Why the sensor failed"
+        ],
+        "correct": 0,
+        "feedback": "It creates the requested date grid; it cannot reconstruct unknown measurements."
+      },
+      "verify": "assert len(result) == 7\nassert pd.isna(result.loc[\"2026-10-04\"])",
+      "solution_verify": "assert len(result) == 1\nassert result.index[0] == pd.Timestamp(\"2026-10-04\")",
+      "watch": "asfreq does not aggregate. Ensure the date index is unique before requesting a frequency.",
+      "takeaway": "A gap in records is not automatically a zero."
+    },
+    {
+      "id": "M21C02",
+      "title": "Resample into calendar bins",
+      "explanation": "resample groups observations into time bins. Here each bin starts at a three-day boundary measured from the first day. Report the number of observations beside the total so a partial bin is visible.",
+      "code": "df = attendance()\ndf[\"Date\"] = pd.to_datetime(df[\"Date\"], format=\"%Y-%m-%d\")\ns = df.set_index(\"Date\")[\"Visitors\"].sort_index()\ngroups = s.resample(\"3D\")\nresult = pd.DataFrame({\"Recorded_Total\": groups.sum(min_count=1), \"Observed_Days\": groups.count()})\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What is grouped by resample(\"3D\")?",
+          "answer": "Observations falling in successive three-day calendar bins."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What total is recorded for October 1 through October 3?",
+          "answer": "62: 20 + 24 + 18."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Is the total of 58 for the next bin a complete three-day total?",
+          "answer": "No. October 4 is missing, so it includes only the recorded counts for October 5 and 6."
+        }
+      ],
+      "task": "Resample to individual days and use sum(min_count=1) so October 4 stays missing. Store only the daily total Series, indexed by date, in result.",
+      "hint": "Change \"3D\" to \"D\" and require at least one known value for a sum.",
+      "solution": "df = attendance()\ndf[\"Date\"] = pd.to_datetime(df[\"Date\"], format=\"%Y-%m-%d\")\ns = df.set_index(\"Date\")[\"Visitors\"].sort_index()\nresult = s.resample(\"D\").sum(min_count=1)\nprint(result)",
+      "solution_note": "min_count=1 keeps a day with no observations unknown instead of reporting an empty sum as zero.",
+      "check": {
+        "prompt": "Why show Observed_Days beside totals?",
+        "options": [
+          "To reveal incomplete bins",
+          "To make every bin complete",
+          "To replace missing days"
+        ],
+        "correct": 0,
+        "feedback": "A total based on two observed days should not be interpreted as a complete three-day total."
+      },
+      "verify": "assert result[\"Recorded_Total\"].tolist() == [62, 58, 32]\nassert result[\"Observed_Days\"].tolist() == [3, 2, 1]",
+      "solution_verify": "assert len(result) == 7\nassert pd.isna(result.loc[\"2026-10-04\"])\nassert result.loc[\"2026-10-05\"] == 30",
+      "watch": "Time-bin labels and boundaries depend on frequency and options; state the reporting period.",
+      "takeaway": "Time summaries need a coverage check."
+    },
+    {
+      "id": "M21C03",
+      "title": "Calculate a rolling mean",
+      "explanation": "A rolling window calculates a statistic repeatedly as it moves through the data. On this daily grid, rolling(3) means three calendar rows. min_periods=3 requires three known counts, so windows crossing the missing day stay unknown.",
+      "code": "df = attendance()\ndf[\"Date\"] = pd.to_datetime(df[\"Date\"], format=\"%Y-%m-%d\")\ndaily = df.set_index(\"Date\")[\"Visitors\"].sort_index().asfreq(\"D\")\nresult = pd.DataFrame({\"Visitors\": daily, \"Mean_3_Days\": daily.rolling(3, min_periods=3).mean()})\nprint(result.round(2))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does min_periods=3 require?",
+          "answer": "At least three non-missing observations within the current window."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What is the rolling mean on October 7?",
+          "answer": "30: (30 + 28 + 32) / 3."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Would rolling(3) mean three days on the original irregular index?",
+          "answer": "No. It would mean three observed rows, which can span more than three days."
+        }
+      ],
+      "task": "Calculate a two-day rolling mean requiring two known daily counts. Store only the resulting mean Series, indexed by date, in result.",
+      "hint": "Apply rolling(2, min_periods=2).mean() to the daily Series and save that Series directly.",
+      "solution": "df = attendance()\ndf[\"Date\"] = pd.to_datetime(df[\"Date\"], format=\"%Y-%m-%d\")\ndaily = df.set_index(\"Date\")[\"Visitors\"].sort_index().asfreq(\"D\")\nresult = daily.rolling(2, min_periods=2).mean()\nprint(result.round(2))",
+      "solution_note": "The last two-day mean is also 30, using only October 6 and 7. Earlier windows differ.",
+      "check": {
+        "prompt": "Without a regular daily grid, rolling(3) means what?",
+        "options": [
+          "Exactly three calendar days",
+          "Three rows",
+          "Three months"
+        ],
+        "correct": 1,
+        "feedback": "An integer window size counts rows, regardless of the spacing between timestamps."
+      },
+      "verify": "assert result.loc[\"2026-10-07\", \"Mean_3_Days\"] == 30\nassert pd.isna(result.loc[\"2026-10-05\", \"Mean_3_Days\"])",
+      "solution_verify": "assert result.loc[\"2026-10-02\"] == 22\nassert result.loc[\"2026-10-07\"] == 30\nassert pd.isna(result.loc[\"2026-10-05\"])",
+      "watch": "Sort time data before rolling. Otherwise the window follows an unintended order.",
+      "takeaway": "Window size and missing-data rules both affect a moving average."
+    },
+    {
+      "id": "M21C04",
+      "title": "Compare with a previous period",
+      "explanation": "shift(1) places the previous row value beside the current row. pct_change(fill_method=None) calculates fractional change without filling gaps. Multiplying by 100 expresses that change as a percentage.",
+      "code": "df = attendance()\ndf[\"Date\"] = pd.to_datetime(df[\"Date\"], format=\"%Y-%m-%d\")\ndaily = df.set_index(\"Date\")[\"Visitors\"].sort_index().asfreq(\"D\")\nresult = pd.DataFrame({\"Visitors\": daily, \"Previous_Day\": daily.shift(1), \"Change_Percent\": daily.pct_change(fill_method=None) * 100})\nprint(result.round(2))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why is the first change missing?",
+          "answer": "There is no previous value in this series for comparison."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What percentage change is shown on October 2?",
+          "answer": "20%, from 20 to 24."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is the October 5 change unknown?",
+          "answer": "The previous calendar day, October 4, has no known visitor count."
+        }
+      ],
+      "task": "Calculate the signed difference in visitor counts from two calendar days earlier using shift(2). Store the difference Series, indexed by date, in result.",
+      "hint": "Subtract the shifted daily Series from the original daily Series.",
+      "solution": "df = attendance()\ndf[\"Date\"] = pd.to_datetime(df[\"Date\"], format=\"%Y-%m-%d\")\ndaily = df.set_index(\"Date\")[\"Visitors\"].sort_index().asfreq(\"D\")\nresult = daily - daily.shift(2)\nprint(result)",
+      "solution_note": "October 7 is two visitors higher than October 5. Comparisons involving missing dates stay unknown.",
+      "check": {
+        "prompt": "Why multiply pct_change by 100?",
+        "options": [
+          "It returns fractional change",
+          "It returns rounded percentage points",
+          "It returns a count"
+        ],
+        "correct": 0,
+        "feedback": "A fractional change of 0.20 corresponds to 20%."
+      },
+      "verify": "assert np.isclose(result.loc[\"2026-10-02\", \"Change_Percent\"], 20)\nassert pd.isna(result.loc[\"2026-10-05\", \"Change_Percent\"])",
+      "solution_verify": "assert result.loc[\"2026-10-07\"] == 2\nassert result.loc[\"2026-10-03\"] == -2",
+      "watch": "Percent change from a previous zero is undefined; inspect zero denominators.",
+      "takeaway": "Be explicit about the time interval and denominator."
+    }
+  ]
+}

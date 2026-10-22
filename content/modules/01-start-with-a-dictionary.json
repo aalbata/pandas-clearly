@@ -1,0 +1,174 @@
+{
+  "id": 1,
+  "title": "Start with a dictionary",
+  "level": "Foundation",
+  "goal": "Read, access, and change named values in a Python dictionary.",
+  "prerequisites": "You only need to recognize text, numbers, and the print function.",
+  "reference": "https://docs.python.org/3/tutorial/datastructures.html#dictionaries",
+  "cells": [
+    {
+      "id": "M01C01",
+      "title": "What are the key and the value?",
+      "explanation": "A dictionary stores pairs: a key and its value. The key is a name you use to find a value, such as \"Name\" or \"Age\". Curly brackets create the dictionary; a colon separates each key from its value. Here, one dictionary describes one fictional student.",
+      "code": "# Text uses quotes. A whole number does not need quotes.\nstudent = {\"Name\": \"Amira\", \"Age\": 20, \"Campus\": \"RAK\"}\nprint(student)\nprint(type(student).__name__)\nprint(len(student))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "In \"Age\": 20, which part is the key and which part is the value?",
+          "answer": "\"Age\" is the key. The integer 20 is its value."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What will len(student) print: the number of letters, pairs, or students?",
+          "answer": "It prints 3, the number of key-value pairs."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is \"20\" different from 20?",
+          "answer": "\"20\" is text; 20 is an integer. Numbers stored as text need conversion before arithmetic."
+        }
+      ],
+      "task": "Create a dictionary for Bilal, age 21, at Dubai. Add a fourth key called Program with value IT. Print the dictionary and its number of pairs.",
+      "hint": "Use four key: value pairs inside one pair of curly brackets.",
+      "solution": "student = {\"Name\": \"Bilal\", \"Age\": 21, \"Campus\": \"Dubai\", \"Program\": \"IT\"}\nprint(student)\nprint(len(student))",
+      "solution_note": "The result has four pairs. Program is a new key, so the dictionary length increases to 4.",
+      "check": {
+        "prompt": "What does the colon do in \"Age\": 20?",
+        "options": [
+          "It ends the dictionary.",
+          "It connects a key to its value.",
+          "It converts text to a number."
+        ],
+        "correct": 1,
+        "feedback": "A colon separates a dictionary key from its associated value."
+      },
+      "verify": "assert student == {'Name': 'Amira', 'Age': 20, 'Campus': 'RAK'}\nassert len(student) == 3",
+      "solution_verify": "assert student['Name'] == 'Bilal' and student['Age'] == 21\nassert student['Program'] == 'IT' and len(student) == 4",
+      "watch": "Do not mix up braces { } for dictionaries with brackets [ ] used for lists and access.",
+      "takeaway": "I can identify the keys, values, and number of pairs in a dictionary."
+    },
+    {
+      "id": "M01C02",
+      "title": "Find a value by its key",
+      "explanation": "Square brackets after a dictionary look up a key. The key must match exactly, including upper and lower case. get() is useful when a key might be missing: you can supply a default value instead of raising KeyError.",
+      "code": "student = {\"Name\": \"Amira\", \"Age\": 20, \"Campus\": \"RAK\"}\nprint(student[\"Name\"])\nprint(student[\"Age\"])\nprint(student.get(\"Email\", \"Not provided\"))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does student[\"Name\"] ask Python to find?",
+          "answer": "It asks for the value associated with the exact key \"Name\"."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What will the three print statements display?",
+          "answer": "Amira, then 20, then Not provided, each on a separate line."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Would student[\"name\"] work here? Why?",
+          "answer": "No. The key is \"Name\", with an uppercase N. The different key \"name\" is absent, so direct access raises KeyError."
+        }
+      ],
+      "task": "Store the campus in campus. Use get() to request Program with the default \"Undeclared\" and save the value in program. Store whether \"Age\" is a key in has_age. Print all three values.",
+      "hint": "Use student[\"Campus\"], student.get(...), and \"Age\" in student.",
+      "solution": "student = {\"Name\": \"Amira\", \"Age\": 20, \"Campus\": \"RAK\"}\ncampus = student[\"Campus\"]\nprogram = student.get(\"Program\", \"Undeclared\")\nhas_age = \"Age\" in student\nprint(campus)\nprint(program)\nprint(has_age)",
+      "solution_note": "Campus is RAK. Program is missing, so get() returns the chosen default. Membership with in checks keys, so has_age is True.",
+      "check": {
+        "prompt": "Which expression safely returns \"Unknown\" when Phone is missing?",
+        "options": [
+          "student[\"Phone\", \"Unknown\"]",
+          "student[\"Phone\"]",
+          "student.get(\"Phone\", \"Unknown\")"
+        ],
+        "correct": 2,
+        "feedback": "get(key, default) supplies the default only when the requested key is absent."
+      },
+      "verify": "assert student['Name'] == 'Amira'\nassert student.get('Email', 'Not provided') == 'Not provided'",
+      "solution_verify": "assert campus == 'RAK' and program == 'Undeclared' and has_age is True",
+      "watch": "A default from get() does not insert the missing key into the dictionary.",
+      "takeaway": "I can choose between direct key access and a safe lookup with a default."
+    },
+    {
+      "id": "M01C03",
+      "title": "Change, add, and remove a pair",
+      "explanation": "Assigning a value to an existing key replaces its old value. Assigning to a new key adds a pair. pop() removes a key and returns its value. A dictionary cannot hold two separate entries with the same key.",
+      "code": "student = {\"Name\": \"Amira\", \"Age\": 20, \"Campus\": \"RAK\"}\nstudent[\"Age\"] = 21\nstudent[\"Program\"] = \"AI\"\nremoved = student.pop(\"Campus\")\nprint(student)\nprint(\"Removed:\", removed)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which line changes an existing pair, and which line adds a new pair?",
+          "answer": "student[\"Age\"] = 21 changes Age. student[\"Program\"] = \"AI\" adds Program."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many pairs remain after Campus is removed?",
+          "answer": "Three: Name, Age, and Program."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why does changing Age not increase the dictionary length?",
+          "answer": "Age already exists. Assignment replaces its value instead of adding a second Age key."
+        }
+      ],
+      "task": "Start with the same original dictionary. Increase Age by 2, add Program as IT, and remove Campus. Print the final dictionary.",
+      "hint": "Read the existing age on the right side of the assignment: student[\"Age\"] + 2.",
+      "solution": "student = {\"Name\": \"Amira\", \"Age\": 20, \"Campus\": \"RAK\"}\nstudent[\"Age\"] = student[\"Age\"] + 2\nstudent[\"Program\"] = \"IT\"\nstudent.pop(\"Campus\")\nprint(student)",
+      "solution_note": "Age is 22 and Program is IT. Campus is no longer a key. Reading the old age lets the same calculation work for other starting ages.",
+      "check": {
+        "prompt": "What happens when you assign another value to an existing key?",
+        "options": [
+          "Its value is replaced.",
+          "A second identical key is added.",
+          "The dictionary is sorted."
+        ],
+        "correct": 0,
+        "feedback": "Each dictionary key identifies one entry; assigning to it replaces its associated value."
+      },
+      "verify": "assert student == {'Name': 'Amira', 'Age': 21, 'Program': 'AI'}\nassert removed == 'RAK'",
+      "solution_verify": "assert student == {'Name': 'Amira', 'Age': 22, 'Program': 'IT'}",
+      "watch": "pop() raises KeyError for an absent key unless you also provide a default.",
+      "takeaway": "I can update a dictionary without confusing replacement with insertion."
+    },
+    {
+      "id": "M01C04",
+      "title": "Read all keys and all pairs",
+      "explanation": "keys() gives the keys, values() gives their values, and items() gives key-value pairs. list() turns these views into lists that are easy to display. A for loop visits each pair in turn; the indented line runs once per pair.",
+      "code": "student = {\"Name\": \"Amira\", \"Age\": 20, \"Campus\": \"RAK\"}\nprint(list(student.keys()))\nprint(list(student.values()))\nfor key, value in student.items():\n    print(key, \"=\", value)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What two things are assigned to key and value on each loop turn?",
+          "answer": "One dictionary key and the value associated with that key."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many times does the indented print line run?",
+          "answer": "Three times, once for each pair."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "What is the difference between \"RAK\" in student and \"RAK\" in student.values()?",
+          "answer": "The first checks keys and is False. The second checks values and is True."
+        }
+      ],
+      "task": "Add Program as AI, print only the keys, and build a list named pairs using list(student.items()). Print pairs.",
+      "hint": "items() exposes both parts of each dictionary entry together.",
+      "solution": "student = {\"Name\": \"Amira\", \"Age\": 20, \"Campus\": \"RAK\", \"Program\": \"AI\"}\nprint(list(student.keys()))\npairs = list(student.items())\nprint(pairs)",
+      "solution_note": "There are four keys and four pairs. Each pair is displayed as a tuple, such as (\"Program\", \"AI\").",
+      "check": {
+        "prompt": "Which method gives key-value pairs?",
+        "options": [
+          "values()",
+          "items()",
+          "keys()"
+        ],
+        "correct": 1,
+        "feedback": "items() provides each key together with its value."
+      },
+      "verify": "assert list(student.keys()) == ['Name', 'Age', 'Campus']\nassert list(student.values()) == ['Amira', 20, 'RAK']",
+      "solution_verify": "assert pairs == [('Name', 'Amira'), ('Age', 20), ('Campus', 'RAK'), ('Program', 'AI')]",
+      "watch": "A Python dictionary preserves insertion order, but this does not mean the keys are alphabetically sorted.",
+      "takeaway": "I can inspect a dictionary and explain what a key-value loop does."
+    }
+  ]
+}

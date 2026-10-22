@@ -1,0 +1,174 @@
+{
+  "id": 4,
+  "title": "Build and inspect a DataFrame",
+  "level": "Foundation",
+  "goal": "Turn Python data into a table and inspect its structure before analysis.",
+  "prerequisites": "Know dictionaries, lists, Series values, and index labels.",
+  "reference": "https://pandas.pydata.org/docs/getting_started/intro_tutorials/01_table_oriented.html",
+  "cells": [
+    {
+      "id": "M04C01",
+      "title": "Make a table from a dictionary",
+      "explanation": "A DataFrame is a two-dimensional table with rows and named columns. Pass a dictionary of equally long lists to pd.DataFrame(). Each dictionary key becomes a column name. Each list position supplies the values for one row.",
+      "code": "data = {\"Name\": [\"Amira\", \"Bilal\", \"Chloe\"], \"Age\": [20, 21, 19]}\ndf = pd.DataFrame(data)\nprint(df)\nprint(type(df).__name__)\nprint(\"Rows and columns:\", df.shape)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What becomes the two column names?",
+          "answer": "The dictionary keys Name and Age."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What does df.shape print?",
+          "answer": "(3, 2): three rows and two columns."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Does the default index count as a third data column?",
+          "answer": "No. The index labels the rows and is separate from the two named data columns."
+        }
+      ],
+      "task": "Add a Campus list with RAK, Dubai, and RAK to data before building df. Print the new table and shape.",
+      "hint": "Add another key with a list of exactly three values.",
+      "solution": "data = {\n    \"Name\": [\"Amira\", \"Bilal\", \"Chloe\"],\n    \"Age\": [20, 21, 19],\n    \"Campus\": [\"RAK\", \"Dubai\", \"RAK\"]\n}\ndf = pd.DataFrame(data)\nprint(df)\nprint(\"Rows and columns:\", df.shape)",
+      "solution_note": "The shape becomes (3, 3). The number of rows stays the same while the new key adds one data column.",
+      "check": {
+        "prompt": "In df.shape, what comes first?",
+        "options": [
+          "Column count.",
+          "Row count.",
+          "The first score."
+        ],
+        "correct": 1,
+        "feedback": "shape is a pair in the order (number of rows, number of columns)."
+      },
+      "verify": "assert df.shape == (3, 2)\nassert df.columns.tolist() == ['Name', 'Age']",
+      "solution_verify": "assert df.shape == (3, 3) and df.loc[1, 'Campus'] == 'Dubai'",
+      "watch": "Call pd.DataFrame(...) with a capital D and F; Python names are case-sensitive.",
+      "takeaway": "I can turn a dictionary of lists into a DataFrame."
+    },
+    {
+      "id": "M04C02",
+      "title": "Build a table from records",
+      "explanation": "A list of dictionaries can also become a DataFrame. Each dictionary contributes a row, and pandas matches fields by their keys. If one record lacks a field, pandas marks that cell as missing. The table therefore does not require every record to contain the same keys.",
+      "code": "rows = [\n    {\"Name\": \"Amira\", \"Age\": 20, \"Campus\": \"RAK\"},\n    {\"Name\": \"Bilal\", \"Age\": 21},\n    {\"Name\": \"Chloe\", \"Age\": 19, \"Campus\": \"RAK\"}\n]\ndf = pd.DataFrame(rows)\nprint(df)\nprint(\"Missing campus:\", df[\"Campus\"].isna().sum())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Which record is missing the Campus key?",
+          "answer": "The second record, for Bilal."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will the second row disappear because its campus is absent?",
+          "answer": "No. Bilal stays in the table with a missing Campus value."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is this different from unequal plain lists?",
+          "answer": "Record dictionaries name their fields, so pandas can identify the missing field for a particular row. Unequal plain lists do not state which row is missing a value."
+        }
+      ],
+      "task": "Add Campus as Dubai to Bilal's record before constructing df. Check that no campus values are missing.",
+      "hint": "Update rows[1][\"Campus\"] before calling pd.DataFrame(rows).",
+      "solution": "rows = [\n    {\"Name\": \"Amira\", \"Age\": 20, \"Campus\": \"RAK\"},\n    {\"Name\": \"Bilal\", \"Age\": 21},\n    {\"Name\": \"Chloe\", \"Age\": 19, \"Campus\": \"RAK\"}\n]\nrows[1][\"Campus\"] = \"Dubai\"\ndf = pd.DataFrame(rows)\nprint(df)\nprint(\"Missing campus:\", df[\"Campus\"].isna().sum())",
+      "solution_note": "Bilal now has Dubai in the Campus column. There are zero missing Campus values.",
+      "check": {
+        "prompt": "A record is missing one field. What can pd.DataFrame(rows) do?",
+        "options": [
+          "Invent a likely value.",
+          "Delete all the other records.",
+          "Keep the row and mark the field as missing."
+        ],
+        "correct": 2,
+        "feedback": "Pandas aligns record fields by key and represents an absent field as missing."
+      },
+      "verify": "assert df.shape == (3, 3) and pd.isna(df.loc[1, 'Campus'])\nassert df['Campus'].isna().sum() == 1",
+      "solution_verify": "assert df.loc[1, 'Campus'] == 'Dubai' and df['Campus'].isna().sum() == 0",
+      "watch": "Missing-value display can vary with dtype and pandas version; inspect it with isna().",
+      "takeaway": "I can build a DataFrame from records and identify a missing field."
+    },
+    {
+      "id": "M04C03",
+      "title": "Look at the beginning and the end",
+      "explanation": "The setup provides students(), a helper that returns a fresh copy of the 12-row fictional practice table. head(n) shows the first n rows and tail(n) shows the last n rows. These previews help you understand a file without printing the whole dataset. A preview alone does not prove every row is valid.",
+      "code": "df = students()\nfirst = df.head(3)\nlast = df.tail(2)\nprint(\"First three rows:\")\nprint(first)\nprint(\"Last two rows:\")\nprint(last)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Is students() a built-in pandas function?",
+          "answer": "No. It is a helper defined in this workbook's setup to return the practice data."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which student IDs appear in tail(2)?",
+          "answer": "S011 and S012."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why should you avoid deciding that a whole dataset is clean after reading only head()?",
+          "answer": "Problems can occur in rows that the preview does not show. You also need checks across all rows."
+        }
+      ],
+      "task": "Show the first two rows and last three rows. Print the full table's shape to confirm previews have not removed rows.",
+      "hint": "Use head(2), tail(3), and df.shape.",
+      "solution": "df = students()\nfirst = df.head(2)\nlast = df.tail(3)\nprint(first)\nprint(last)\nprint(\"Full shape:\", df.shape)",
+      "solution_note": "The previews show 2 and 3 rows, while df remains a 12-row, 9-column table.",
+      "check": {
+        "prompt": "What does df.head(3) do?",
+        "options": [
+          "Returns the first three rows.",
+          "Permanently deletes all other rows.",
+          "Returns the first three columns."
+        ],
+        "correct": 0,
+        "feedback": "head(3) returns a row preview; it does not alter df."
+      },
+      "verify": "assert first['Student_ID'].tolist() == ['S001', 'S002', 'S003']\nassert last['Student_ID'].tolist() == ['S011', 'S012'] and df.shape == (12, 9)",
+      "solution_verify": "assert first['Student_ID'].tolist() == ['S001', 'S002']\nassert last['Student_ID'].tolist() == ['S010', 'S011', 'S012'] and df.shape == (12, 9)",
+      "watch": "head() without an argument defaults to five rows, or fewer when fewer exist.",
+      "takeaway": "I can preview a dataset while preserving its full contents."
+    },
+    {
+      "id": "M04C04",
+      "title": "Inspect names, types, and a first summary",
+      "explanation": "Attributes such as shape and columns are stored information, so they do not use parentheses. Methods such as info() perform an action and do use parentheses. info() reports column names, non-missing counts, and dtypes; describe() returns summary statistics. Text dtype labels can differ across pandas versions, so focus on what the data represent.",
+      "code": "df = students()\nprint(\"Columns:\", df.columns.tolist())\nprint(\"Shape:\", df.shape)\ndf.info()\nsummary = df[[\"Age\", \"Score\"]].describe()\nprint(summary.round(2))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why is it df.shape but df.info()?",
+          "answer": "shape is an attribute; info is a method that must be called to produce its report."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What will count be for both Age and Score in this clean table?",
+          "answer": "12 for each, because all 12 rows have values in both columns."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is df.info() better than only looking at the first row?",
+          "answer": "It checks the full table's structure, non-missing counts, and types rather than showing one record."
+        }
+      ],
+      "task": "Inspect dtypes, then create a describe() summary for Study_Hours and Attendance only. Round it to one decimal place.",
+      "hint": "Use df.dtypes and select two columns with a list inside the brackets.",
+      "solution": "df = students()\nprint(df.dtypes)\nsummary = df[[\"Study_Hours\", \"Attendance\"]].describe().round(1)\nprint(summary)",
+      "solution_note": "The summary covers only Study_Hours and Attendance. Rounding changes the displayed summary, not the original data values.",
+      "check": {
+        "prompt": "Which expression correctly accesses the table shape?",
+        "options": [
+          "df.shape()",
+          "df[shape]",
+          "df.shape"
+        ],
+        "correct": 2,
+        "feedback": "shape is an attribute, so it is accessed without parentheses."
+      },
+      "verify": "assert summary.loc['count', 'Age'] == 12 and summary.loc['count', 'Score'] == 12\nassert summary.loc['max', 'Score'] == 95",
+      "solution_verify": "assert summary.columns.tolist() == ['Study_Hours', 'Attendance']\nassert summary.loc['count', 'Study_Hours'] == 12 and summary.loc['max', 'Attendance'] == 99",
+      "watch": "Call df.info() directly. print(df.info()) also prints None because info() returns None.",
+      "takeaway": "I can inspect table structure before writing an analysis."
+    }
+  ]
+}

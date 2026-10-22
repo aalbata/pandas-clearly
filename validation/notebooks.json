@@ -1,0 +1,30 @@
+{
+  "notebooks_schema_valid": 64,
+  "sequential_execution": [
+    {
+      "notebook": "notebooks/Pandas_Clearly_Solutions.ipynb",
+      "code_cells_executed": 361,
+      "errors": 0,
+      "seconds": 5.4
+    },
+    {
+      "notebook": "notebooks/Independent_Assessment_Solutions.ipynb",
+      "code_cells_executed": 18,
+      "errors": 0,
+      "seconds": 1.58
+    },
+    {
+      "notebook": "notebooks/student/01-start-with-a-dictionary.ipynb",
+      "code_cells_executed": 9,
+      "errors": 0,
+      "seconds": 1.31
+    },
+    {
+      "notebook": "notebooks/solutions/28-work-across-excel-and-json-formats.ipynb",
+      "code_cells_executed": 13,
+      "errors": 0,
+      "seconds": 1.55
+    }
+  ],
+  "passed": true
+}

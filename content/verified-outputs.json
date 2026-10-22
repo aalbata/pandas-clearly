@@ -1,0 +1,743 @@
+{
+  "environment": {
+    "python": "3.12.14",
+    "pandas": "2.2.3",
+    "numpy": "2.3.5",
+    "matplotlib": "3.10.8",
+    "openpyxl": "3.1.5"
+  },
+  "cells": {
+    "M00C01": {
+      "ok": true,
+      "stdout": "Amira\n21\nTrue\nint\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M00C02": {
+      "ok": true,
+      "stdout": "88\n[88, 72]\n3\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M00C03": {
+      "ok": true,
+      "stdout": "75\n90\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M00C04": {
+      "ok": true,
+      "stdout": "ValueError: could not convert string to float: 'nine'\nCorrected result: 3.0\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M01C01": {
+      "ok": true,
+      "stdout": "{'Name': 'Amira', 'Age': 20, 'Campus': 'RAK'}\ndict\n3\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M01C02": {
+      "ok": true,
+      "stdout": "Amira\n20\nNot provided\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M01C03": {
+      "ok": true,
+      "stdout": "{'Name': 'Amira', 'Age': 21, 'Program': 'AI'}\nRemoved: RAK\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M01C04": {
+      "ok": true,
+      "stdout": "['Name', 'Age', 'Campus']\n['Amira', 20, 'RAK']\nName = Amira\nAge = 20\nCampus = RAK\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M02C01": {
+      "ok": true,
+      "stdout": "Amira\nDana\n['Amira', 'Bilal']\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M02C02": {
+      "ok": true,
+      "stdout": "['Amira', 'Bilal', 'Chloe']\n21\nBilal Dubai\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M02C03": {
+      "ok": true,
+      "stdout": "{'Name': 'Bilal', 'Age': 21, 'Campus': 'Dubai'}\nBilal\n3\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M02C04": {
+      "ok": true,
+      "stdout": "{'Name': 3, 'Age': 3}\nReady for a rectangular table: True\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M03C01": {
+      "ok": true,
+      "stdout": "0    88\n1    72\n2    91\nName: Score, dtype: int64\nNumber of values: 3\nIndex: [0, 1, 2]\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M03C02": {
+      "ok": true,
+      "stdout": "S001    88\nS002    72\nS003    91\nName: Score, dtype: int64\n72 72\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M03C03": {
+      "ok": true,
+      "stdout": "Original:\nS001    88\nS002    72\nS003    99\nName: Score, dtype: int64\nAfter adding two:\nS001     90\nS002     74\nS003    101\nName: Score, dtype: int64\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M03C04": {
+      "ok": true,
+      "stdout": "S001    61\nS002    50\nS003    65\ndtype: int64\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M04C01": {
+      "ok": true,
+      "stdout": "    Name  Age\n0  Amira   20\n1  Bilal   21\n2  Chloe   19\nDataFrame\nRows and columns: (3, 2)\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M04C02": {
+      "ok": true,
+      "stdout": "    Name  Age Campus\n0  Amira   20    RAK\n1  Bilal   21    NaN\n2  Chloe   19    RAK\nMissing campus: 1\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M04C03": {
+      "ok": true,
+      "stdout": "First three rows:\n  Student_ID   Name Campus Program  Age  Study_Hours  Score  Attendance   Join_Date\n0       S001  Amira    RAK      AI   20            8     88          95  2026-09-01\n1       S002  Bilal  Dubai      IT   21            5     72          85  2026-09-02\n2       S003  Chloe    RAK      AI   19            9     91          98  2026-09-03\nLast two rows:\n   Student_ID    Name Campus Program  Age  Study_Hours  Score  Attendance   Join_Date\n10       S011  Khalid    RAK      AI   24            5     68          82  2026-09-11\n11       S012    Lina  Dubai      IT   21            7     82          94  2026-09-12\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M04C04": {
+      "ok": true,
+      "stdout": "Columns: ['Student_ID', 'Name', 'Campus', 'Program', 'Age', 'Study_Hours', 'Score', 'Attendance', 'Join_Date']\nShape: (12, 9)\n<class 'pandas.core.frame.DataFrame'>\nRangeIndex: 12 entries, 0 to 11\nData columns (total 9 columns):\n #   Column       Non-Null Count  Dtype \n---  ------       --------------  ----- \n 0   Student_ID   12 non-null     object\n 1   Name         12 non-null     object\n 2   Campus       12 non-null     object\n 3   Program      12 non-null     object\n 4   Age          12 non-null     int64 \n 5   Study_Hours  12 non-null     int64 \n 6   Score        12 non-null     int64 \n 7   Attendance   12 non-null     int64 \n 8   Join_Date    12 non-null     object\ndtypes: int64(4), object(5)\nmemory usage: 996.0+ bytes\n         Age  Score\ncount  12.00  12.00\nmean   21.00  78.92\nstd     1.54  11.41\nmin    19.00  58.00\n25%    20.00  71.00\n50%    21.00  80.50\n75%    22.00  88.25\nmax    24.00  95.00\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M05C01": {
+      "ok": true,
+      "stdout": "Series (12,)\nDataFrame (12, 1)\n    Name  Score\n0  Amira     88\n1  Bilal     72\n2  Chloe     91\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M05C02": {
+      "ok": true,
+      "stdout": "             Name  Score\nStudent_ID              \nS001        Amira     88\nS003        Chloe     91\nOne score: 91\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M05C03": {
+      "ok": true,
+      "stdout": "    Name  Score\n1  Bilal     72\n2  Chloe     91\n3   Dana     65\nOne score: 72\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M05C04": {
+      "ok": true,
+      "stdout": "Label slice:\n             Name  Score\nStudent_ID              \nS002        Bilal     72\nS003        Chloe     91\nS004         Dana     65\nPosition slice:\n             Name  Score\nStudent_ID              \nS002        Bilal     72\nS003        Chloe     91\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M06C01": {
+      "ok": true,
+      "stdout": "0      True\n1     False\n2      True\n3     False\n4     False\n5      True\n6      True\n7     False\n8     False\n9      True\n10    False\n11     True\nName: Score, dtype: bool\n   Student_ID    Name  Score\n0        S001   Amira     88\n2        S003   Chloe     91\n5        S006  Fatima     95\n6        S007   Grace     84\n9        S010   Jamal     89\n11       S012    Lina     82\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M06C02": {
+      "ok": true,
+      "stdout": "  Student_ID   Name Campus  Score\n0       S001  Amira    RAK     88\n2       S003  Chloe    RAK     91\n6       S007  Grace    RAK     84\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M06C03": {
+      "ok": true,
+      "stdout": "    Name Program  Score\n0  Amira      AI     88\n6  Grace      AI     84\n9  Jamal      AI     89\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M06C04": {
+      "ok": true,
+      "stdout": "     Name Campus  Score\n5  Fatima  Dubai     95\n9   Jamal  Dubai     89\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M07C01": {
+      "ok": true,
+      "stdout": "  Student_ID    Name  Score\n5       S006  Fatima     95\n2       S003   Chloe     91\n9       S010   Jamal     89\nIndex labels: [5, 2, 9]\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M07C02": {
+      "ok": true,
+      "stdout": "    Name  Score\n2  Bilal     95\n0  Chloe     80\n1  Amira     80\n3   Dana     80\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M07C03": {
+      "ok": true,
+      "stdout": "Unique index: True\n  Student_ID   Name\n0       S001  Amira\n1       S002  Bilal\n2       S003  Chloe\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M07C04": {
+      "ok": true,
+      "stdout": "             Name  Score\nStudent_ID              \nS003        Chloe   91.0\nS001        Amira   88.0\nS999          NaN    NaN\nMissing name:\nStudent_ID\nS003    False\nS001    False\nS999     True\nName: Name, dtype: bool\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M08C01": {
+      "ok": true,
+      "stdout": "    Name  Score  Study_Hours  Score_Per_Hour\n0  Amira     88            8           11.00\n1  Bilal     72            5           14.40\n2  Chloe     91            9           10.11\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M08C02": {
+      "ok": true,
+      "stdout": "  Student_Name  Score  Passed\n0        Amira     88    True\n1        Bilal     72    True\n2        Chloe     91    True\n3         Dana     65    True\nResult shape: (12, 9)\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M08C03": {
+      "ok": true,
+      "stdout": "  Student_ID  Name  Score\n3       S004  Dana     67\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M08C04": {
+      "ok": true,
+      "stdout": "Original first score: 88\nWorking first score: 0\nSame object: False\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M09C01": {
+      "ok": true,
+      "stdout": "Before: string\nAfter: int64\nNext year: [21, 22, 20]\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M09C02": {
+      "ok": true,
+      "stdout": "  Original  Number  Invalid_text\n0       88      88         False\n1   absent    <NA>          True\n2     <NA>    <NA>         False\n3       72      72         False\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M09C03": {
+      "ok": true,
+      "stdout": "0      21\n1    <NA>\n2      23\ndtype: Int64\nKnown ages: 2\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M09C04": {
+      "ok": true,
+      "stdout": "1       Low\n3       Low\n2    Medium\n0      High\ndtype: category\nCategories (3, object): ['Low' < 'Medium' < 'High']\nOrder: ['Low', 'Medium', 'High']\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M10C01": {
+      "ok": true,
+      "stdout": "[False, True, False, True, True]\nMissing count: 3\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M10C02": {
+      "ok": true,
+      "stdout": "   Student_ID  Score Study_Hours\n0        S001   88.0           8\n1        S002   72.0           5\n2        S003   91.0           9\n4        S005   79.0           6\n5        S006   95.0        None\n6        S007   84.0           7\n8        S009   76.0           6\n9        S010   89.0           8\n10       S011   68.0           5\n11       S012   82.0           7\n12       S003   91.0           9\nRows kept: 11\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M10C03": {
+      "ok": true,
+      "stdout": "['RAK', 'Unknown', 'Dubai', 'Unknown']\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M10C04": {
+      "ok": true,
+      "stdout": "  Program  Hours  Hours_filled  Was_missing\n0      AI    4.0           4.0        False\n1      AI    8.0           8.0        False\n2      AI    NaN           6.0         True\n3      IT    2.0           2.0        False\n4      IT    NaN           2.0         True\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M11C01": {
+      "ok": true,
+      "stdout": "   Student_ID   Name Score\n2        S003  Chloe    91\n12       S003  Chloe    91\nExtra copies: 1\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M11C02": {
+      "ok": true,
+      "stdout": "  Student_ID     Updated  Score\n0       S001  2026-10-01     80\n1       S001  2026-10-03     88\nExact duplicates: 0\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M11C03": {
+      "ok": true,
+      "stdout": "   Student_ID  Attendance\n10       S011         105\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M11C04": {
+      "ok": true,
+      "stdout": "{'rows': 12, 'valid_ids': True, 'valid_scores': True}\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M12C01": {
+      "ok": true,
+      "stdout": "  Student_ID   Name\n0       S001  Amira\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M12C02": {
+      "ok": true,
+      "stdout": "0    report.csv\n2     notes.csv\ndtype: string\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M12C03": {
+      "ok": true,
+      "stdout": "  Username       Domain\n0    amira  example.edu\n1    bilal  example.edu\n2     <NA>         <NA>\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M12C04": {
+      "ok": true,
+      "stdout": "  Program Number\n0      AI    101\n1      IT    205\n2    <NA>   <NA>\n3    <NA>   <NA>\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M13C01": {
+      "ok": true,
+      "stdout": "0   2026-09-01\n1   2026-09-03\n2          NaT\ndtype: datetime64[ns]\nUnparsed dates: 1\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M13C02": {
+      "ok": true,
+      "stdout": "  Student_ID  Join_Date  Month    Weekday\n0       S001 2026-09-01      9    Tuesday\n1       S002 2026-09-02      9  Wednesday\n2       S003 2026-09-03      9   Thursday\n3       S004 2026-09-04      9     Friday\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M13C03": {
+      "ok": true,
+      "stdout": "  Student_ID  Join_Date\n2       S003 2026-09-03\n3       S004 2026-09-04\n4       S005 2026-09-05\n5       S006 2026-09-06\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M13C04": {
+      "ok": true,
+      "stdout": "  Student_ID  Days_enrolled\n0       S001             30\n1       S002             29\n2       S003             28\n3       S004             27\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M14C01": {
+      "ok": true,
+      "stdout": "   Code                    Label\n0    AI  Artificial Intelligence\n1    IT   Information Technology\n2    CS                      NaN\n3  <NA>                      NaN\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M14C02": {
+      "ok": true,
+      "stdout": "['Review', 'Review', 'Secure', 'Secure']\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M14C03": {
+      "ok": true,
+      "stdout": "[80.0, 66.0, 90.0]\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M14C04": {
+      "ok": true,
+      "stdout": "   Value Fixed_band Quantile_band\n0     10      Lower    Lower_half\n1     20      Lower    Lower_half\n2     30      Lower    Upper_half\n3    100      Upper    Upper_half\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M15C01": {
+      "ok": true,
+      "stdout": "Mean_AED      30.0\nMedian_AED    30.0\ndtype: float64\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M15C02": {
+      "ok": true,
+      "stdout": "Mean_hours              4.000\nSample_std_hours        2.000\nPopulation_std_hours    1.633\ndtype: float64\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M15C03": {
+      "ok": true,
+      "stdout": "count     4.000000\nmean     75.000000\nstd      12.909944\nmin      60.000000\n25%      67.500000\n50%      75.000000\n75%      82.500000\nmax      90.000000\ndtype: float64\nRows: 5 Known: 4\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M15C04": {
+      "ok": true,
+      "stdout": "             Study_Hours  Score  Attendance\nStudy_Hours        1.000  0.985       0.959\nScore              0.985  1.000       0.983\nAttendance         0.959  0.983       1.000\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M16C01": {
+      "ok": true,
+      "stdout": "  Campus  Students  Mean_score\n0  Dubai         6       76.83\n1    RAK         6       81.00\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M16C02": {
+      "ok": true,
+      "stdout": "  Campus Program  Students  Mean_score\n0  Dubai      AI         2       92.00\n1  Dubai      IT         4       69.25\n2    RAK      AI         3       81.00\n3    RAK      IT         2       77.50\n4    NaN      AI         1       88.00\nTotal represented: 12\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M16C03": {
+      "ok": true,
+      "stdout": "   Student_ID Program  Score  Program_mean  Difference\n0        S001      AI     88         85.83        2.17\n1        S002      IT     72         72.00        0.00\n2        S003      AI     91         85.83        5.17\n3        S004      IT     65         72.00       -7.00\n4        S005      IT     79         72.00        7.00\n5        S006      AI     95         85.83        9.17\n6        S007      AI     84         85.83       -1.83\n7        S008      IT     58         72.00      -14.00\n8        S009      IT     76         72.00        4.00\n9        S010      AI     89         85.83        3.17\n10       S011      AI     68         85.83      -17.83\n11       S012      IT     82         72.00       10.00\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M16C04": {
+      "ok": true,
+      "stdout": "         size   mean\nProgram             \nAI          6  85.83\nIT          6  72.00\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M17C01": {
+      "ok": true,
+      "stdout": "   Student_ID Program           Department\n0        S001      AI            Computing\n1        S002      IT  Information Systems\n2        S003      AI            Computing\n3        S004      IT  Information Systems\n4        S005      IT  Information Systems\n5        S006      AI            Computing\n6        S007      AI            Computing\n7        S008      IT  Information Systems\n8        S009      IT  Information Systems\n9        S010      AI            Computing\n10       S011      AI            Computing\n11       S012      IT  Information Systems\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M17C02": {
+      "ok": true,
+      "stdout": "   Student_ID    Name  Quiz\n0        S001   Amira    17\n1        S002   Bilal    14\n2        S003   Chloe    19\n3        S004    Dana    13\n4        S005   Ethan    16\n5        S006  Fatima    19\n6        S007   Grace    17\n7        S008  Hassan    11\n8        S009     Ivy    15\n9        S010   Jamal    18\n10       S011  Khalid    14\nRows: 11\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M17C03": {
+      "ok": true,
+      "stdout": "   Student_ID      _merge\n11       S012   left_only\n12       S013  right_only\nAll merged rows: 13\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M17C04": {
+      "ok": true,
+      "stdout": "Blocked: Program is not unique in the lookup.\nRows without validation: 18\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M18C01": {
+      "ok": true,
+      "stdout": "   Student_ID    Name\n0        S001   Amira\n1        S002   Bilal\n2        S003   Chloe\n3        S004    Dana\n4        S005   Ethan\n5        S006  Fatima\n6        S007   Grace\n7        S008  Hassan\n8        S009     Ivy\n9        S010   Jamal\n10       S011  Khalid\n11       S012    Lina\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M18C02": {
+      "ok": true,
+      "stdout": "       Name  Score\nS001  Amira     88\nS002  Bilal     72\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M18C03": {
+      "ok": true,
+      "stdout": "             Name  Score\nStudent_ID              \nS003        Chloe   91.0\nS001        Amira   88.0\nS099          NaN    NaN\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M18C04": {
+      "ok": true,
+      "stdout": "S001    88\nS002    72\nS003    91\ndtype: Int64\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M19C01": {
+      "ok": true,
+      "stdout": "  Student_ID     Measure  Value\n0       S001       Score     88\n1       S002       Score     72\n2       S003       Score     91\n3       S001  Attendance     95\n4       S002  Attendance     85\n5       S003  Attendance     98\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M19C02": {
+      "ok": true,
+      "stdout": "Measure     Attendance  Score\nStudent_ID                   \nS001                95     88\nS002                85     72\nS003                98     91\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M19C03": {
+      "ok": true,
+      "stdout": "Program     AI     IT\nCampus               \nDubai    92.00  69.25\nRAK      82.75  77.50\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M19C04": {
+      "ok": true,
+      "stdout": "Program  AI  IT\nCampus         \nDubai     2   4\nRAK       4   2\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M20C01": {
+      "ok": true,
+      "stdout": "  Student_ID    Name  Score\n0       S001   Amira     88\n2       S003   Chloe     91\n5       S006  Fatima     95\n9       S010   Jamal     89\nSaved outputs/high_scores.csv\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M20C02": {
+      "ok": true,
+      "stdout": "  Student_ID Campus  Score\n0       S001    RAK     88\n1       S002  Dubai     72\n2       S003    RAK     91\n[\n  {\n    \"Student_ID\":\"S001\",\n    \"Campus\":\"RAK\",\n    \"Score\":88\n  },\n  {\n    \"Student_ID\":\"S002\",\n    \"Campus\":\"Dubai\",\n    \"Score\":72\n  },\n  {\n    \"Student_ID\":\"S003\",\n    \"Campus\":\"RAK\",\n    \"Score\":91\n  }\n]\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M20C03": {
+      "ok": true,
+      "stdout": "  Campus  Score\n0  Dubai  76.83\n1    RAK  81.00\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M20C04": {
+      "ok": true,
+      "stdout": "  Student_ID    Name  Score\n0       S006  Fatima     95\n1       S003   Chloe     91\n2       S010   Jamal     89\n3       S001   Amira     88\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M21C01": {
+      "ok": true,
+      "stdout": "Date\n2026-10-01    20.0\n2026-10-02    24.0\n2026-10-03    18.0\n2026-10-04     NaN\n2026-10-05    30.0\n2026-10-06    28.0\n2026-10-07    32.0\nFreq: D, Name: Visitors, dtype: float64\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M21C02": {
+      "ok": true,
+      "stdout": "            Recorded_Total  Observed_Days\nDate                                     \n2026-10-01              62              3\n2026-10-04              58              2\n2026-10-07              32              1\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M21C03": {
+      "ok": true,
+      "stdout": "            Visitors  Mean_3_Days\nDate                             \n2026-10-01      20.0          NaN\n2026-10-02      24.0          NaN\n2026-10-03      18.0        20.67\n2026-10-04       NaN          NaN\n2026-10-05      30.0          NaN\n2026-10-06      28.0          NaN\n2026-10-07      32.0        30.00\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M21C04": {
+      "ok": true,
+      "stdout": "            Visitors  Previous_Day  Change_Percent\nDate                                              \n2026-10-01      20.0           NaN             NaN\n2026-10-02      24.0          20.0           20.00\n2026-10-03      18.0          24.0          -25.00\n2026-10-04       NaN          18.0             NaN\n2026-10-05      30.0           NaN             NaN\n2026-10-06      28.0          30.0           -6.67\n2026-10-07      32.0          28.0           14.29\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M22C01": {
+      "ok": true,
+      "stdout": "Name     Chloe\nScore       91\nName: (RAK, S003), dtype: object\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M22C02": {
+      "ok": true,
+      "stdout": "Student_ID            \nS001        Score         88\n            Attendance    95\nS002        Score         72\n            Attendance    85\ndtype: int64\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M22C03": {
+      "ok": true,
+      "stdout": "  Student_ID  Skills\n0       S001  Python\n1       S001     SQL\n2       S002   Excel\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M22C04": {
+      "ok": true,
+      "stdout": "  Student_ID Program\n1       S002      IT\n3       S004      IT\n0       S001      AI\n2       S003      AI\n   Program_IT  Program_AI\n1           1           0\n3           1           0\n0           0           1\n2           0           1\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M23C01": {
+      "ok": true,
+      "stdout": "Object_bytes      53132\nCategory_bytes     1346\ndtype: int64\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M23C02": {
+      "ok": true,
+      "stdout": "  Student_ID Program  Score\n0       S001      AI     88\n1       S002      IT     72\n2       S003      AI     91\n3       S004      IT     65\n4       S005      IT     79\nStudent_ID    string[python]\nProgram             category\nScore                  int64\ndtype: object\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M23C03": {
+      "ok": true,
+      "stdout": "Known scores: 12\nMean score: 78.92\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M23C04": {
+      "ok": true,
+      "stdout": "   Student_ID Campus  Score\n7        S008  Dubai     58\n10       S011    RAK     68\n2        S003    RAK     91\nSame sample: True\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M24C01": {
+      "ok": true,
+      "stdout": "Campus\nDubai    76.83\nRAK      81.00\nName: Score, dtype: float64\n",
+      "warnings": [],
+      "plots": [
+        "M24C01-example-1.png"
+      ]
+    },
+    "M24C02": {
+      "ok": true,
+      "stdout": "Score\n[50, 60)     1\n[60, 70)     2\n[70, 80)     3\n[80, 90)     4\n[90, 100)    2\nName: count, dtype: int64\n",
+      "warnings": [],
+      "plots": [
+        "M24C02-example-1.png"
+      ]
+    },
+    "M24C03": {
+      "ok": true,
+      "stdout": "Pearson correlation: 0.985\n",
+      "warnings": [],
+      "plots": [
+        "M24C03-example-1.png"
+      ]
+    },
+    "M24C04": {
+      "ok": true,
+      "stdout": "Date\n2026-10-01    20.0\n2026-10-02    24.0\n2026-10-03    18.0\n2026-10-04     NaN\n2026-10-05    30.0\n2026-10-06    28.0\n2026-10-07    32.0\nFreq: D, Name: Visitors, dtype: float64\n",
+      "warnings": [],
+      "plots": [
+        "M24C04-example-1.png"
+      ]
+    },
+    "M25C01": {
+      "ok": true,
+      "stdout": "             Name  Score\nStudent_ID              \nS001        Amira     88\nS002        Bilal     72\nSame rows: True\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M25C02": {
+      "ok": true,
+      "stdout": "   Student_ID  Score  Attendance\n0        S001     88          95\n2        S003     91          98\n5        S006     95          99\n6        S007     84          92\n9        S010     89          96\n11       S012     82          94\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M25C03": {
+      "ok": true,
+      "stdout": "  Student_ID  Score\n3       S004     70\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M25C04": {
+      "ok": true,
+      "stdout": "   Student_ID      _merge\n11       S012   left_only\n12       S013  right_only\nRows: 13\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M26C01": {
+      "ok": true,
+      "stdout": "   Student_ID    Name Campus  Score Score_Status  Attendance\n0        S001   Amira    RAK   88.0     recorded        95.0\n1        S002   Bilal  Dubai   72.0     recorded        85.0\n2        S003   Chloe    RAK   91.0     recorded        98.0\n3        S004    Dana  Dubai   <NA>      missing        78.0\n4        S005   Ethan    RAK   79.0     recorded        90.0\n5        S006  Fatima  Dubai   95.0     recorded        99.0\n6        S007   Grace    RAK   84.0     recorded        92.0\n7        S008  Hassan  Dubai   <NA>       absent        70.0\n8        S009     Ivy    RAK   76.0     recorded        88.0\n9        S010   Jamal  Dubai   89.0     recorded        96.0\n10       S011  Khalid    RAK   68.0     recorded        <NA>\n11       S012    Lina  Dubai   82.0     recorded        94.0\nRows: 12\nUnavailable scores: 2\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M26C02": {
+      "ok": true,
+      "stdout": "  Campus  Students  Recorded_Scores  Mean_Score\n0  Dubai         6                4        84.5\n1    RAK         6                6        81.0\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M26C03": {
+      "ok": true,
+      "stdout": "   Student_ID  Score  Quiz     _merge\n1        S002   72.0  14.0       both\n10       S011   68.0  14.0       both\n11       S012   82.0   NaN  left_only\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M26C04": {
+      "ok": true,
+      "stdout": "Recorded mean scores:\nProgram     AI    IT\nCampus              \nDubai     92.0  77.0\nRAK      82.75  77.5\nRecorded score counts:\nProgram  AI  IT\nCampus         \nDubai     2   2\nRAK       4   2\nSaved cleaned data, summary, and recorded counts in outputs/.\n",
+      "warnings": [],
+      "plots": [
+        "M26C04-example-1.png"
+      ]
+    },
+    "M27C01": {
+      "ok": true,
+      "stdout": "  species     island  bill_length_mm  bill_depth_mm  flipper_length_mm  body_mass_g     sex  year\n0  Adelie  Torgersen            39.1           18.7              181.0       3750.0    male  2007\n1  Adelie  Torgersen            39.5           17.4              186.0       3800.0  female  2007\n2  Adelie  Torgersen            40.3           18.0              195.0       3250.0  female  2007\n3  Adelie  Torgersen             NaN            NaN                NaN          NaN     NaN  2007\n4  Adelie  Torgersen            36.7           19.3              193.0       3450.0  female  2007\nShape: (344, 8)\nColumns: ['species', 'island', 'bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g', 'sex', 'year']\nMissing values:\nspecies               0\nisland                0\nbill_length_mm        2\nbill_depth_mm         2\nflipper_length_mm     2\nbody_mass_g           2\nsex                  11\nyear                  0\ndtype: int64\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M27C02": {
+      "ok": true,
+      "stdout": "With a comma separator: (344, 1)\nWith a tab separator: (344, 8)\n  species     island  bill_length_mm  bill_depth_mm  flipper_length_mm  body_mass_g     sex  year\n0  Adelie  Torgersen            39.1           18.7              181.0       3750.0    male  2007\n1  Adelie  Torgersen            39.5           17.4              186.0       3800.0  female  2007\n2  Adelie  Torgersen            40.3           18.0              195.0       3250.0  female  2007\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M27C03": {
+      "ok": true,
+      "stdout": "  record_id site_code amount_eur               note\n0       001        NA      12,50    café, east desk\n1       010        EU    MISSING  quoted; semicolon\n2       100        NA       0,00      recorded zero\nIDs: ['001', '010', '100']\nSite codes: ['NA', 'EU', 'NA']\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M27C04": {
+      "ok": true,
+      "stdout": "Rows and columns: (344, 8)\nspecies              string[python]\nisland               string[python]\nbill_length_mm              Float64\nbill_depth_mm               Float64\nflipper_length_mm             Int64\nbody_mass_g                   Int64\nsex                  string[python]\nyear                          Int64\ndtype: object\nRound-trip values and declared types match.\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M28C01": {
+      "ok": true,
+      "stdout": "Worksheets: ['Penguins', 'Data_Dictionary']\n  species     island  bill_length_mm  bill_depth_mm  flipper_length_mm  body_mass_g     sex  year\n0  Adelie  Torgersen            39.1           18.7              181.0       3750.0    male  2007\n1  Adelie  Torgersen            39.5           17.4              186.0       3800.0  female  2007\n2  Adelie  Torgersen            40.3           18.0              195.0       3250.0  female  2007\nShape: (344, 8)\nKnown body masses: 342\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M28C02": {
+      "ok": true,
+      "stdout": "  species     island  body_mass_g\n0  Adelie  Torgersen       3750.0\n1  Adelie  Torgersen       3800.0\n2  Adelie  Torgersen       3250.0\n3  Adelie  Torgersen          NaN\n4  Adelie  Torgersen       3450.0\nLoaded records: 344\nMissing body masses: 2\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M28C03": {
+      "ok": true,
+      "stdout": "  species     island  bill_length_mm  bill_depth_mm  flipper_length_mm  body_mass_g     sex  year\n0  Adelie  Torgersen            39.1           18.7              181.0       3750.0    male  2007\n1  Adelie  Torgersen            39.5           17.4              186.0       3800.0  female  2007\n2  Adelie  Torgersen            40.3           18.0              195.0       3250.0  female  2007\nRows: 344\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M28C04": {
+      "ok": true,
+      "stdout": "  species     island     sex  year  measurements.bill_length_mm  measurements.bill_depth_mm  \\\n0  Adelie  Torgersen    male  2007                         39.1                        18.7   \n1  Adelie  Torgersen  female  2007                         39.5                        17.4   \n2  Adelie  Torgersen  female  2007                         40.3                        18.0   \n\n   measurements.flipper_length_mm  measurements.body_mass_g  \n0                           181.0                    3750.0  \n1                           186.0                    3800.0  \n2                           195.0                    3250.0  \nColumns: ['species', 'island', 'sex', 'year', 'measurements.bill_length_mm', 'measurements.bill_depth_mm', 'measurements.flipper_length_mm', 'measurements.body_mass_g']\nKnown body masses: 342\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M29C01": {
+      "ok": true,
+      "stdout": "Dataset: Palmer Penguins, simplified penguins table\nSource commit: 8957207b78d6ccd1b4654a9dd9c9041b657478ab\nShape: (344, 8)\n                   Missing  Known\nspecies                  0    344\nisland                   0    344\nbill_length_mm           2    342\nbill_depth_mm            2    342\nflipper_length_mm        2    342\nbody_mass_g              2    342\nsex                     11    333\nyear                     0    344\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M29C02": {
+      "ok": true,
+      "stdout": "Rows retained: 342\nExcluded rows:\n     source_row species  body_mass_g\n3             4  Adelie          NaN\n271         272  Gentoo          NaN\nRetained rows with unrecorded sex: 9\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M29C03": {
+      "ok": true,
+      "stdout": "     species  Observations  Known_mass  Mean_mass_g  Missing_mass\n0     Adelie           152         151      3700.66             1\n1  Chinstrap            68          68      3733.09             0\n2     Gentoo           124         123      5076.02             1\nTotal observed records: 344\nTotal known body masses: 342\n",
+      "warnings": [],
+      "plots": []
+    },
+    "M29C04": {
+      "ok": true,
+      "stdout": "     species  Observations  Known_mass  Mean_mass_g  Missing_mass  Mean_mass_kg\n0     Adelie           152         151      3700.66             1         3.701\n1  Chinstrap            68          68      3733.09             0         3.733\n2     Gentoo           124         123      5076.02             1         5.076\nSource: Palmer Penguins; DOI 10.5281/zenodo.3960218. Means use known body masses.\nThese summaries describe sampled observations, not causal effects or a population census.\n",
+      "warnings": [],
+      "plots": [
+        "M29C04-example-1.png"
+      ]
+    }
+  }
+}

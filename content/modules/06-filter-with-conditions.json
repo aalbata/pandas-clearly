@@ -1,0 +1,174 @@
+{
+  "id": 6,
+  "title": "Filter with conditions",
+  "level": "Core",
+  "goal": "Build Boolean masks and combine conditions to answer precise questions.",
+  "prerequisites": "Know column selection and the basic comparison operators.",
+  "reference": "https://pandas.pydata.org/docs/getting_started/intro_tutorials/03_subset_data.html",
+  "cells": [
+    {
+      "id": "M06C01",
+      "title": "See the True and False values first",
+      "explanation": "Comparing a Series with a value produces a Boolean Series, often called a mask. Each True marks a row that meets the condition. df.loc[mask, columns] keeps those rows and selects the requested columns. Keeping the mask in its own variable makes the logic easier to inspect.",
+      "code": "df = students()\nmask = df[\"Score\"] > 80\nprint(mask)\nresult = df.loc[mask, [\"Student_ID\", \"Name\", \"Score\"]]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What is the type of value at each position in mask?",
+          "answer": "A Boolean value, True or False, for this clean non-missing Score column."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many rows pass Score > 80?",
+          "answer": "Six: S001, S003, S006, S007, S010, and S012."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is df[\"Score\"] > 80 not already the filtered table?",
+          "answer": "It only contains the condition results. A second selection uses that mask to retrieve the matching records."
+        }
+      ],
+      "task": "Change the condition to Score < 70. Select Student_ID, Name, and Score into result. Print the number of matches.",
+      "hint": "Change > to < and use 70 as the threshold.",
+      "solution": "df = students()\nmask = df[\"Score\"] < 70\nresult = df.loc[mask, [\"Student_ID\", \"Name\", \"Score\"]]\nprint(result)\nprint(\"Matches:\", len(result))",
+      "solution_note": "Dana, Hassan, and Khalid match the new rule, giving three rows. The question changed from high scores to scores needing attention.",
+      "check": {
+        "prompt": "What does a True in a filter mask mean?",
+        "options": [
+          "Keep that row.",
+          "Delete the column.",
+          "Replace the value with 1."
+        ],
+        "correct": 0,
+        "feedback": "A True marks a row to keep when the mask is used for selection."
+      },
+      "verify": "assert result['Student_ID'].tolist() == ['S001', 'S003', 'S006', 'S007', 'S010', 'S012']\nassert mask.sum() == 6",
+      "solution_verify": "assert result['Student_ID'].tolist() == ['S004', 'S008', 'S011'] and mask.sum() == 3",
+      "watch": "A mask should correspond to the table being filtered; a mask from another table can misalign.",
+      "takeaway": "I can separate the condition from the table selection it controls."
+    },
+    {
+      "id": "M06C02",
+      "title": "Combine conditions with AND and OR",
+      "explanation": "Use & for element-by-element AND and | for element-by-element OR. Put parentheses around each comparison before combining them. AND requires both conditions; OR requires at least one. Python's and and or do not combine pandas Series masks this way.",
+      "code": "df = students()\nmask = (df[\"Campus\"] == \"RAK\") & (df[\"Score\"] >= 80)\nresult = df.loc[mask, [\"Student_ID\", \"Name\", \"Campus\", \"Score\"]]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What two conditions must a row satisfy?",
+          "answer": "Its Campus must equal RAK and its Score must be at least 80."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which names remain?",
+          "answer": "Amira, Chloe, and Grace."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "What changes if & is replaced by |?",
+          "answer": "A student can pass either condition: be at RAK, have Score at least 80, or satisfy both. More rows can qualify."
+        }
+      ],
+      "task": "Select students who are at RAK OR have Score at least 90. Keep the same four output columns.",
+      "hint": "Use | between two parenthesized comparisons.",
+      "solution": "df = students()\nmask = (df[\"Campus\"] == \"RAK\") | (df[\"Score\"] >= 90)\nresult = df.loc[mask, [\"Student_ID\", \"Name\", \"Campus\", \"Score\"]]\nprint(result)",
+      "solution_note": "All six RAK students qualify, and Fatima qualifies through her score of 95. Chloe meets both conditions but appears only once, so there are seven rows.",
+      "check": {
+        "prompt": "Which correctly combines two pandas conditions with AND?",
+        "options": [
+          "condition_a and condition_b",
+          "(condition_a) & (condition_b)",
+          "condition_a + \"and\" + condition_b"
+        ],
+        "correct": 1,
+        "feedback": "Use & for element-wise AND; parenthesize each comparison when constructing the masks."
+      },
+      "verify": "assert result['Name'].tolist() == ['Amira', 'Chloe', 'Grace']",
+      "solution_verify": "assert result['Student_ID'].tolist() == ['S001', 'S003', 'S005', 'S006', 'S007', 'S009', 'S011']",
+      "watch": "Do not omit the parentheses around comparisons; operator precedence can change the expression.",
+      "takeaway": "I can translate both, either, and at least into correct filter logic."
+    },
+    {
+      "id": "M06C03",
+      "title": "Membership, ranges, and NOT",
+      "explanation": "isin() tests whether a value belongs to an allowed list. between() checks a range; inclusive=\"both\" includes its two endpoints. The ~ operator reverses a Boolean mask. Naming masks can make a longer rule easier to explain.",
+      "code": "df = students()\nin_program = df[\"Program\"].isin([\"AI\"])\nin_range = df[\"Score\"].between(70, 90, inclusive=\"both\")\nresult = df.loc[in_program & in_range, [\"Name\", \"Program\", \"Score\"]]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does inclusive=\"both\" tell between() to do?",
+          "answer": "Include values exactly equal to 70 or 90, as well as values between them."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which AI students have scores between 70 and 90 here?",
+          "answer": "Amira, Grace, and Jamal."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why does isin([\"AI\"]) use a list even for one allowed value?",
+          "answer": "isin expects a list-like collection of allowed values. The same expression can later include several categories."
+        }
+      ],
+      "task": "Select students whose Program is NOT AI and whose Score is between 70 and 85 inclusive. Print their names, programs, and scores.",
+      "hint": "Reverse the membership mask with ~ and combine it with the new range mask.",
+      "solution": "df = students()\nnot_ai = ~df[\"Program\"].isin([\"AI\"])\nin_range = df[\"Score\"].between(70, 85, inclusive=\"both\")\nresult = df.loc[not_ai & in_range, [\"Name\", \"Program\", \"Score\"]]\nprint(result)",
+      "solution_note": "Bilal, Ethan, Ivy, and Lina qualify. ~ reverses the AI membership test before the score range is applied.",
+      "check": {
+        "prompt": "Which operator reverses a Boolean Series?",
+        "options": [
+          "!",
+          "not",
+          "~"
+        ],
+        "correct": 2,
+        "feedback": "Use ~ for element-wise Boolean reversal of a pandas mask."
+      },
+      "verify": "assert result['Name'].tolist() == ['Amira', 'Grace', 'Jamal']",
+      "solution_verify": "assert result['Name'].tolist() == ['Bilal', 'Ethan', 'Ivy', 'Lina']",
+      "watch": "Do not use Program == [\"AI\", \"IT\"] to test membership; use .isin([\"AI\", \"IT\"]).",
+      "takeaway": "I can express allowed categories, numerical ranges, and excluded categories."
+    },
+    {
+      "id": "M06C04",
+      "title": "Read a filter written with query",
+      "explanation": "query() is another way to express a row filter, using a short expression in a string. Column names appear inside that expression. @limit refers to a Python variable outside it. Learn the normal Boolean-mask form first so you can check what the query means.",
+      "code": "df = students()\nlimit = 85\nresult = df.query(\"Score >= @limit and Campus == 'Dubai'\")[[\"Name\", \"Campus\", \"Score\"]]\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why is there an @ before limit?",
+          "answer": "It tells query to use the Python variable limit instead of looking for a column named limit."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which Dubai students meet the threshold?",
+          "answer": "Fatima and Jamal."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why is and accepted here even though a previous cell used &?",
+          "answer": "query parses its expression string. Outside query, combining pandas Series directly requires the element-wise operators such as &."
+        }
+      ],
+      "task": "Use a normal Boolean mask instead of query to find Dubai students with Score at least 80. Save the same three columns in result.",
+      "hint": "Combine (df[\"Score\"] >= limit) and (df[\"Campus\"] == \"Dubai\") with &.",
+      "solution": "df = students()\nlimit = 80\nmask = (df[\"Score\"] >= limit) & (df[\"Campus\"] == \"Dubai\")\nresult = df.loc[mask, [\"Name\", \"Campus\", \"Score\"]]\nprint(result)",
+      "solution_note": "Fatima, Jamal, and Lina meet the threshold of 80. A mask and a query can express the same selection rule.",
+      "check": {
+        "prompt": "Inside query, what does @limit refer to?",
+        "options": [
+          "A Python variable named limit.",
+          "Always a column called limit.",
+          "The last row."
+        ],
+        "correct": 0,
+        "feedback": "@ accesses a variable from the surrounding Python scope within the query expression."
+      },
+      "verify": "assert result['Name'].tolist() == ['Fatima', 'Jamal']",
+      "solution_verify": "assert result['Name'].tolist() == ['Fatima', 'Jamal', 'Lina']",
+      "watch": "Use fixed, trusted query expressions for these lessons; do not construct executable expressions from arbitrary user text.",
+      "takeaway": "I can translate a simple query into a Boolean mask and explain both."
+    }
+  ]
+}

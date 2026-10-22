@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><meta name="author" content="Ali Al Bataineh"><meta name="description" content="Pandas, Clearly: a free practical pandas course and reference by Dr. Ali Al Bataineh. Learn through prediction, code, questions, and independent practice."><title>Reference guide | Pandas, Clearly</title><link rel="stylesheet" href="assets/course.css"><script src="assets/course.js" defer></script></head>
+<body data-view="learn"><a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="site-header"><a class="brand" href="index.html"><span class="brand-title">Pandas, Clearly</span><span class="brand-subtitle">Pandas for Data Science</span></a><nav class="header-nav" aria-label="Main navigation"><a href="index.html#paths">Learn</a><a href="reference.html">Reference</a><a href="datasets.html">Datasets</a><a href="downloads.html">Downloads</a></nav><div class="header-actions"><button type="button" class="button small" data-action="toggle-menu" aria-controls="course-sidebar" aria-expanded="false">Modules &amp; search</button></div></header>
+<div class="course-shell"><aside class="course-sidebar" id="course-sidebar"><div class="sidebar-search"><label for="course-search">Find a task or pandas method</label><input id="course-search" type="search" placeholder="Try: missing, merge, Excel" autocomplete="off"><p id="search-status" class="sr-only" aria-live="polite"></p><div id="search-results" hidden></div></div><nav aria-label="Course modules"><div class="sidebar-group"><h2>Start here</h2><a class="module-link" href="lessons/00-a-short-python-bridge.html"><span class="module-number">00</span><span>A short Python bridge</span></a><a class="module-link" href="lessons/01-start-with-a-dictionary.html"><span class="module-number">01</span><span>Start with a dictionary</span></a><a class="module-link" href="lessons/02-from-one-student-to-many.html"><span class="module-number">02</span><span>From one student to many</span></a></div><div class="sidebar-group"><h2>Tables and selection</h2><a class="module-link" href="lessons/03-meet-the-pandas-series.html"><span class="module-number">03</span><span>Meet the pandas Series</span></a><a class="module-link" href="lessons/04-build-and-inspect-a-dataframe.html"><span class="module-number">04</span><span>Build and inspect a DataFrame</span></a><a class="module-link" href="lessons/05-select-exactly-what-you-need.html"><span class="module-number">05</span><span>Select exactly what you need</span></a><a class="module-link" href="lessons/06-filter-with-conditions.html"><span class="module-number">06</span><span>Filter with conditions</span></a><a class="module-link" href="lessons/07-sorting-and-index-decisions.html"><span class="module-number">07</span><span>Sorting and index decisions</span></a><a class="module-link" href="lessons/08-create-and-update-columns.html"><span class="module-number">08</span><span>Create and update columns</span></a></div><div class="sidebar-group"><h2>Clean and understand</h2><a class="module-link" href="lessons/09-data-types-and-safe-conversion.html"><span class="module-number">09</span><span>Data types and safe conversion</span></a><a class="module-link" href="lessons/10-missing-values-and-honest-cleaning.html"><span class="module-number">10</span><span>Missing values and honest cleaning</span></a><a class="module-link" href="lessons/11-duplicates-and-data-quality.html"><span class="module-number">11</span><span>Duplicates and data quality</span></a><a class="module-link" href="lessons/12-clean-and-search-text.html"><span class="module-number">12</span><span>Clean and search text</span></a><a class="module-link" href="lessons/13-dates-times-and-durations.html"><span class="module-number">13</span><span>Dates, times, and durations</span></a><a class="module-link" href="lessons/14-map-apply-and-vectorize.html"><span class="module-number">14</span><span>Map, apply, and vectorize</span></a><a class="module-link" href="lessons/15-statistics-you-can-explain.html"><span class="module-number">15</span><span>Statistics you can explain</span></a></div><div class="sidebar-group"><h2>Combine and analyze</h2><a class="module-link" href="lessons/16-group-summarize-and-compare.html"><span class="module-number">16</span><span>Group, summarize, and compare</span></a><a class="module-link" href="lessons/17-merge-related-tables.html"><span class="module-number">17</span><span>Merge related tables</span></a><a class="module-link" href="lessons/18-concatenate-and-align.html"><span class="module-number">18</span><span>Concatenate and align</span></a><a class="module-link" href="lessons/19-reshape-tables.html"><span class="module-number">19</span><span>Reshape tables</span></a></div><div class="sidebar-group"><h2>Files and practical work</h2><a class="module-link" href="lessons/20-read-and-write-files.html"><span class="module-number">20</span><span>Read and write files</span></a><a class="module-link" href="lessons/21-work-with-time-series.html"><span class="module-number">21</span><span>Work with time series</span></a><a class="module-link" href="lessons/22-explore-richer-structures.html"><span class="module-number">22</span><span>Explore richer structures</span></a><a class="module-link" href="lessons/23-work-efficiently-and-reproducibly.html"><span class="module-number">23</span><span>Work efficiently and reproducibly</span></a><a class="module-link" href="lessons/24-plot-and-interpret.html"><span class="module-number">24</span><span>Plot and interpret</span></a><a class="module-link" href="lessons/25-debugging-clinic.html"><span class="module-number">25</span><span>Debugging clinic</span></a><a class="module-link" href="lessons/26-end-to-end-classroom-project.html"><span class="module-number">26</span><span>End-to-end classroom project</span></a></div><div class="sidebar-group"><h2>Public data workshops</h2><a class="module-link" href="lessons/27-import-csv-and-text-with-confidence.html"><span class="module-number">27</span><span>Import CSV and text with confidence</span></a><a class="module-link" href="lessons/28-work-across-excel-and-json-formats.html"><span class="module-number">28</span><span>Work across Excel and JSON formats</span></a><a class="module-link" href="lessons/29-analyze-a-real-public-dataset.html"><span class="module-number">29</span><span>Analyze a real public dataset</span></a></div></nav><div class="sidebar-tools"><p data-progress aria-live="polite">Your practice progress is saved on this device.</p><div class="button-row"><button type="button" class="button small" data-action="export-work">Export my work</button><button type="button" class="button small" data-action="import-work">Import work</button></div><p class="small-print" data-save-status>Save an export to keep a backup.</p></div></aside><main id="main-content" class="course-main"><noscript><p class="notice">All explanations, questions, and verified outputs can be read here. Enable JavaScript for search, saved answers, and browser Python, or use the downloadable notebooks.</p></noscript><h1 id="a-practical-pandas-reference">A practical pandas reference</h1>
+<p>Use this guide after attempting a lesson. It is a reminder of common operations, with questions to ask before trusting the result. Examples assume <code>import pandas as pd</code> and a DataFrame named <code>df</code>; substitute the actual columns in your data.</p>
+<h2 id="python-and-pandas-objects">Python and pandas objects</h2>
+<table>
+<thead>
+<tr>
+<th>Expression</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{"Name": "Amira", "Age": 20}</code></td>
+<td>A dictionary containing named key-value pairs.</td>
+</tr>
+<tr>
+<td><code>[88, 72, 91]</code></td>
+<td>An ordered Python list.</td>
+</tr>
+<tr>
+<td><code>pd.Series([88, 72, 91])</code></td>
+<td>A labeled one-dimensional collection.</td>
+</tr>
+<tr>
+<td><code>pd.DataFrame({"Name": ["Amira", "Bilal"], "Score": [88, 72]})</code></td>
+<td>A two-dimensional labeled table built from equally long plain lists.</td>
+</tr>
+<tr>
+<td><code>df["Score"]</code></td>
+<td>A Series for one column.</td>
+</tr>
+<tr>
+<td><code>df[["Score"]]</code></td>
+<td>A one-column DataFrame.</td>
+</tr>
+</tbody>
+</table>
+<p>Ask: is this a dictionary, list, Series, or DataFrame? What do its keys, positions, or labels mean? See <a href="https://docs.python.org/3/tutorial/datastructures.html">Python data structures</a> and <a href="https://pandas.pydata.org/docs/user_guide/dsintro.html">pandas data structures</a>.</p>
+<h2 id="inspect-before-analyzing">Inspect before analyzing</h2>
+<table>
+<thead>
+<tr>
+<th>Expression</th>
+<th>What it shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>df.head(3)</code> / <code>df.tail(3)</code></td>
+<td>First or last three rows.</td>
+</tr>
+<tr>
+<td><code>df.shape</code></td>
+<td>Number of rows and columns, in that order.</td>
+</tr>
+<tr>
+<td><code>df.columns</code> / <code>df.index</code></td>
+<td>Column labels and row labels.</td>
+</tr>
+<tr>
+<td><code>df.dtypes</code></td>
+<td>Column storage types.</td>
+</tr>
+<tr>
+<td><code>df.info()</code></td>
+<td>Structure, types, and non-missing counts.</td>
+</tr>
+<tr>
+<td><code>df.describe()</code></td>
+<td>A default summary of eligible columns.</td>
+</tr>
+<tr>
+<td><code>df["Program"].value_counts(dropna=False)</code></td>
+<td>Counts of observed values, including a missing-value entry.</td>
+</tr>
+</tbody>
+</table>
+<p>Attributes such as <code>shape</code> have no call parentheses. Methods such as <code>head()</code> do. A preview is not a check of every record. See <a href="https://pandas.pydata.org/docs/user_guide/basics.html">essential functionality</a>.</p>
+<h2 id="select-by-label-or-position">Select by label or position</h2>
+<table>
+<thead>
+<tr>
+<th>Expression</th>
+<th>Selection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>df.loc[row_label, "Score"]</code></td>
+<td>A row label and a column label.</td>
+</tr>
+<tr>
+<td><code>df.loc[[label_a, label_b], ["Name", "Score"]]</code></td>
+<td>Requested row labels and named columns.</td>
+</tr>
+<tr>
+<td><code>df.iloc[0:3, 1:4]</code></td>
+<td>Row positions 0–2 and column positions 1–3.</td>
+</tr>
+<tr>
+<td><code>df.at[row_label, "Score"]</code></td>
+<td>One value by labels when those labels identify one cell.</td>
+</tr>
+<tr>
+<td><code>df.iat[0, 2]</code></td>
+<td>One value by position.</td>
+</tr>
+<tr>
+<td><code>df.set_index("Student_ID", verify_integrity=True)</code></td>
+<td>Use Student_ID as the index and reject duplicate index labels.</td>
+</tr>
+<tr>
+<td><code>df.reset_index()</code></td>
+<td>Move the current index into a column.</td>
+</tr>
+</tbody>
+</table>
+<p>An <code>iloc</code> slice excludes its stop position. A <code>loc</code> label slice includes its endpoint labels when they are present and the label-slicing conditions are satisfied. Duplicate or unsorted labels need extra care. Ask whether an integer is a label or a position before choosing a selector. See <a href="https://pandas.pydata.org/docs/user_guide/indexing.html">indexing and selecting data</a>.</p>
+<h2 id="build-and-use-a-boolean-mask">Build and use a Boolean mask</h2>
+<pre><code class="language-python">mask = (df[&quot;Score&quot;] &gt;= 80) &amp; (df[&quot;Campus&quot;] == &quot;RAK&quot;)
+result = df.loc[mask, [&quot;Student_ID&quot;, &quot;Score&quot;]]
+</code></pre>
+<p>Use <code>&amp;</code> for AND, <code>|</code> for OR, and <code>~</code> to reverse a mask. Put parentheses around comparisons. <code>isin(["AI", "IT"])</code> checks membership and <code>between(70, 90, inclusive="both")</code> checks an inclusive range.</p>
+<p>Ask: what should happen when the value being compared is missing? Nullable comparisons can produce missing Boolean values. Decide the treatment explicitly when the rule requires it. The <a href="https://pandas.pydata.org/docs/getting_started/intro_tutorials/03_subset_data.html">subset tutorial</a> explains masks and selection.</p>
+<h2 id="add-rename-remove-and-update">Add, rename, remove, and update</h2>
+<pre><code class="language-python">df[&quot;Score_Fraction&quot;] = df[&quot;Score&quot;] / 100
+renamed = df.rename(columns={&quot;Name&quot;: &quot;Student_Name&quot;})
+smaller = df.drop(columns=[&quot;Join_Date&quot;])
+df.loc[df[&quot;Student_ID&quot;] == &quot;S004&quot;, &quot;Score&quot;] = 67
+working = df.copy()
+</code></pre>
+<p>The <code>rename</code> and <code>drop</code> calls shown here return new tables. Assign their results if you want to keep them. Use one explicit <code>.loc</code> assignment to change selected values in the original table. Simple <code>working = df</code> creates another name for the same object; it is not a copy.</p>
+<p>Ask: which object should change? Is the new column's meaning and unit clear? See <a href="https://pandas.pydata.org/docs/getting_started/intro_tutorials/05_add_columns.html">new columns</a> and <a href="https://pandas.pydata.org/docs/user_guide/copy_on_write.html">Copy-on-Write</a>.</p>
+<h2 id="convert-and-clean-deliberately">Convert and clean deliberately</h2>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Example</th>
+<th>Decision to explain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Detect missing values</td>
+<td><code>df["Score"].isna()</code></td>
+<td>Is an empty string also meant to count as missing?</td>
+</tr>
+<tr>
+<td>Parse numeric text</td>
+<td><code>pd.to_numeric(df["Score"], errors="coerce")</code></td>
+<td>Which source values failed to parse, and why?</td>
+</tr>
+<tr>
+<td>Nullable integers</td>
+<td><code>pd.Series([20, None], dtype="Int64")</code></td>
+<td>Is the quantity a whole number with possible unknown values?</td>
+</tr>
+<tr>
+<td>Remove incomplete rows</td>
+<td><code>df.dropna(subset=["Score"])</code></td>
+<td>Which fields are required for this particular analysis?</td>
+</tr>
+<tr>
+<td>Fill a category label</td>
+<td><code>df["Campus"].fillna("Unknown")</code></td>
+<td>Should a missingness flag also be preserved?</td>
+</tr>
+<tr>
+<td>Find repeated records</td>
+<td><code>df.duplicated(keep=False)</code></td>
+<td>Are these exact repeats or legitimate repeated observations?</td>
+</tr>
+<tr>
+<td>Remove exact repeats</td>
+<td><code>df.drop_duplicates()</code></td>
+<td>What evidence justifies removing them?</td>
+</tr>
+</tbody>
+</table>
+<p>Missing is not automatically zero, a failure, or an invalid observation. Preserve raw labels when a conversion would erase their meaning. See <a href="https://pandas.pydata.org/docs/user_guide/missing_data.html">missing data</a>.</p>
+<h2 id="text-and-dates">Text and dates</h2>
+<pre><code class="language-python">names = df[&quot;Name&quot;].astype(&quot;string&quot;).str.strip()
+matches = names.str.contains(&quot;am&quot;, case=False, regex=False, na=False)
+dates = pd.to_datetime(df[&quot;Join_Date&quot;], format=&quot;%Y-%m-%d&quot;, errors=&quot;coerce&quot;)
+months = dates.dt.month
+</code></pre>
+<p><code>.str</code> provides operations on text values and <code>.dt</code> provides operations on datetime-like values. Be explicit about literal text versus a regular expression and about the intended date format. Inspect parsing failures rather than assuming conversion repaired the data. See <a href="https://pandas.pydata.org/docs/user_guide/text.html">text</a> and <a href="https://pandas.pydata.org/docs/user_guide/timeseries.html">time series</a>.</p>
+<h2 id="summaries-and-groups">Summaries and groups</h2>
+<pre><code class="language-python">summary = (
+    df.groupby(&quot;Program&quot;, as_index=False, dropna=False, observed=True)
+      .agg(Rows=(&quot;Student_ID&quot;, &quot;size&quot;),
+           Known_scores=(&quot;Score&quot;, &quot;count&quot;),
+           Mean_score=(&quot;Score&quot;, &quot;mean&quot;))
+)
+df[&quot;Program_mean&quot;] = df.groupby(&quot;Program&quot;)[&quot;Score&quot;].transform(&quot;mean&quot;)
+</code></pre>
+<p><code>size</code> counts rows; <code>count</code> counts non-missing values in the selected column. Aggregation reduces groups to summaries. <code>transform</code> returns a result aligned with the original rows. <code>dropna=False</code> retains missing group keys, while <code>observed=True</code> limits categorical groups to observed categories.</p>
+<p>The default standard deviation uses <code>ddof=1</code>. Correlation describes association and does not, by itself, establish cause. Ask: what is one result row, what is the denominator, and what observations are excluded? See <a href="https://pandas.pydata.org/docs/user_guide/groupby.html">grouping</a> and <a href="https://pandas.pydata.org/docs/user_guide/basics.html#descriptive-statistics">descriptive statistics</a>.</p>
+<h2 id="join-and-concatenate">Join and concatenate</h2>
+<pre><code class="language-python">joined = left.merge(
+    right, on=&quot;Student_ID&quot;, how=&quot;left&quot;,
+    validate=&quot;one_to_one&quot;, indicator=True
+)
+unmatched = joined.loc[joined[&quot;_merge&quot;] == &quot;left_only&quot;]
+stacked = pd.concat([batch_a, batch_b], ignore_index=True)
+</code></pre>
+<p>Choose <code>inner</code> for shared keys, <code>left</code> to retain left-side records, <code>right</code> to retain right-side records, or <code>outer</code> to audit the union. Match cardinality matters: repeated keys can multiply rows. Missing right-side measurements do not always prove a missing match; the merge indicator identifies match status.</p>
+<p><code>concat(..., axis=0)</code> stacks rows. <code>axis=1</code> combines objects as columns, aligning their row labels. Ask: what keys identify records, which side must be unique, and how many output rows should exist? See <a href="https://pandas.pydata.org/docs/user_guide/merging.html">merging and concatenation</a>.</p>
+<h2 id="reshape">Reshape</h2>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>melt(...)</code></td>
+<td>Turn selected measure columns into long-form rows.</td>
+</tr>
+<tr>
+<td><code>pivot(...)</code></td>
+<td>Turn distinct column-category labels into columns when each row/column pair identifies one value.</td>
+</tr>
+<tr>
+<td><code>pivot_table(..., aggfunc="mean")</code></td>
+<td>Summarize repeated row/column combinations with an explicit statistic.</td>
+</tr>
+<tr>
+<td><code>pd.crosstab(...)</code></td>
+<td>Count category combinations or report specified proportions.</td>
+</tr>
+<tr>
+<td><code>explode(...)</code></td>
+<td>Expand list-like values into separate rows.</td>
+</tr>
+</tbody>
+</table>
+<p>Ask whether the operation rearranges values, combines observations, or changes what one row represents. See <a href="https://pandas.pydata.org/docs/user_guide/reshaping.html">reshaping</a>.</p>
+<h2 id="read-write-and-verify-a-file">Read, write, and verify a file</h2>
+<pre><code class="language-python">df = pd.read_csv(&quot;students.csv&quot;, dtype={&quot;Student_ID&quot;: &quot;string&quot;})
+df.to_csv(&quot;report.csv&quot;, index=False)
+read_back = pd.read_csv(&quot;report.csv&quot;, dtype={&quot;Student_ID&quot;: &quot;string&quot;})
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Read</th>
+<th>Write</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CSV or delimited text</td>
+<td><code>pd.read_csv(path, sep=...)</code></td>
+<td><code>df.to_csv(path, sep=..., index=False)</code></td>
+</tr>
+<tr>
+<td>Excel workbook</td>
+<td><code>pd.read_excel(path, sheet_name=...)</code></td>
+<td><code>df.to_excel(path, sheet_name=..., index=False)</code></td>
+</tr>
+<tr>
+<td>Record JSON</td>
+<td><code>pd.read_json(path, orient="records")</code></td>
+<td><code>df.to_json(path, orient="records")</code></td>
+</tr>
+<tr>
+<td>JSON Lines</td>
+<td><code>pd.read_json(path, lines=True)</code></td>
+<td><code>df.to_json(path, orient="records", lines=True)</code></td>
+</tr>
+<tr>
+<td>SQL query</td>
+<td><code>pd.read_sql_query(query, connection, params=...)</code></td>
+<td><code>df.to_sql(name, connection, ...)</code></td>
+</tr>
+</tbody>
+</table>
+<p>Use the paths supplied by each lesson instead of overwriting source files. Textual IDs, date formats, missing-value tokens, and worksheet names deserve explicit choices. CSV does not preserve every pandas dtype. Check the loaded result's labels, row count, and meaning. See the <a href="https://pandas.pydata.org/docs/user_guide/io.html">I/O guide</a>.</p>
+<h2 id="time-series-and-plots">Time series and plots</h2>
+<p>Use a sorted, suitable date index before resampling or rolling calculations. <code>asfreq("D")</code> requests a daily grid; it does not invent the measurements for missing days. <code>rolling(3)</code> counts rows, which correspond to three calendar days only on an appropriate daily grid. A time-based window has a different meaning.</p>
+<p>Choose a chart for the question: bars for category summaries, a histogram for numeric distributions, a scatter plot for paired measurements, and a line plot for ordered change. Label the statistic and units, retain visible missingness where it matters, and support the chart with counts or a small numeric table. See <a href="https://pandas.pydata.org/docs/user_guide/timeseries.html">time series</a> and <a href="https://pandas.pydata.org/docs/user_guide/visualization.html">visualization</a>.</p>
+<h2 id="a-final-result-check">A final result check</h2>
+<p>Before accepting an answer, inspect the relevant invariants: expected row count, preserved IDs, key uniqueness, non-missing counts, permitted ranges, totals, and saved-file contents. Choose checks that follow from the question and data contract. A result that runs without an exception can still answer the wrong question.</p>
+<hr />
+<p><a href="https://github.com/aalbatai">GitHub: aalbatai</a> · <a href="https://github.com/aalbatai/pandas-clearly">pandas-clearly</a></p><footer class="page-footer"><div class="author-signature"><strong>Dr. Ali Al Bataineh</strong><span>Computer Information Science</span><span>Higher Colleges of Technology, Ras Al Khaimah, United Arab Emirates</span></div><div class="footer-links"><a href="about.html">About &amp; citation</a><a href="sources.html">Sources &amp; licenses</a><a href="versions.html">Tested environments</a><a href="https://github.com/aalbatai/pandas-clearly">GitHub repository</a></div><p class="small-print">Pandas, Clearly · Version 1.0.0 · Original course material © 2026 Ali Al Bataineh</p></footer></main></div>
+<script type="application/json" id="site-config">{"root": "./", "runtimeBase": "runtime/", "manifest": "data/manifest.json", "setupURL": "setup.py", "pageType": "reading", "storageKey": "pandas-clearly-v1", "additionalWheels": ["runtime/et_xmlfile-2.0.0-py3-none-any.whl", "runtime/openpyxl-3.1.5-py2.py3-none-any.whl"], "timeoutMs": 60000, "totalCells": 120, "learningCellIds": ["M00C01", "M00C02", "M00C03", "M00C04", "M01C01", "M01C02", "M01C03", "M01C04", "M02C01", "M02C02", "M02C03", "M02C04", "M03C01", "M03C02", "M03C03", "M03C04", "M04C01", "M04C02", "M04C03", "M04C04", "M05C01", "M05C02", "M05C03", "M05C04", "M06C01", "M06C02", "M06C03", "M06C04", "M07C01", "M07C02", "M07C03", "M07C04", "M08C01", "M08C02", "M08C03", "M08C04", "M09C01", "M09C02", "M09C03", "M09C04", "M10C01", "M10C02", "M10C03", "M10C04", "M11C01", "M11C02", "M11C03", "M11C04", "M12C01", "M12C02", "M12C03", "M12C04", "M13C01", "M13C02", "M13C03", "M13C04", "M14C01", "M14C02", "M14C03", "M14C04", "M15C01", "M15C02", "M15C03", "M15C04", "M16C01", "M16C02", "M16C03", "M16C04", "M17C01", "M17C02", "M17C03", "M17C04", "M18C01", "M18C02", "M18C03", "M18C04", "M19C01", "M19C02", "M19C03", "M19C04", "M20C01", "M20C02", "M20C03", "M20C04", "M21C01", "M21C02", "M21C03", "M21C04", "M22C01", "M22C02", "M22C03", "M22C04", "M23C01", "M23C02", "M23C03", "M23C04", "M24C01", "M24C02", "M24C03", "M24C04", "M25C01", "M25C02", "M25C03", "M25C04", "M26C01", "M26C02", "M26C03", "M26C04", "M27C01", "M27C02", "M27C03", "M27C04", "M28C01", "M28C02", "M28C03", "M28C04", "M29C01", "M29C02", "M29C03", "M29C04"]}</script><script type="application/json" id="page-data">{}</script></body></html>

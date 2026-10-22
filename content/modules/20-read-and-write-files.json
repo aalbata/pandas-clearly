@@ -1,0 +1,174 @@
+{
+  "id": 20,
+  "title": "Read and write files",
+  "level": "Core",
+  "goal": "Move data between pandas and common local file formats.",
+  "prerequisites": "Know DataFrame construction, column selection, and paths.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/io.html",
+  "cells": [
+    {
+      "id": "M20C01",
+      "title": "Read and export CSV",
+      "explanation": "CSV stores text rows separated by delimiters. read_csv creates a DataFrame and attempts to infer column types. to_csv writes the selected data; index=False avoids saving the pandas row index as an extra column.",
+      "code": "df = pd.read_csv(DATA_DIR / \"students.csv\", dtype={\"Student_ID\": \"string\"})\nresult = df.loc[df[\"Score\"].ge(85), [\"Student_ID\", \"Name\", \"Score\"]]\nresult.to_csv(OUTPUT_DIR / \"high_scores.csv\", index=False)\nprint(result)\nprint(\"Saved outputs/high_scores.csv\")",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does DATA_DIR / \"students.csv\" build?",
+          "answer": "A platform-independent path to a file inside the data directory."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many students score at least 85?",
+          "answer": "4 students: S001, S003, S006, and S010."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why keep Student_ID as text?",
+          "answer": "IDs are labels, not quantities; text preserves formats such as leading zeros."
+        }
+      ],
+      "task": "Read only Student_ID, Name, and Attendance. Save students with Attendance below 85 to attendance_followup.csv.",
+      "hint": "Use usecols when reading and .lt(85) when filtering.",
+      "solution": "df = pd.read_csv(DATA_DIR / \"students.csv\", usecols=[\"Student_ID\", \"Name\", \"Attendance\"], dtype={\"Student_ID\": \"string\"})\nresult = df.loc[df[\"Attendance\"].lt(85)]\nresult.to_csv(OUTPUT_DIR / \"attendance_followup.csv\", index=False)\nprint(result)",
+      "solution_note": "The report contains S004, S008, and S011. All written files go in outputs.",
+      "check": {
+        "prompt": "Why use index=False on export?",
+        "options": [
+          "To sort the records",
+          "To omit the pandas row index",
+          "To delete Student_ID"
+        ],
+        "correct": 1,
+        "feedback": "The row index is otherwise written as an additional CSV field."
+      },
+      "verify": "assert result[\"Student_ID\"].tolist() == [\"S001\", \"S003\", \"S006\", \"S010\"]\nassert (OUTPUT_DIR / \"high_scores.csv\").is_file()",
+      "solution_verify": "assert result[\"Student_ID\"].tolist() == [\"S004\", \"S008\", \"S011\"]\nassert (OUTPUT_DIR / \"attendance_followup.csv\").is_file()",
+      "watch": "CSV does not preserve every pandas dtype. Check types and missing-value rules when reloading.",
+      "takeaway": "Inspect imports and choose export columns deliberately."
+    },
+    {
+      "id": "M20C02",
+      "title": "Move records through JSON",
+      "explanation": "JSON can store a list of records, each represented by a dictionary. orient=\"records\" makes this structure explicit. Re-reading a file checks that the exported shape matches what you intended.",
+      "code": "df = pd.read_json(DATA_DIR / \"students.json\", orient=\"records\")\nresult = df[[\"Student_ID\", \"Campus\", \"Score\"]].head(3)\nresult.to_json(OUTPUT_DIR / \"student_preview.json\", orient=\"records\", indent=2)\nprint(result)\nprint((OUTPUT_DIR / \"student_preview.json\").read_text())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does one JSON record represent?",
+          "answer": "One student row, with column names as dictionary keys."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many dictionaries are written?",
+          "answer": "3, because head(3) selects three rows."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why inspect the exported JSON as text?",
+          "answer": "It shows the actual file structure, not only its DataFrame representation."
+        }
+      ],
+      "task": "Export Student_ID and Program for the first two students, then read the saved JSON back into result.",
+      "hint": "Write with orient=\"records\" and read with the same orientation.",
+      "solution": "df = students().head(2)[[\"Student_ID\", \"Program\"]]\npath = OUTPUT_DIR / \"program_preview.json\"\ndf.to_json(path, orient=\"records\", indent=2)\nresult = pd.read_json(path, orient=\"records\")\nprint(result)",
+      "solution_note": "The round trip preserves these two records and their field names.",
+      "check": {
+        "prompt": "What does orient=\"records\" produce?",
+        "options": [
+          "A list of row dictionaries",
+          "One image",
+          "An Excel worksheet"
+        ],
+        "correct": 0,
+        "feedback": "Each output dictionary describes a row using field names and values."
+      },
+      "verify": "assert result.shape == (3, 3)\nassert len(json.loads((OUTPUT_DIR / \"student_preview.json\").read_text())) == 3",
+      "solution_verify": "assert result.shape == (2, 2)\nassert result[\"Student_ID\"].tolist() == [\"S001\", \"S002\"]",
+      "watch": "File formats can change date and nullable dtype representations; a round trip needs validation.",
+      "takeaway": "Choose a file orientation that matches the receiving system."
+    },
+    {
+      "id": "M20C03",
+      "title": "Select an Excel worksheet",
+      "explanation": "An Excel workbook can contain several sheets. sheet_name selects one by name. The openpyxl engine handles the provided .xlsx workbook and is listed in the installation requirements.",
+      "code": "df = pd.read_excel(DATA_DIR / \"students.xlsx\", sheet_name=\"Students\", engine=\"openpyxl\")\nresult = df.groupby(\"Campus\", as_index=False)[\"Score\"].mean()\nresult.to_excel(OUTPUT_DIR / \"campus_report.xlsx\", sheet_name=\"Summary\", index=False, engine=\"openpyxl\")\nprint(result.round(2))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What is the difference between the file and the sheet?",
+          "answer": "students.xlsx is the workbook file; Students identifies a worksheet inside it."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many rows are in the summary?",
+          "answer": "2, one for Dubai and one for RAK."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why use a new output filename?",
+          "answer": "It preserves the supplied source data and clearly identifies the generated report."
+        }
+      ],
+      "task": "Read the Students sheet. Store a summary in result with columns Program and Students, where Students counts rows per program. Export it to program_counts.xlsx, sheet Counts.",
+      "hint": "groupby(\"Program\").size() counts rows; name the count column.",
+      "solution": "df = pd.read_excel(DATA_DIR / \"students.xlsx\", sheet_name=\"Students\", engine=\"openpyxl\")\nresult = df.groupby(\"Program\").size().rename(\"Students\").reset_index()\nresult.to_excel(OUTPUT_DIR / \"program_counts.xlsx\", sheet_name=\"Counts\", index=False, engine=\"openpyxl\")\nprint(result)",
+      "solution_note": "The workbook contains two counts: six AI students and six IT students.",
+      "check": {
+        "prompt": "Which argument chooses a worksheet?",
+        "options": [
+          "sheet_name",
+          "index=False",
+          "dtype alone"
+        ],
+        "correct": 0,
+        "feedback": "sheet_name identifies which worksheet to read or create."
+      },
+      "verify": "assert len(result) == 2\nassert np.isclose(result.loc[result[\"Campus\"].eq(\"RAK\"), \"Score\"].item(), 81)",
+      "solution_verify": "assert result[\"Students\"].tolist() == [6, 6]\nassert (OUTPUT_DIR / \"program_counts.xlsx\").is_file()",
+      "watch": "If openpyxl is missing, install the provided requirements before running this cell.",
+      "takeaway": "Excel I/O needs a workbook path and the correct worksheet."
+    },
+    {
+      "id": "M20C04",
+      "title": "Query a small SQLite table",
+      "explanation": "SQL retrieves data from tables using a query. This example creates a temporary in-memory database from the fictional data. The parameter placeholder passes a value separately from the query text.",
+      "code": "with sqlite3.connect(\":memory:\") as connection:\n    students().to_sql(\"students\", connection, index=False, if_exists=\"replace\")\n    result = pd.read_sql_query(\n        \"SELECT Student_ID, Name, Score FROM students WHERE Score >= ? ORDER BY Score DESC\",\n        connection, params=(85,))\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does :memory: mean?",
+          "answer": "The database exists in memory for this connection and is not a disk database file."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which student appears first?",
+          "answer": "Fatima, S006, with Score 95."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why use a placeholder and params?",
+          "answer": "It passes values safely without manually inserting them into SQL text."
+        }
+      ],
+      "task": "Use SQL to calculate mean Score and student count for each Campus. Store the returned DataFrame in result with columns Campus, Mean_Score, and Students, ordered by Campus.",
+      "hint": "Use GROUP BY Campus with AVG(Score) AS Mean_Score and COUNT(*) AS Students.",
+      "solution": "with sqlite3.connect(\":memory:\") as connection:\n    students().to_sql(\"students\", connection, index=False, if_exists=\"replace\")\n    result = pd.read_sql_query(\n        \"SELECT Campus, AVG(Score) AS Mean_Score, COUNT(*) AS Students FROM students GROUP BY Campus ORDER BY Campus\",\n        connection)\nprint(result.round(2))",
+      "solution_note": "This performs the grouping inside SQL and returns the two-row result as a DataFrame.",
+      "check": {
+        "prompt": "What does read_sql_query return?",
+        "options": [
+          "A DataFrame",
+          "A database server",
+          "An Excel file"
+        ],
+        "correct": 0,
+        "feedback": "The query result becomes a pandas DataFrame."
+      },
+      "verify": "assert len(result) == 4\nassert result.iloc[0][\"Student_ID\"] == \"S006\"",
+      "solution_verify": "assert result[\"Students\"].tolist() == [6, 6]\nassert np.isclose(result.loc[result[\"Campus\"].eq(\"RAK\"), \"Mean_Score\"].item(), 81)",
+      "watch": "Only use if_exists=\"replace\" here on the temporary classroom table; on a real database it replaces the existing table.",
+      "takeaway": "Pandas can receive SQL results without loading every source row."
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+{
+  "id": 15,
+  "title": "Statistics you can explain",
+  "level": "Core",
+  "goal": "Summarize center, spread, completeness, and association with clear interpretations.",
+  "prerequisites": "You can select numeric columns and identify missing values.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/basics.html#descriptive-statistics",
+  "cells": [
+    {
+      "id": "M15C01",
+      "title": "Mean and median respond differently",
+      "explanation": "The mean uses every numeric value in an arithmetic average. The median is the middle value after sorting. Comparing them can help you notice how an unusually large or small observation affects a summary.",
+      "code": "costs = pd.Series([10, 20, 30, 40, 50])  # Fictional costs in AED\nresult = pd.Series({\"Mean_AED\": costs.mean(), \"Median_AED\": costs.median()})\nprint(result)",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What calculation produces the mean here?",
+          "answer": "(10 + 20 + 30 + 40 + 50) / 5 = 30."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What is the median?",
+          "answer": "30, the middle value of the five sorted costs."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Does a mean equal to the median prove the data are correct?",
+          "answer": "No. It only describes this set of numbers; validation is a separate task."
+        }
+      ],
+      "task": "Change the last cost from 50 to 500. Recalculate mean and median in result.",
+      "hint": "Recreate the Series with the changed final value.",
+      "solution": "costs = pd.Series([10, 20, 30, 40, 500])\nresult = pd.Series({\"Mean_AED\": costs.mean(), \"Median_AED\": costs.median()})\nprint(result)",
+      "solution_note": "The mean rises to AED 120, while the median stays AED 30. The large value has a stronger effect on the mean.",
+      "check": {
+        "prompt": "Which summary stays 30 after this change?",
+        "options": [
+          "Mean",
+          "Median",
+          "Maximum"
+        ],
+        "correct": 1,
+        "feedback": "The middle sorted observation is still 30."
+      },
+      "verify": "assert result[\"Mean_AED\"] == 30\nassert result[\"Median_AED\"] == 30",
+      "solution_verify": "assert result[\"Mean_AED\"] == 120\nassert result[\"Median_AED\"] == 30",
+      "watch": "An extreme value is not automatically a mistake; investigate its source and meaning.",
+      "takeaway": "Explain which summary fits the question and distribution."
+    },
+    {
+      "id": "M15C02",
+      "title": "Spread and the standard-deviation convention",
+      "explanation": "Standard deviation measures spread around the mean in the same units as the values. pandas uses sample standard deviation by default, with ddof=1. ddof=0 uses the population-style denominator; choose based on what the data represent.",
+      "code": "hours = pd.Series([2.0, 4.0, 6.0])\nresult = pd.Series({\"Mean_hours\": hours.mean(), \"Sample_std_hours\": hours.std(ddof=1), \"Population_std_hours\": hours.std(ddof=0)})\nprint(result.round(4))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does ddof change?",
+          "answer": "It changes the denominator from n to n minus ddof in the variance calculation."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which standard deviation is larger for these data?",
+          "answer": "The sample value, 2.0, is larger than the population-style value, about 1.633."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Would changing hours to minutes leave the standard deviation numerically unchanged?",
+          "answer": "No. The standard deviation would also be multiplied by 60 because it has the same units."
+        }
+      ],
+      "task": "Replace the hours with [4.0, 4.0, 4.0]. Recalculate both standard deviations.",
+      "hint": "A set of identical values has no spread around its mean.",
+      "solution": "hours = pd.Series([4.0, 4.0, 4.0])\nresult = pd.Series({\"Sample_std_hours\": hours.std(ddof=1), \"Population_std_hours\": hours.std(ddof=0)})\nprint(result)",
+      "solution_note": "Both standard deviations are zero because every value equals the mean.",
+      "check": {
+        "prompt": "Which ddof does pandas std() use by default?",
+        "options": [
+          "0",
+          "1",
+          "The number of rows"
+        ],
+        "correct": 1,
+        "feedback": "The default is ddof=1, the sample standard-deviation convention."
+      },
+      "verify": "assert result[\"Sample_std_hours\"] == 2.0\nassert np.isclose(result[\"Population_std_hours\"], np.sqrt(8/3))",
+      "solution_verify": "assert result[\"Sample_std_hours\"] == 0\nassert result[\"Population_std_hours\"] == 0",
+      "watch": "With only one known value, sample std is missing because n - 1 is zero.",
+      "takeaway": "State the spread measure and its convention."
+    },
+    {
+      "id": "M15C03",
+      "title": "Describe, count, and quantiles",
+      "explanation": "`describe()` summarizes a numeric Series with count, mean, spread, and selected percentiles. Count excludes missing values; size counts all entries. A quantile describes a position in the distribution, and its value may be interpolated between observations.",
+      "code": "scores = pd.Series([60.0, 70.0, np.nan, 80.0, 90.0])\nresult = scores.describe()\nprint(result)\nprint(\"Rows:\", scores.size, \"Known:\", scores.count())",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Does describe count the missing score as an observed score?",
+          "answer": "No. Its count is 4, while the Series has 5 entries."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What is the 50% value?",
+          "answer": "75.0, halfway between the two middle known values, 70 and 80."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Why does a reported average need a known-value count?",
+          "answer": "Readers need to know how many observations support the average and how much information is missing."
+        }
+      ],
+      "task": "For the same scores, report the 25th, 50th, and 75th percentiles explicitly using quantile.",
+      "hint": "Pass a list of probabilities [0.25, 0.5, 0.75].",
+      "solution": "scores = pd.Series([60.0, 70.0, np.nan, 80.0, 90.0])\nresult = scores.quantile([0.25, 0.5, 0.75])\nprint(result)",
+      "solution_note": "With the default linear interpolation, the quartiles are 67.5, 75.0, and 82.5.",
+      "check": {
+        "prompt": "Which quantity includes a missing entry?",
+        "options": [
+          "Series.count()",
+          "Series.size",
+          "The count row of describe()"
+        ],
+        "correct": 1,
+        "feedback": "size counts entries; count counts nonmissing values."
+      },
+      "verify": "assert result[\"count\"] == 4\nassert result[\"50%\"] == 75.0\nassert scores.size == 5",
+      "solution_verify": "assert result.to_dict() == {0.25: 67.5, 0.5: 75.0, 0.75: 82.5}",
+      "watch": "Describe is a starting point. It does not check whether IDs, units, ranges, or collection procedures are valid.",
+      "takeaway": "Report completeness alongside summary statistics."
+    },
+    {
+      "id": "M15C04",
+      "title": "Correlation describes association",
+      "explanation": "`corr()` computes pairwise correlations between numeric variables; its default method is Pearson correlation. Positive values indicate that higher values tend to occur together in a linear pattern. Correlation does not establish that one variable causes the other.",
+      "code": "df = students()\nresult = df[[\"Study_Hours\", \"Score\", \"Attendance\"]].corr(method=\"pearson\")\nprint(result.round(3))",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why are only three columns selected before corr()?",
+          "answer": "They are numeric measurements relevant to this question; IDs and labels do not belong in this calculation."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "What values appear on the diagonal?",
+          "answer": "1.0 for each of these nonconstant columns correlated with itself."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Does a positive Study_Hours-Score correlation prove that studying longer caused these scores?",
+          "answer": "No. Other factors and the way the data were collected could explain the association. These records are also fictional teaching data."
+        }
+      ],
+      "task": "Calculate Spearman rank correlation for Study_Hours and Score. Store the two-by-two matrix in result.",
+      "hint": "Change method to \"spearman\" after selecting the two columns.",
+      "solution": "df = students()\nresult = df[[\"Study_Hours\", \"Score\"]].corr(method=\"spearman\")\nprint(result.round(3))",
+      "solution_note": "Spearman compares ranks rather than raw values. The association is positive in this practice table; it still does not support a causal claim.",
+      "check": {
+        "prompt": "What claim does correlation alone justify?",
+        "options": [
+          "A causal effect has been proved",
+          "An association was measured in the available data",
+          "The model will predict perfectly"
+        ],
+        "correct": 1,
+        "feedback": "Association is the appropriate interpretation without a design supporting causal inference."
+      },
+      "verify": "assert result.shape == (3, 3)\nassert np.allclose(np.diag(result), 1)\nassert result.loc[\"Study_Hours\", \"Score\"] > 0",
+      "solution_verify": "assert result.shape == (2, 2)\nassert 0 < result.loc[\"Study_Hours\", \"Score\"] <= 1\nassert np.isclose(result.loc[\"Study_Hours\", \"Score\"], result.loc[\"Score\", \"Study_Hours\"])",
+      "watch": "Missing entries are handled pairwise, so different correlations can use different numbers of observations.",
+      "takeaway": "Interpret a correlation as an association with limitations."
+    }
+  ]
+}

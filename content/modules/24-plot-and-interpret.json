@@ -1,0 +1,174 @@
+{
+  "id": 24,
+  "title": "Plot and interpret",
+  "level": "Core",
+  "goal": "Select a plot that answers a clear question and label its units.",
+  "prerequisites": "Use summaries, numeric columns, and sorted dates.",
+  "reference": "https://pandas.pydata.org/docs/user_guide/visualization.html",
+  "cells": [
+    {
+      "id": "M24C01",
+      "title": "Compare groups with bars",
+      "explanation": "A bar chart compares categories. First calculate one statistic per group, then plot those values. The axis label must say whether the height is a mean, count, or total.",
+      "code": "df = students()\nresult = df.groupby(\"Campus\")[\"Score\"].mean().sort_index()\nax = result.plot.bar(color=\"#28756a\", rot=0, figsize=(6, 3.6))\nax.set(title=\"Mean score by campus (practice data)\", xlabel=\"Campus\", ylabel=\"Mean score (out of 100)\", ylim=(0, 100))\nplt.tight_layout()\nprint(result.round(2))\nplt.show()",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does the height of one bar represent?",
+          "answer": "The mean student Score for that campus in the fictional table."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Which campus has the higher mean?",
+          "answer": "RAK, with 81.00, compared with Dubai at about 76.83."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Does the chart prove campus causes a score difference?",
+          "answer": "No. These are descriptive summaries from a small fictional dataset, without causal evidence."
+        }
+      ],
+      "task": "Plot the number of students in each Program instead, with a count label on the y-axis.",
+      "hint": "Use groupby(\"Program\").size() before plot.bar().",
+      "solution": "df = students()\nresult = df.groupby(\"Program\").size()\nax = result.plot.bar(color=\"#28756a\", rot=0, figsize=(6, 3.6))\nax.set(title=\"Students by program (practice data)\", xlabel=\"Program\", ylabel=\"Number of students\")\nax.set_ylim(bottom=0)\nplt.tight_layout()\nprint(result)\nplt.show()",
+      "solution_note": "Both programs have six students, so their bars have the same height.",
+      "check": {
+        "prompt": "Why label the y-axis \"Mean score\"?",
+        "options": [
+          "To identify the statistic and units",
+          "To make the bar taller",
+          "To remove uncertainty"
+        ],
+        "correct": 0,
+        "feedback": "A viewer needs to know what each plotted quantity means."
+      },
+      "verify": "assert np.isclose(result.loc[\"RAK\"], 81)\nassert np.isclose(result.loc[\"Dubai\"], 461 / 6)",
+      "solution_verify": "assert result.to_dict() == {\"AI\": 6, \"IT\": 6}",
+      "watch": "Use a zero baseline for ordinary bar comparisons so bar length remains meaningful.",
+      "takeaway": "Aggregate first, then label exactly what was plotted."
+    },
+    {
+      "id": "M24C02",
+      "title": "Inspect a distribution",
+      "explanation": "A histogram counts numeric observations within intervals called bins. It shows the distribution of individual values, rather than a summary for each named category. Bin choices can change the visual impression.",
+      "code": "df = students()\nresult = pd.cut(df[\"Score\"], bins=[50, 60, 70, 80, 90, 100], right=False).value_counts(sort=False)\nax = df[\"Score\"].plot.hist(bins=[50, 60, 70, 80, 90, 100], color=\"#28756a\", edgecolor=\"white\", figsize=(6, 3.6))\nax.set(title=\"Distribution of scores (practice data)\", xlabel=\"Score (out of 100)\", ylabel=\"Number of students\")\nplt.tight_layout()\nprint(result)\nplt.show()",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What is counted along the vertical axis?",
+          "answer": "Students whose scores fall inside each interval."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "How many scores are in [90, 100)?",
+          "answer": "2: 91 and 95."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "How is this different from a bar chart of campus means?",
+          "answer": "A histogram groups numeric values into intervals; campus bars compare named groups."
+        }
+      ],
+      "task": "Use wider bins [50, 75, 100] and compare the count table and visual shape.",
+      "hint": "Change the bin edges in both pd.cut and plot.hist.",
+      "solution": "df = students()\nresult = pd.cut(df[\"Score\"], bins=[50, 75, 100], right=False).value_counts(sort=False)\nax = df[\"Score\"].plot.hist(bins=[50, 75, 100], color=\"#28756a\", edgecolor=\"white\", figsize=(6, 3.6))\nax.set(title=\"Scores with wider bins (practice data)\", xlabel=\"Score (out of 100)\", ylabel=\"Number of students\")\nplt.tight_layout()\nprint(result)\nplt.show()",
+      "solution_note": "The two wider bins contain four scores below 75 and eight scores from 75 up to 100.",
+      "check": {
+        "prompt": "What happens when bin widths change?",
+        "options": [
+          "The raw scores change",
+          "The grouped visual summary changes",
+          "The number of students changes"
+        ],
+        "correct": 1,
+        "feedback": "Binning changes the display, not the underlying observations."
+      },
+      "verify": "assert result.tolist() == [1, 2, 3, 4, 2]\nassert result.sum() == 12",
+      "solution_verify": "assert result.tolist() == [4, 8]\nassert result.sum() == 12",
+      "watch": "Histogram libraries usually include the upper endpoint of the last bin; pd.cut(right=False) does not. These sample scores contain no endpoint value of 100.",
+      "takeaway": "Check bin boundaries when interpreting distributions."
+    },
+    {
+      "id": "M24C03",
+      "title": "Compare two measurements",
+      "explanation": "A scatter plot places one point at each pair of numeric measurements. This can reveal a pattern, an unusual observation, or a gap. Correlation describes association; it does not establish why the pattern occurs.",
+      "code": "df = students()\nresult = df[[\"Study_Hours\", \"Score\"]].corr().loc[\"Study_Hours\", \"Score\"]\nax = df.plot.scatter(x=\"Study_Hours\", y=\"Score\", color=\"#28756a\", figsize=(6, 3.6))\nax.set(title=\"Study time and score (practice data)\", xlabel=\"Study hours per week\", ylabel=\"Score (out of 100)\")\nplt.tight_layout()\nprint(\"Pearson correlation:\", round(result, 3))\nplt.show()",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "What does one dot represent?",
+          "answer": "One student with a Study_Hours value and a Score value."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Will the overall pattern slope upward or downward?",
+          "answer": "Upward in this fictional table: higher study hours generally accompany higher scores."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Can this prove that adding one hour causes a fixed score increase?",
+          "answer": "No. The table is fictional and descriptive, and the plot does not control other factors."
+        }
+      ],
+      "task": "Plot Attendance against Score and calculate their Pearson correlation.",
+      "hint": "Replace Study_Hours with Attendance in both the correlation and plot.",
+      "solution": "df = students()\nresult = df[[\"Attendance\", \"Score\"]].corr().loc[\"Attendance\", \"Score\"]\nax = df.plot.scatter(x=\"Attendance\", y=\"Score\", color=\"#28756a\", figsize=(6, 3.6))\nax.set(title=\"Attendance and score (practice data)\", xlabel=\"Attendance (%)\", ylabel=\"Score (out of 100)\")\nplt.tight_layout()\nprint(\"Pearson correlation:\", round(result, 3))\nplt.show()",
+      "solution_note": "The revised plot compares attendance percentages with scores. Its association still does not establish causation.",
+      "check": {
+        "prompt": "What does a positive correlation indicate?",
+        "options": [
+          "One variable must cause the other",
+          "Values tend to increase together",
+          "Every point lies on a straight line"
+        ],
+        "correct": 1,
+        "feedback": "A positive correlation describes the direction of association, not a causal mechanism."
+      },
+      "verify": "assert 0 < result <= 1\nassert np.isclose(result, students()[\"Study_Hours\"].corr(students()[\"Score\"]))",
+      "solution_verify": "assert 0 < result <= 1\nassert np.isclose(result, students()[\"Attendance\"].corr(students()[\"Score\"]))",
+      "watch": "Outliers, restricted ranges, and missing data can affect correlation; inspect the actual points.",
+      "takeaway": "Use scatter plots to inspect relationships without claiming causes."
+    },
+    {
+      "id": "M24C04",
+      "title": "Show change over time",
+      "explanation": "A line chart uses an ordered horizontal axis to show change. Reindexing to a daily grid keeps the missing date visible as a gap. A line across an unobserved day can otherwise suggest continuity that was not measured.",
+      "code": "df = attendance()\ndf[\"Date\"] = pd.to_datetime(df[\"Date\"], format=\"%Y-%m-%d\")\nresult = df.set_index(\"Date\")[\"Visitors\"].sort_index().asfreq(\"D\")\nfig, ax = plt.subplots(figsize=(6.5, 3.6))\nax.plot(result.index, result, marker=\"o\", color=\"#28756a\")\nax.set(title=\"Daily visitors (practice data)\", xlabel=\"Date\", ylabel=\"Recorded visitors\")\nax.set_ylim(bottom=0)\nfig.autofmt_xdate()\nplt.tight_layout()\nprint(result)\nplt.show()",
+      "questions": [
+        {
+          "kind": "Read",
+          "prompt": "Why convert Date before plotting?",
+          "answer": "It gives the horizontal axis chronological meaning and supports a regular daily index."
+        },
+        {
+          "kind": "Predict",
+          "prompt": "Where will the gap appear?",
+          "answer": "October 4, whose visitor count is missing."
+        },
+        {
+          "kind": "Explain",
+          "prompt": "Does the gap mean no visitors came?",
+          "answer": "No. The count is unknown for that day."
+        }
+      ],
+      "task": "Store the daily counts in daily and the three-day rolling mean in result, requiring three known daily values. Plot daily and result together with labels for both lines.",
+      "hint": "Calculate result from daily.rolling(3, min_periods=3).mean(), then plot both Series on the same axes.",
+      "solution": "df = attendance()\ndf[\"Date\"] = pd.to_datetime(df[\"Date\"], format=\"%Y-%m-%d\")\ndaily = df.set_index(\"Date\")[\"Visitors\"].sort_index().asfreq(\"D\")\nresult = daily.rolling(3, min_periods=3).mean()\nfig, ax = plt.subplots(figsize=(6.5, 3.6))\nax.plot(daily.index, daily, marker=\"o\", label=\"Daily count\", color=\"#28756a\")\nax.plot(result.index, result, marker=\"s\", label=\"3-day mean\", color=\"#9c6b28\")\nax.set(title=\"Daily visitors and rolling mean (practice data)\", xlabel=\"Date\", ylabel=\"Visitors\")\nax.set_ylim(bottom=0)\nax.legend()\nfig.autofmt_xdate()\nplt.tight_layout()\nprint(result.round(2))\nplt.show()",
+      "solution_note": "The rolling mean is available only on October 3 and October 7 because other windows lack three known values.",
+      "check": {
+        "prompt": "Why leave a visible gap for the missing day?",
+        "options": [
+          "It communicates an unknown measurement",
+          "It proves the count was zero",
+          "It increases the sample size"
+        ],
+        "correct": 0,
+        "feedback": "A gap prevents an unknown value from being mistaken for an observed zero."
+      },
+      "verify": "assert result.notna().sum() == 6\nassert pd.isna(result.loc[\"2026-10-04\"])",
+      "solution_verify": "assert result.notna().sum() == 2\nassert result.loc[\"2026-10-07\"] == 30",
+      "watch": "A smooth line does not create new observations; report how any smoothing was calculated.",
+      "takeaway": "Time order, gaps, and transformations belong in the explanation."
+    }
+  ]
+}

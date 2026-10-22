@@ -1,0 +1,28 @@
+{
+  "mode": "full",
+  "browser": "133.0.6943.0",
+  "versions": {
+    "python": "3.12.7",
+    "pandas": "2.2.3",
+    "numpy": "2.0.2"
+  },
+  "browser_cases": 248,
+  "passed": 248,
+  "failed": 0,
+  "failures": [],
+  "plots_rendered": 12,
+  "output_files_created": 18,
+  "saved_answers_and_code": true,
+  "export_work": true,
+  "search_under_project_subpath": true,
+  "learn_and_reference_views": true,
+  "keyboard_tab_exit": true,
+  "mobile_widths": [
+    1024,
+    736,
+    390,
+    320
+  ],
+  "external_requests": [],
+  "javascript_errors": []
+}
