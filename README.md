@@ -21,9 +21,8 @@ The course contains **30 modules and 120 guided lessons**, with a student notebo
 | Practise without a worked example beside you | [Independent assessment](notebooks/Independent_Assessment_Student.ipynb) |
 | Teach a class | [Teaching guide](docs/teaching-guide.md) |
 | Find a familiar operation quickly | [Reference guide](docs/reference-guide.md) |
-| Put this repository on GitHub | [Push and publishing instructions](PUSH_TO_GITHUB.md) |
 
-The intended repository is [aalbata/pandas-clearly](https://github.com/aalbata/pandas-clearly). After GitHub Pages is enabled, its course address will be [aalbata.github.io/pandas-clearly](https://aalbata.github.io/pandas-clearly/). A downloaded copy can be previewed locally using the instructions below.
+The course is online at [aalbata.github.io/pandas-clearly](https://aalbata.github.io/pandas-clearly/). A downloaded copy can be previewed locally using the instructions below.
 
 ## How a lesson works
 
